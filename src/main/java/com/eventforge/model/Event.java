@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,28 +24,18 @@ public class Event {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
-
     private String name;
-
     private String description;
-
     private String address;
-
     private List<String> eventCategories;
-
     @ManyToOne
     @JoinColumn(name = "organisation_id")
     private Organisation organisationId;
-
     private boolean isOnline;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
     private LocalDateTime startsAt;
-
     private LocalDateTime endsAt;
-
 }

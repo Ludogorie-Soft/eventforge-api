@@ -30,6 +30,4 @@ public class EventEnrollment {
     private String externalLink;
     @Nullable
     private String email;
-
-
 }
