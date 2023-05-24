@@ -1,6 +1,5 @@
 package com.eventforge.model;
 
-import com.eventforge.enums.ImageType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
 @Entity
 @Data
 @Builder
@@ -40,6 +40,5 @@ public class Image {
     @ManyToOne
     @JoinColumn(name = "organisation_id")
     private Organisation organisationId;
-
 
 }

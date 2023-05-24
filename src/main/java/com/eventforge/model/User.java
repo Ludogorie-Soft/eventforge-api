@@ -26,24 +26,14 @@ public class User {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
-
     private String username;
-
     private String password;
-
-
     private String role;
-
-
     @CreationTimestamp
     private LocalDateTime registeredAt;
-
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-
     private boolean isEnabled;
-
     private boolean isLocked;
 
     public User(String username, String password, boolean isEnabled, boolean isLocked) {
