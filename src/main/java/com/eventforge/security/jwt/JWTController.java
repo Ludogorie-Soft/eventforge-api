@@ -1,19 +1,21 @@
 package com.eventforge.security.jwt;
 
-;
+import com.eventforge.dto.AuthenticationResponse;
+import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.service.AuthenticationService;
-import jakarta.servlet.http.HttpSession;
+import io.jsonwebtoken.io.IOException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+;
 
 
 @RequiredArgsConstructor
@@ -23,21 +25,38 @@ public class JWTController {
     private final JWTService jwtService;
     private final AuthenticationService authenticationService;
 
+    @PostMapping("/register")
+    public ResponseEntity<AuthenticationResponse> register(
+            @RequestBody RegistrationRequest request
+    ) {
+        return ResponseEntity.ok(authenticationService.register(request));
+    }
+
 
     @PostMapping("/authenticate")
-    public String getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest){
-        Authentication authentication = authenticationService.authenticate(authRequest);
-        if(authentication.isAuthenticated()){
-            return jwtService.getGeneratedToken(authRequest.getUserName());
+    public ResponseEntity<String> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest){
+        AuthenticationResponse authentication = authenticationService.authenticate(authRequest);
+        if(authentication!=null){
+            String token = jwtService.getGeneratedToken(authRequest.getUserName());
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization" ,"Bearer " + token);
+            return ResponseEntity.ok().headers(headers).body(token);
         } else {
             throw new UsernameNotFoundException("Грешно въведен имейл или парола.");
         }
     }
 
+    @PostMapping("/refresh-token")
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException, java.io.IOException {
+        authenticationService.refreshToken(request, response);
+    }
+
     @PostMapping("/logout")
-    public ResponseEntity<String> logout() {
-        // You can perform additional logout-related logic here if needed
-        return ResponseEntity.ok("Logged out successfully.");
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorization){
+        return ResponseEntity.ok("Logged out successfully");
     }
 
 

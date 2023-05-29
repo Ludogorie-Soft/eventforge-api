@@ -2,7 +2,6 @@ package com.eventforge.security;
 
 import com.eventforge.enums.Role;
 import com.eventforge.security.jwt.JWTAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,11 +12,12 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -27,9 +27,11 @@ public class SecurityConfig {
     private JWTAuthenticationFilter authenticationFilter;
     @Autowired
     private  MyUserDetailsService userDetailsService;
+    @Autowired
+    private LogoutHandler logoutHandler;
 
     private static final String[] SECURED_URLs = {"/admin/**", "/organisation/**"};
-    private static final String[] UNSECURED_URLs = {"/registration", "/menu/**", "/login", "/authenticate"};
+    private static final String[] UNSECURED_URLs = {"/register", "/menu/**", "/login", "/authenticate"};
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,12 +50,18 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable().cors().disable()
                 .authorizeHttpRequests().requestMatchers(UNSECURED_URLs).permitAll()
-                .and().authorizeHttpRequests().requestMatchers("/logout").authenticated().and()
+                .and().authorizeHttpRequests().requestMatchers("/proba").authenticated().and()
                 .authorizeHttpRequests().requestMatchers(SECURED_URLs).hasAuthority(Role.ADMIN.toString())
                 .anyRequest().authenticated()
-                .and().httpBasic().disable().formLogin().disable().logout().logoutUrl("/logout").addLogoutHandler(new SecurityContextLogoutHandler()).and()
+                .and().httpBasic().disable().formLogin().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authenticationProvider(authenticationProvider()).addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
+                .authenticationProvider(authenticationProvider()).addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout()
+                .logoutUrl("/logout")
+                .addLogoutHandler(logoutHandler)
+                .logoutSuccessHandler(((request, response, authentication) -> SecurityContextHolder.clearContext())).and()
+                .build();
+
     }
 
     @Bean

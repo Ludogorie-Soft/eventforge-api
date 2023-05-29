@@ -1,7 +1,6 @@
 package com.eventforge.model;
 
 import com.eventforge.enums.Role;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,19 +28,21 @@ public class User {
     private String username;
     private String password;
     private String role;
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
     @CreationTimestamp
     private LocalDateTime registeredAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
     private boolean isEnabled;
-    private boolean isLocked;
+    private boolean isNonLocked;
 
-    public User(String username, String password, boolean isEnabled, boolean isLocked) {
+    public User(String username, String password, boolean isEnabled, boolean isNonLocked) {
         this.username = username;
         this.password = password;
         this.role = Role.ORGANISATION.toString();
         this.isEnabled = isEnabled;
-        this.isLocked = isLocked;
+        this.isNonLocked = isNonLocked;
     }
 
     public User(String username, String password) {
@@ -49,6 +50,6 @@ public class User {
         this.password = password;
         this.role = Role.ADMIN.toString();
         this.isEnabled = true;
-        this.isLocked = false;
+        this.isNonLocked = false;
     }
 }

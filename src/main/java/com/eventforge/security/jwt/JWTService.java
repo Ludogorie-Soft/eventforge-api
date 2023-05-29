@@ -1,6 +1,5 @@
 package com.eventforge.security.jwt;
 
-import com.eventforge.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -8,7 +7,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -29,6 +27,8 @@ public class JWTService {
     private String JWT_SECRET;
     @Value("${spring.jwt.jwtExpirationTime}")
     private int JWT_EXPIRATION_TIME;
+    @Value("${application.security.jwt.refresh-token.expiration}")
+    private long REFRESH_EXPIRATION;
     public String getGeneratedToken(String username) {
         Map<String , Object> claims = new HashMap<>();
         return generateTokenForUser(claims , username);
@@ -76,5 +76,9 @@ public class JWTService {
 
     private boolean isTokenExpired(String theToken){
         return extractExpirationTimeFromToken(theToken).before(new Date());
+    }
+
+    public String generateRefreshToken(String username) {
+        return generateTokenForUser(new HashMap<>(),username);
     }
 }
