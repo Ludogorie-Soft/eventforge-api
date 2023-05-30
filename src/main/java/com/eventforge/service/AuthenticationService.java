@@ -2,10 +2,9 @@ package com.eventforge.service;
 
 import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
-import com.eventforge.enums.Role;
 import com.eventforge.enums.TokenType;
 import com.eventforge.exception.GlobalException;
-import com.eventforge.model.Organisation;
+import com.eventforge.factory.OrganisationBuilder;
 import com.eventforge.model.Token;
 import com.eventforge.model.User;
 import com.eventforge.repository.OrganisationRepository;
@@ -33,30 +32,12 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final OrganisationRepository organisationRepository;
+    private final OrganisationBuilder organisationBuilder;
     private final TokenRepository tokenRepository;
     private final JWTService jwtService;
 
-    public AuthenticationResponse register(RegistrationRequest registrationRequest){
-        var user = User.builder()
-                .username(registrationRequest.getEmail())
-                .password(passwordEncoder.encode(registrationRequest.getPassword()))
-                .role(Role.ORGANISATION.toString())
-                .isNonLocked(true)
-                .isEnabled(false)
-                .build();
-        var organisation = Organisation.builder()
-                        .name(registrationRequest.getName())
-                                .bullstat(registrationRequest.getBullstat())
-                                        .user(user)
-                                                .purposeOfOrganisation(registrationRequest.getPurposeOfOrganisation())
-                                                        .build();
-        userRepository.save(user);
-        organisationRepository.save(organisation);
-        return AuthenticationResponse.builder()
-                .accessToken(null)
-                .refreshToken(null)
-                .build();
+    public User register(RegistrationRequest registrationRequest){
+        return organisationBuilder.createOrganisation(registrationRequest);
     }
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()

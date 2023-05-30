@@ -15,6 +15,8 @@ public interface UserRepository extends JpaRepository<User , UUID> {
     @Query("SELECT a FROM User a WHERE a.role = 'ADMIN'")
     public Optional<User> findAdmin();
     Optional<User> findByUsername(String username);
+    @Query("SELECT u FROM User u WHERE u.username = :username")
+    User findByEmail(String username);
 
 
 }

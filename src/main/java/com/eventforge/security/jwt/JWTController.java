@@ -2,17 +2,22 @@ package com.eventforge.security.jwt;
 
 import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
+import com.eventforge.email.CreateApplicationUrl;
+import com.eventforge.email.RegistrationCompleteEvent;
+import com.eventforge.model.User;
+import com.eventforge.model.VerificationToken;
+import com.eventforge.repository.VerificationTokenRepository;
 import com.eventforge.service.AuthenticationService;
+import com.eventforge.service.UserService;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 ;
 
@@ -23,13 +28,28 @@ public class JWTController {
 
     private final JWTService jwtService;
     private final AuthenticationService authenticationService;
+    private final ApplicationEventPublisher publisher;
+    private final CreateApplicationUrl url;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegistrationRequest request
-    ) {
-        return ResponseEntity.ok(authenticationService.register(request));
+    public ResponseEntity<String> register(
+            @RequestBody RegistrationRequest request , final HttpServletRequest httpServletRequest) {
+        User user = authenticationService.register(request);
+        publisher.publishEvent(new RegistrationCompleteEvent(user ,url.applicationUrl(httpServletRequest)));
+        return new ResponseEntity<>("Успешна регистрация. Моля потвърдете имейла си." , HttpStatus.CREATED);
     }
+    @GetMapping("/verifyEmail")
+    public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken){
+        VerificationToken verifyToken =verificationTokenRepository.findByToken(verificationToken);
+        if(verifyToken.getUser().isEnabled()){
+            return new ResponseEntity<>("Аканутът е вече потвърден, моля впишете се." , HttpStatus.IM_USED);
+        }
+        String verificationResult = userService.validateVarificationToken(verificationToken);
+        return new ResponseEntity<>(verificationResult,HttpStatus.ACCEPTED);
+    }
+
 
 
     @PostMapping("/authenticate")
