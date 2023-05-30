@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -36,15 +35,12 @@ public class JWTController {
     @PostMapping("/authenticate")
     public ResponseEntity<String> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest){
         AuthenticationResponse authentication = authenticationService.authenticate(authRequest);
-        if(authentication!=null){
             String token = jwtService.getGeneratedToken(authRequest.getUserName());
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization" ,"Bearer " + token);
+            headers.add(HttpHeaders.SET_COOKIE, "sessionToken=" + token + "; Path=/");
             return ResponseEntity.ok().headers(headers).body(token);
-        } else {
-            throw new UsernameNotFoundException("Грешно въведен имейл или парола.");
-        }
     }
+
 
     @PostMapping("/refresh-token")
     public void refreshToken(

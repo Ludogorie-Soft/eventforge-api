@@ -4,6 +4,7 @@ import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.enums.Role;
 import com.eventforge.enums.TokenType;
+import com.eventforge.exception.GlobalException;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.Token;
 import com.eventforge.model.User;
@@ -19,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -69,17 +71,21 @@ public class AuthenticationService {
 
 
     public AuthenticationResponse authenticate(JWTAuthenticationRequest request) {
+       try{
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUserName(),
                         request.getPassword()
                 )
-        );
+        );}
+       catch (BadCredentialsException ex){
+           throw new GlobalException("Невалидна потребителска поща или парола");
+       }
         var user = userRepository.findByUsername(request.getUserName())
                 .orElseThrow();
         var jwtToken = jwtService.getGeneratedToken(user.getUsername());
         var refreshToken = jwtService.generateRefreshToken(user.getUsername());
-        revokeAllUserTokens(user);
+//        revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)

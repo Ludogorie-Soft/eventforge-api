@@ -12,6 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -41,6 +43,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 var  authToken = new UsernamePasswordAuthenticationToken(userDetails ,null ,userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                // Set the session token in the Feign client headers
+                RequestContextHolder.currentRequestAttributes().setAttribute("sessionToken", token, RequestAttributes.SCOPE_REQUEST);
             }
 
         }
