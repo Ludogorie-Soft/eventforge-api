@@ -14,5 +14,5 @@ public class UserResponse {
     private LocalDateTime registeredAt;
     private LocalDateTime updatedAt;
     private boolean isEnabled;
-    private boolean isLocked;
+    private boolean isNonLocked;
 }

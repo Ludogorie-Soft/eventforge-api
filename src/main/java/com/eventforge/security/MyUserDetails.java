@@ -13,18 +13,18 @@ import java.util.stream.Collectors;
 @Data
 public class MyUserDetails implements UserDetails {
 
-    private String username;
+    private String userName;
     private String password;
 
-    private boolean isAccountLocked;
+    private boolean isAccountNonLocked;
 
     private boolean isAccountEnabled;
     private List<GrantedAuthority> authorities;
 
     public MyUserDetails(User user) {
-        this.username = user.getUsername();
+        this.userName = user.getUsername();
         this.password = user.getPassword();
-        this.isAccountLocked = user.isLocked();
+        this.isAccountNonLocked = user.isNonLocked();
         this.isAccountEnabled = user.isEnabled();
         this.authorities = Arrays.stream(user.getRole()
                 .split(","))
@@ -44,7 +44,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return userName;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return isAccountLocked ;
+        return isAccountNonLocked;
     }
 
     @Override
