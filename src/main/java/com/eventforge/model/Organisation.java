@@ -11,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 @Entity
 @Data
@@ -32,6 +33,14 @@ public class Organisation {
     private User user;
 
     private String address;
+
+    @ManyToMany
+    @JoinTable(
+            name = "priorityId_organisationId",
+            joinColumns = @JoinColumn(name = "priority_id"),
+            inverseJoinColumns = @JoinColumn(name = "organisation_id")
+    )
+    private Set<OrganisationPriority> organisationPriorities;
 
     private String website;
 
