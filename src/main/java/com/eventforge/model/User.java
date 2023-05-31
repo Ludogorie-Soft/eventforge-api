@@ -2,6 +2,7 @@ package com.eventforge.model;
 
 import com.eventforge.enums.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +26,10 @@ public class User {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
+    @Size(min = 4, max = 30, message = "Username must be between 4 and 30 characters")
+    @Column(unique = true)
     private String username;
+    @Column(length = 64, nullable = false)
     private String password;
     private String role;
     @OneToMany(mappedBy = "user")

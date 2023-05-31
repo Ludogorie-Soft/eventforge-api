@@ -1,6 +1,7 @@
 package com.eventforge.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class Organisation {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
-
+    @Size(min = 4, max = 30, message = "Name must be between 4 and 30 characters")
     private String name;
 
     private String bullstat;
@@ -34,9 +35,7 @@ public class Organisation {
     private String phone;
 
     private String address;
-
     private String charityOption;
-
     private String purposeOfOrganisation;
 
     private List<String> categories;

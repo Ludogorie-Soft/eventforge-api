@@ -1,6 +1,8 @@
 package com.eventforge.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,18 +26,23 @@ public class Event {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
+    @Size(min = 4, max = 30, message = "Name must be between 4 and 30 characters")
     private String name;
     private String description;
     private String address;
     private List<String> eventCategories;
     @ManyToOne
     @JoinColumn(name = "organisation_id")
-    private Organisation organisationId;
+    private Organisation organisation;
     private boolean isOnline;
+    @FutureOrPresent(message = "Date must be in the future")
     @CreationTimestamp
     private LocalDateTime createdAt;
+    @FutureOrPresent(message = "Date must be in the future")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    @FutureOrPresent(message = "Date must be in the future")
     private LocalDateTime startsAt;
+    @FutureOrPresent(message = "Date must be in the future")
     private LocalDateTime endsAt;
 }
