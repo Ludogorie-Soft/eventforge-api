@@ -1,4 +1,4 @@
-package com.eventforge.security.jwt;
+package com.eventforge.controller;
 
 import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
@@ -7,6 +7,8 @@ import com.eventforge.email.RegistrationCompleteEvent;
 import com.eventforge.email.listener.RegistrationCompleteEventListener;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
+import com.eventforge.security.jwt.JWTAuthenticationRequest;
+import com.eventforge.security.jwt.JWTService;
 import com.eventforge.service.AuthenticationService;
 import com.eventforge.service.EmailVerificationTokenService;
 import com.eventforge.service.UserService;
@@ -23,10 +25,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 
-@RequiredArgsConstructor
 @RestController
-public class JWTController {
-
+@RequiredArgsConstructor
+@RequestMapping("/auth")
+public class AuthenticationController {
     private final JWTService jwtService;
     private final AuthenticationService authenticationService;
     private final ApplicationEventPublisher publisher;
@@ -48,7 +50,7 @@ public class JWTController {
 
     @GetMapping("/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken) {
-        String appUrl = url.applicationUrl(servletRequest) + "/resend-verification-token?verificationToken=" + verificationToken;
+        String appUrl = url.applicationUrl(servletRequest) + "/auth/resend-verification-token?verificationToken=" + verificationToken;
         VerificationToken verifyToken = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
         if (verifyToken.getUser().isEnabled()) {
             return new ResponseEntity<>("Аканутът е вече потвърден, моля впишете се.", HttpStatus.IM_USED);
@@ -88,7 +90,4 @@ public class JWTController {
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorization) {
         return ResponseEntity.ok("Logged out successfully");
     }
-
-
 }
-

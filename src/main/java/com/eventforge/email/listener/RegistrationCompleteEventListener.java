@@ -8,6 +8,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -26,6 +27,8 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
     private final   UserService userService;
 
     private final JavaMailSender mailSender;
+    @Value("${spring.mail.username}")
+    private String senderEmail;
 
 
 
@@ -39,7 +42,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         userService.saveUserVerificationToken(theUser , verificationToken);
 
         //4. Build the verification url to be sent to the user.
-        String url = event.getApplicationUrl()+"/verifyEmail?verificationToken="+verificationToken;
+        String url = event.getApplicationUrl()+"/auth/verifyEmail?verificationToken="+verificationToken;
         log.info("Линк за потвърждение на регистрация : {} ",url);
         //5. Send  the email.
         try {
@@ -59,14 +62,14 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
                 "<p> Благодарим <br> ЧАЙНА ТАААУННН";
         MimeMessage message =mailSender.createMimeMessage();
         var messageHelper = new MimeMessageHelper(message);
-        messageHelper.setFrom("proba@gmail.com " ,senderName);
+        messageHelper.setFrom(senderEmail ,senderName);
         messageHelper.setTo(user.getUsername());
         messageHelper.setSubject(subject);
         messageHelper.setText(content , true);
         mailSender.send(message);
     }
     public void resendVerificationTokenEmail(User user, String applicationUrl, VerificationToken verificationToken) throws MessagingException, UnsupportedEncodingException {
-        String url = applicationUrl+"/verifyEmail?verificationToken="+verificationToken.getToken();
+        String url = applicationUrl+"/auth/verifyEmail?verificationToken="+verificationToken.getToken();
         sendVerificationEmail(url , user);
     }
 

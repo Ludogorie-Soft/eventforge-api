@@ -26,7 +26,7 @@ public class VerificationToken {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private static final int EXPIRATION_TIME = 15;
+    private static final int EXPIRATION_TIME = 1;
 
     public VerificationToken(String token, User user) {
         super();
