@@ -31,7 +31,7 @@ public class SecurityConfig {
     private LogoutHandler logoutHandler;
 
     private static final String[] SECURED_URLs = {"/admin/**", "/organisation/**"};
-    private static final String[] UNSECURED_URLs = {"/register", "/menu/**", "/login", "/authenticate" , "/verifyEmail"};
+    private static final String[] UNSECURED_URLs = {"/register", "/menu/**", "/login", "/authenticate" , "/verifyEmail" , "/resend-verification-token"};
 
     @Bean
     public PasswordEncoder passwordEncoder() {

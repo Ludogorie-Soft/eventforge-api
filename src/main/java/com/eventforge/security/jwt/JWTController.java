@@ -4,12 +4,14 @@ import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.email.CreateApplicationUrl;
 import com.eventforge.email.RegistrationCompleteEvent;
+import com.eventforge.email.listener.RegistrationCompleteEventListener;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
-import com.eventforge.repository.VerificationTokenRepository;
 import com.eventforge.service.AuthenticationService;
+import com.eventforge.service.EmailVerificationTokenService;
 import com.eventforge.service.UserService;
 import io.jsonwebtoken.io.IOException;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-;
-
+import java.io.UnsupportedEncodingException;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,35 +31,48 @@ public class JWTController {
     private final AuthenticationService authenticationService;
     private final ApplicationEventPublisher publisher;
     private final CreateApplicationUrl url;
-    private final VerificationTokenRepository verificationTokenRepository;
+    private final EmailVerificationTokenService emailVerificationTokenService;
     private final UserService userService;
+
+    private final HttpServletRequest servletRequest;
+
+    private final RegistrationCompleteEventListener eventListener;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(
-            @RequestBody RegistrationRequest request , final HttpServletRequest httpServletRequest) {
+            @RequestBody RegistrationRequest request, final HttpServletRequest httpServletRequest) {
         User user = authenticationService.register(request);
-        publisher.publishEvent(new RegistrationCompleteEvent(user ,url.applicationUrl(httpServletRequest)));
-        return new ResponseEntity<>("Успешна регистрация. Моля потвърдете имейла си." , HttpStatus.CREATED);
-    }
-    @GetMapping("/verifyEmail")
-    public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken){
-        VerificationToken verifyToken =verificationTokenRepository.findByToken(verificationToken);
-        if(verifyToken.getUser().isEnabled()){
-            return new ResponseEntity<>("Аканутът е вече потвърден, моля впишете се." , HttpStatus.IM_USED);
-        }
-        String verificationResult = userService.validateVarificationToken(verificationToken);
-        return new ResponseEntity<>(verificationResult,HttpStatus.ACCEPTED);
+        publisher.publishEvent(new RegistrationCompleteEvent(user, url.applicationUrl(httpServletRequest)));
+        return new ResponseEntity<>("Успешна регистрация. Моля потвърдете имейла си.", HttpStatus.CREATED);
     }
 
+    @GetMapping("/verifyEmail")
+    public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken) {
+        String appUrl = url.applicationUrl(servletRequest) + "/resend-verification-token?verificationToken=" + verificationToken;
+        VerificationToken verifyToken = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
+        if (verifyToken.getUser().isEnabled()) {
+            return new ResponseEntity<>("Аканутът е вече потвърден, моля впишете се.", HttpStatus.IM_USED);
+        }
+        String verificationResult = userService.validateVarificationToken(verificationToken, appUrl);
+        return new ResponseEntity<>(verificationResult, HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/resend-verification-token")
+    public String resendVerificationToken(@RequestParam("verificationToken") String verificationToken, final HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+        VerificationToken verificationTokenDb = userService.generateNewVerificationToken(verificationToken);
+        User user = verificationTokenDb.getUser();
+        eventListener.resendVerificationTokenEmail(user, url.applicationUrl(request), verificationTokenDb);
+        return "test";
+    }
 
 
     @PostMapping("/authenticate")
-    public ResponseEntity<String> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest){
+    public ResponseEntity<String> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest) {
         AuthenticationResponse authentication = authenticationService.authenticate(authRequest);
-            String token = jwtService.getGeneratedToken(authRequest.getUserName());
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.SET_COOKIE, "sessionToken=" + token + "; Path=/");
-            return ResponseEntity.ok().headers(headers).body(token);
+        String token = jwtService.getGeneratedToken(authRequest.getUserName());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, "sessionToken=" + token + "; Path=/");
+        return ResponseEntity.ok().headers(headers).body(token);
     }
 
 
@@ -71,7 +85,7 @@ public class JWTController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorization){
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorization) {
         return ResponseEntity.ok("Logged out successfully");
     }
 

@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,9 +62,12 @@ public class AuthenticationService {
         );}
        catch (BadCredentialsException ex){
            throw new GlobalException("Невалидна потребителска поща или парола");
+       } catch (DisabledException ex){
+           throw new GlobalException("Моля потвърдете имейла си");
        }
         var user = userRepository.findByUsername(request.getUserName())
                 .orElseThrow();
+
         var jwtToken = jwtService.getGeneratedToken(user.getUsername());
         var refreshToken = jwtService.generateRefreshToken(user.getUsername());
 //        revokeAllUserTokens(user);

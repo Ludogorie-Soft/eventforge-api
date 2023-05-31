@@ -4,14 +4,13 @@ import com.eventforge.exception.GlobalException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
-import com.eventforge.repository.VerificationTokenRepository;
-import jakarta.persistence.Cache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +18,10 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final VerificationTokenRepository verificationTokenRepository;
+    private final EmailVerificationTokenService emailVerificationTokenService;
 
 
-    public void saveUserInDb(User user){
+    public void saveUserInDb(User user) {
         userRepository.save(user);
     }
 
@@ -31,38 +30,49 @@ public class UserService {
         return userRepository.findByUsername(email);
     }
 
-    public User getUserByEmail(String email){
+    public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    public void updateUserIsEnabledFieldAfterConfirmedEmail(User user){
-        if(user!=null){
+    public void updateUserIsEnabledFieldAfterConfirmedEmail(User user) {
+        if (user != null) {
             user.setEnabled(true);
             saveUserInDb(user);
-            log.info("Успешно потвърдена електронна поща - "+user.getUsername());
-        }else {
-            log.warn("Не е намерен потребител с електронна поща "+user.getUsername());
+            log.info("Успешно потвърдена електронна поща - " + user.getUsername());
         }
 
     }
 
     public void saveUserVerificationToken(User theUser, String token) {
-        VerificationToken verificationToken = new VerificationToken(token , theUser);
-        verificationTokenRepository.save(verificationToken);
+        VerificationToken verificationToken = new VerificationToken(token, theUser);
+        emailVerificationTokenService.saveVerificationToken(verificationToken);
     }
 
-    public String validateVarificationToken(String verificationToken) {
-        VerificationToken verificationTokenDb = verificationTokenRepository.findByToken(verificationToken);
-        if(verificationTokenDb == null){
+    public String validateVarificationToken(String verificationToken, String url) {
+        System.out.println(url);
+        VerificationToken verificationTokenDb = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
+        if (verificationTokenDb == null) {
             throw new GlobalException("Линкът за активация е невалиден");
         }
+
         User user = verificationTokenDb.getUser();
-        Calendar calendar =Calendar.getInstance();
-        if(verificationTokenDb.getExpirationTime().getTime() - calendar.getTime().getTime() <= 0){
-            verificationTokenRepository.delete(verificationTokenDb);
-            throw new GlobalException("Линкът за активация е изтекъл");
+        Calendar calendar = Calendar.getInstance();
+        if (verificationTokenDb.getExpirationTime().getTime() - calendar.getTime().getTime() <= 0) {
+            return "Линкът за активация е изтекъл , моля кликнете на следният линк за да генерирате нов - " +
+                    "<a href=\"" + url + "\"> Генерирай нов линк за активация.</a>";
         }
         updateUserIsEnabledFieldAfterConfirmedEmail(user);
+        emailVerificationTokenService.deleteVerificationToken(verificationTokenDb);
         return "Успешно потвърдихте акаунта си";
+    }
+
+    public VerificationToken generateNewVerificationToken(String oldToken) {
+        VerificationToken verificationToken = emailVerificationTokenService.getVerificationTokenByToken(oldToken);
+        var verificationTokenTime = new VerificationToken();
+        verificationToken.setToken(UUID.randomUUID().toString());
+        verificationToken.setExpirationTime(verificationTokenTime.getTokenExpirationTime());
+        emailVerificationTokenService.saveVerificationToken(verificationToken);
+        return verificationToken;
+
     }
 }
