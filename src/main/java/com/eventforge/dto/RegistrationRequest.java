@@ -5,14 +5,18 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RegistrationRequest {
     @Email(message = "Моля въведете валидна електронна поща")
     private String email;
@@ -22,7 +26,7 @@ public class RegistrationRequest {
     private MultipartFile logo;
     private String bullstat;
     @Nullable
-    private HashSet<String> categories = OrganisationPriorityCategory.categories;
+    private Set<String> categories;
     @Nullable
     private String optionalCategory;
     private String purposeOfOrganisation;

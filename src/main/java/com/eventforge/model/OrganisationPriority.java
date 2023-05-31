@@ -25,14 +25,6 @@ public class OrganisationPriority {
 
     private String category;
 
-    @ManyToMany
-    @JoinTable(
-            name = "priorityId_organisationId",
-            joinColumns = @JoinColumn(name = "priority_id"),
-            inverseJoinColumns = @JoinColumn(name = "organisation_id")
-    )
-    private Set<Organisation> organisation;
-
     public OrganisationPriority(String category) {
         this.category = category;
     }

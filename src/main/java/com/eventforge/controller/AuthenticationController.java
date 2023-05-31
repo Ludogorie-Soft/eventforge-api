@@ -11,6 +11,7 @@ import com.eventforge.security.jwt.JWTAuthenticationRequest;
 import com.eventforge.security.jwt.JWTService;
 import com.eventforge.service.AuthenticationService;
 import com.eventforge.service.EmailVerificationTokenService;
+import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.UserService;
 import io.jsonwebtoken.io.IOException;
 import jakarta.mail.MessagingException;
@@ -24,6 +25,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,6 +44,13 @@ public class AuthenticationController {
     private final HttpServletRequest servletRequest;
 
     private final RegistrationCompleteEventListener eventListener;
+
+    private final OrganisationPriorityService organisationPriorityService;
+
+    @GetMapping("/registration")
+    public ResponseEntity<Set<String>>registrationForm(){
+        return new ResponseEntity<>(organisationPriorityService.getAllPriorityCategories(), HttpStatus.OK);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<String> register(
