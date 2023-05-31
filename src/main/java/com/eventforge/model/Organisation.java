@@ -31,15 +31,15 @@ public class Organisation {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String phone;
-
     private String address;
+
+    private String website;
+
+    private String facebookLink;
 
     private String charityOption;
 
     private String purposeOfOrganisation;
-
-    private List<String> categories;
 
     @CreationTimestamp
     private LocalDateTime registeredAt;

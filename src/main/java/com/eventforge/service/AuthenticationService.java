@@ -2,10 +2,9 @@ package com.eventforge.service;
 
 import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
-import com.eventforge.enums.Role;
 import com.eventforge.enums.TokenType;
 import com.eventforge.exception.GlobalException;
-import com.eventforge.model.Organisation;
+import com.eventforge.factory.OrganisationBuilder;
 import com.eventforge.model.Token;
 import com.eventforge.model.User;
 import com.eventforge.repository.OrganisationRepository;
@@ -21,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,30 +33,12 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final OrganisationRepository organisationRepository;
+    private final OrganisationBuilder organisationBuilder;
     private final TokenRepository tokenRepository;
     private final JWTService jwtService;
 
-    public AuthenticationResponse register(RegistrationRequest registrationRequest){
-        var user = User.builder()
-                .username(registrationRequest.getEmail())
-                .password(passwordEncoder.encode(registrationRequest.getPassword()))
-                .role(Role.ORGANISATION.toString())
-                .isNonLocked(true)
-                .isEnabled(false)
-                .build();
-        var organisation = Organisation.builder()
-                        .name(registrationRequest.getName())
-                                .bullstat(registrationRequest.getBullstat())
-                                        .user(user)
-                                                .purposeOfOrganisation(registrationRequest.getPurposeOfOrganisation())
-                                                        .build();
-        userRepository.save(user);
-        organisationRepository.save(organisation);
-        return AuthenticationResponse.builder()
-                .accessToken(null)
-                .refreshToken(null)
-                .build();
+    public User register(RegistrationRequest registrationRequest){
+        return organisationBuilder.createOrganisation(registrationRequest);
     }
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
@@ -80,9 +62,12 @@ public class AuthenticationService {
         );}
        catch (BadCredentialsException ex){
            throw new GlobalException("Невалидна потребителска поща или парола");
+       } catch (DisabledException ex){
+           throw new GlobalException("Моля потвърдете имейла си");
        }
         var user = userRepository.findByUsername(request.getUserName())
                 .orElseThrow();
+
         var jwtToken = jwtService.getGeneratedToken(user.getUsername());
         var refreshToken = jwtService.generateRefreshToken(user.getUsername());
 //        revokeAllUserTokens(user);

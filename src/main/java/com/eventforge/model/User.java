@@ -27,6 +27,8 @@ public class User {
     private UUID id;
     private String username;
     private String password;
+    private String name;
+    private String phone;
     private String role;
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
