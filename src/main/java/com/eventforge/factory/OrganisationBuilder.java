@@ -4,7 +4,6 @@ import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.OrganisationPriority;
 import com.eventforge.model.User;
-import com.eventforge.repository.OrganisationRepository;
 import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.OrganisationService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,7 @@ public class OrganisationBuilder {
     private final UserBuilder userBuilder;
     private final OrganisationPriorityService organisationPriorityService;
 
+
     public User createOrganisation(RegistrationRequest request) {
         User user = userBuilder.createUser(request);
         Organisation org = Organisation.builder()
@@ -28,19 +28,26 @@ public class OrganisationBuilder {
                 .bullstat(request.getBullstat())
                 .user(user)
                 .address(request.getAddress())
+                .organisationPriorities(assignOrganisationPrioritiesToOrganisation(request.getCategories()))
                 .website(request.getWebsite())
                 .facebookLink(request.getFacebookLink())
                 .charityOption(request.getOptionalCharity())
                 .purposeOfOrganisation(request.getPurposeOfOrganisation())
                 .build();
-        Set<OrganisationPriority> organisationPriorities = new HashSet<>();
-        for (String category : request.getCategories()) {
-            OrganisationPriority organisationPriority = organisationPriorityService.getOrganisationPriorityCategoriesByCategory(category);
-            organisationPriorities.add(organisationPriority);
-        }
-        org.setOrganisationPriorities(organisationPriorities);
         organisationService.saveOrganisationInDb(org);
         return user;
     }
 
+    private Set<OrganisationPriority> assignOrganisationPrioritiesToOrganisation(Set<String> priorityCategories) {
+        Set<OrganisationPriority> organisationPriorities = new HashSet<>();
+        if (priorityCategories != null) {
+            for (String category : priorityCategories) {
+                OrganisationPriority organisationPriority = organisationPriorityService.getOrganisationPriorityByCategory(category);
+                if (organisationPriority != null) {
+                    organisationPriorities.add(organisationPriority);
+                }
+            }
+        }
+        return organisationPriorities;
+    }
 }

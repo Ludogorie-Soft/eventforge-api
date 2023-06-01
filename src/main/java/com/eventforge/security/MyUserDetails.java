@@ -24,8 +24,8 @@ public class MyUserDetails implements UserDetails {
     public MyUserDetails(User user) {
         this.userName = user.getUsername();
         this.password = user.getPassword();
-        this.isAccountNonLocked = user.isNonLocked();
-        this.isAccountEnabled = user.isEnabled();
+        this.isAccountNonLocked = user.getIsNonLocked();
+        this.isAccountEnabled = user.getIsEnabled();
         this.authorities = Arrays.stream(user.getRole()
                 .split(","))
                 .map(SimpleGrantedAuthority::new)

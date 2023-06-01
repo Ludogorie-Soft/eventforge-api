@@ -36,22 +36,7 @@ public class User {
     private LocalDateTime registeredAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    private boolean isEnabled;
-    private boolean isNonLocked;
+    private Boolean isEnabled = false;
+    private Boolean isNonLocked = true;
 
-    public User(String username, String password, boolean isEnabled, boolean isNonLocked) {
-        this.username = username;
-        this.password = password;
-        this.role = Role.ORGANISATION.toString();
-        this.isEnabled = isEnabled;
-        this.isNonLocked = isNonLocked;
-    }
-
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
-        this.role = Role.ADMIN.toString();
-        this.isEnabled = true;
-        this.isNonLocked = false;
-    }
 }

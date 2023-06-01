@@ -22,7 +22,7 @@ public class OrganisationPriorityService {
     }
 
 
-    public OrganisationPriority getOrganisationPriorityCategoriesByCategory(String category){
+    public OrganisationPriority getOrganisationPriorityByCategory(String category){
         return organisationPriorityRepository.findByCategory(category);
     }
 }

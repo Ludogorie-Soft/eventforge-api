@@ -18,21 +18,23 @@ public class UserBuilder {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    public User createUser(RegistrationRequest request){
+    public User createUser(RegistrationRequest request) {
         User user = userService.getUserByEmail(request.getEmail());
-        if(user==null){
-           User user1 = User.builder()
+        if (user == null) {
+            User user1 = User.builder()
                     .username(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.ORGANISATION.toString())
+                    .phone(request.getPhoneNumber())
+                    .name(request.getFirstAndLastName())
                     .isEnabled(false)
                     .isNonLocked(true)
                     .build();
             userService.saveUserInDb(user1);
             return user1;
-        }else {
+        } else {
             log.warn("Неуспешна регистрация");
-            throw new GlobalException(String.format("Потребител с електронна поща %s вече съществува",request.getEmail()));
+            throw new GlobalException(String.format("Потребител с електронна поща %s вече съществува", request.getEmail()));
         }
 
     }

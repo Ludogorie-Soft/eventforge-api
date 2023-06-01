@@ -36,7 +36,7 @@ public class UserService {
 
     public void updateUserIsEnabledFieldAfterConfirmedEmail(User user) {
         if (user != null) {
-            user.setEnabled(true);
+            user.setIsEnabled(true);
             saveUserInDb(user);
             log.info("Успешно потвърдена електронна поща - " + user.getUsername());
         }
