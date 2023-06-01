@@ -22,7 +22,10 @@ public class EventEnrollment {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
     @ManyToMany
-    @JoinTable(name = "eventId_enrollmentId")
+//    @JoinTable(name = "eventId_enrollmentId")
+    @JoinTable(name = "event_enrollment_event",
+            joinColumns = @JoinColumn(name = "event_enrollment_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> eventId;
     @Nullable
     private String phone;

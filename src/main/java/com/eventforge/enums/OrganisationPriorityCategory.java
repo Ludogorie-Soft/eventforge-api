@@ -24,7 +24,7 @@ public class OrganisationPriorityCategory {
             "друго"
     ));
 
-    public OrganisationPriorityCategory (String category){
+    public static void addNewOrganisationPriorityCategory(String category){
         categories.add(category);
     }
 

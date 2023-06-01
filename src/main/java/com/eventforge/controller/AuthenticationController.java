@@ -1,6 +1,5 @@
 package com.eventforge.controller;
 
-import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.email.CreateApplicationUrl;
 import com.eventforge.email.RegistrationCompleteEvent;
@@ -11,6 +10,7 @@ import com.eventforge.security.jwt.JWTAuthenticationRequest;
 import com.eventforge.security.jwt.JWTService;
 import com.eventforge.service.AuthenticationService;
 import com.eventforge.service.EmailVerificationTokenService;
+import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.UserService;
 import io.jsonwebtoken.io.IOException;
 import jakarta.mail.MessagingException;
@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +41,13 @@ public class AuthenticationController {
 
     private final RegistrationCompleteEventListener eventListener;
 
+    private final OrganisationPriorityService organisationPriorityService;
+
+    @GetMapping("/registration")
+    public ResponseEntity<Set<String>>registrationForm(){
+        return new ResponseEntity<>(organisationPriorityService.getAllPriorityCategories(), HttpStatus.OK);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<String> register(
             @RequestBody RegistrationRequest request, final HttpServletRequest httpServletRequest) {
@@ -52,10 +60,10 @@ public class AuthenticationController {
     public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken) {
         String appUrl = url.applicationUrl(servletRequest) + "/auth/resend-verification-token?verificationToken=" + verificationToken;
         VerificationToken verifyToken = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
-        if (verifyToken.getUser().isEnabled()) {
+        if (verifyToken.getUser().getIsEnabled()) {
             return new ResponseEntity<>("Аканутът е вече потвърден, моля впишете се.", HttpStatus.IM_USED);
         }
-        String verificationResult = userService.validateVarificationToken(verificationToken, appUrl);
+        String verificationResult = userService.validateVerificationToken(verificationToken, appUrl);
         return new ResponseEntity<>(verificationResult, HttpStatus.ACCEPTED);
     }
 
@@ -70,7 +78,7 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest) {
-        AuthenticationResponse authentication = authenticationService.authenticate(authRequest);
+         authenticationService.authenticate(authRequest);
         String token = jwtService.getGeneratedToken(authRequest.getUserName());
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, "sessionToken=" + token + "; Path=/");

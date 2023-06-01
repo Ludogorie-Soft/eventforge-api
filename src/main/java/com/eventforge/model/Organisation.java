@@ -1,6 +1,7 @@
 package com.eventforge.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 @Entity
 @Data
@@ -23,7 +25,7 @@ public class Organisation {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
-
+    @Size(min = 4, max = 30, message = "Името на събитието трява да е между 4 и 30 символа!")
     private String name;
 
     private String bullstat;
@@ -32,6 +34,14 @@ public class Organisation {
     private User user;
 
     private String address;
+
+    @ManyToMany
+    @JoinTable(
+            name = "priorityId_organisationId",
+            joinColumns = @JoinColumn(name = "priority_id"),
+            inverseJoinColumns = @JoinColumn(name = "organisation_id")
+    )
+    private Set<OrganisationPriority> organisationPriorities;
 
     private String website;
 
