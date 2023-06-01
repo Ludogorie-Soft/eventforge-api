@@ -24,11 +24,11 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private  JWTAuthenticationFilter authenticationFilter;
+    private final JWTAuthenticationFilter authenticationFilter;
 
-    private  MyUserDetailsService userDetailsService;
+    private final MyUserDetailsService userDetailsService;
 
-    private  LogoutHandler logoutHandler;
+    private final LogoutHandler logoutHandler;
 
     public SecurityConfig(JWTAuthenticationFilter authenticationFilter, MyUserDetailsService userDetailsService, LogoutHandler logoutHandler) {
         this.authenticationFilter = authenticationFilter;
@@ -39,8 +39,6 @@ public class SecurityConfig {
     private static final String[] SECURED_URLs = {"/admin/**", "/organisation/**"};
     private static final String[] UNSECURED_URLs = { "/menu/**", "/auth/**"};
 
-    public SecurityConfig() {
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
