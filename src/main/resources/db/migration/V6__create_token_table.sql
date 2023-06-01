@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS token (
                                       id BINARY(16) PRIMARY KEY,
-                                      token VARCHAR(255) UNIQUE,
+                                      token_value VARCHAR(255) UNIQUE,
                                       token_type VARCHAR(50),
                                       revoked BOOLEAN,
                                       expired BOOLEAN,
