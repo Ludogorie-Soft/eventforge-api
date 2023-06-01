@@ -17,7 +17,8 @@ public class OrganisationRequest {
     private String name;
     private String bullstat;
     @NotNull
-    private User user;
+    private String username;
+   private String fullName;
     @Pattern(regexp = "^[0-9]{10}$", message = "Телефонният номер трябва да вклъчва 10 цифри!")
     private String phone;
     private String address;

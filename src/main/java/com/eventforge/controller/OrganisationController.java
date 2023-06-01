@@ -16,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/organisation")
 public class OrganisationController {
 
     private final OrganisationService organisationService;
@@ -25,11 +26,10 @@ public class OrganisationController {
     public String proba(@RequestHeader("Authorization") String authorization){
         return "proba";
     }
-    @PutMapping(path = "{organisationId}")
-    public ResponseEntity<String> updateOrganisation(@PathVariable("organisationId") UUID id,
-                                              @Valid @RequestBody OrganisationRequest organisationRequest) {
-        organisationService.updateOrganisation(id, organisationRequest);
-        return new ResponseEntity<>("All changes are done", HttpStatus.OK);
+    @PutMapping("/update-account")
+    public ResponseEntity<String> updateOrganisation(@Valid @RequestBody OrganisationRequest organisationRequest) {
+        organisationService.updateOrganisation(organisationRequest);
+        return new ResponseEntity<>("Успешно обновихте акаунта си.", HttpStatus.OK);
     }
     @GetMapping(path = "{organisationId}")
     public ResponseEntity<OrganisationResponse> getOrganisation(@PathVariable("organisationId") UUID uuid) {

@@ -4,6 +4,8 @@ import com.eventforge.exception.GlobalException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
+import com.eventforge.security.jwt.JWTService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,12 +17,24 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Data
 public class UserService {
 
     private final UserRepository userRepository;
     private final EmailVerificationTokenService emailVerificationTokenService;
+    private final JWTService jwtService;
+
+    private  String tokenForCurrentUser;
 
 
+
+    public User getCurrentAuthenticatedUser(){
+        String username = jwtService.extractUsernameFromToken(tokenForCurrentUser);
+        if(username!= null){
+            return getUserByEmail(username);
+        }
+        return null;
+    }
     public void saveUserInDb(User user) {
         userRepository.save(user);
     }

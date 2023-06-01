@@ -30,11 +30,10 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
-    private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
     private final OrganisationBuilder organisationBuilder;
     private final TokenRepository tokenRepository;
     private final JWTService jwtService;
+    private final UserService userService;
 
     public User register(RegistrationRequest registrationRequest){
         return organisationBuilder.createOrganisation(registrationRequest);
@@ -64,10 +63,10 @@ public class AuthenticationService {
        } catch (DisabledException ex){
            throw new GlobalException("Моля потвърдете имейла си");
        }
-        var user = userRepository.findByUsername(request.getUserName())
-                .orElseThrow();
+        var user = userService.getUserByEmail(request.getUserName());
 
         var jwtToken = jwtService.getGeneratedToken(user.getUsername());
+        userService.setTokenForCurrentUser(jwtToken);
         var refreshToken = jwtService.generateRefreshToken(user.getUsername());
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
@@ -98,8 +97,7 @@ public class AuthenticationService {
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsernameFromToken(refreshToken);
         if (userEmail != null) {
-            var user = userRepository.findByUsername(userEmail)
-                    .orElseThrow();
+            var user = userService.getUserByEmail(userEmail);
             if (jwtService.validateToken(refreshToken, (UserDetails) user)) {
                 var accessToken = jwtService.getGeneratedToken(user.getUsername());
                 revokeAllUserTokens(user);

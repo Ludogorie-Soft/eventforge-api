@@ -1,5 +1,6 @@
 package com.eventforge.controller;
 
+import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.email.CreateApplicationUrl;
 import com.eventforge.email.RegistrationCompleteEvent;
@@ -43,6 +44,8 @@ public class AuthenticationController {
 
     private final OrganisationPriorityService organisationPriorityService;
 
+
+
     @GetMapping("/registration")
     public ResponseEntity<Set<String>>registrationForm(){
         return new ResponseEntity<>(organisationPriorityService.getAllPriorityCategories(), HttpStatus.OK);
@@ -78,8 +81,8 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest) {
-         authenticationService.authenticate(authRequest);
-        String token = jwtService.getGeneratedToken(authRequest.getUserName());
+        AuthenticationResponse authenticationResponse= authenticationService.authenticate(authRequest);
+        String token = authenticationResponse.getAccessToken();
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, "sessionToken=" + token + "; Path=/");
         return ResponseEntity.ok().headers(headers).body(token);
@@ -96,6 +99,7 @@ public class AuthenticationController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorization) {
+        userService.setTokenForCurrentUser(null);
         return ResponseEntity.ok("Logged out successfully");
     }
 }
