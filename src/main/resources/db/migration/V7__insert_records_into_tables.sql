@@ -1,8 +1,7 @@
-INSERT INTO organisation (id, address, bullstat, categories, charity_option, name, phone, purpose_of_organisation, registered_at, updated_at, user_id)
-VALUES (UUID(),"Varna","000123","Bussiness","tangibles","MODA","898989","charity",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,null);
-INSERT INTO organisation (id, address, bullstat, categories, charity_option, name, phone, purpose_of_organisation, registered_at, updated_at, user_id)
-VALUES (UUID(),"Targovishte","000123","Sport","something","live","898989","taramtaram",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,null);
-
+INSERT INTO organisation(id, name, bullstat, user_id, address, website, facebook_link, charity_option, purpose_of_organisation, registered_at, updated_at)
+VALUES (UUID(),"charity","000123",null,"Varna","wwwHTTp0","facebook link","tangibles","charity",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
+INSERT INTO organisation(id, name, bullstat, user_id, address, website, facebook_link, charity_option, purpose_of_organisation, registered_at, updated_at)
+VALUES (UUID(),"charity","000245",null,"Sofia","wwwHTTp1","facebook link","taramtaram","live",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
 
 
 -- Event records:
