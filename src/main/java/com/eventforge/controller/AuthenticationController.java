@@ -1,6 +1,5 @@
 package com.eventforge.controller;
 
-import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.email.CreateApplicationUrl;
 import com.eventforge.email.RegistrationCompleteEvent;
@@ -25,9 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -67,7 +63,7 @@ public class AuthenticationController {
         if (verifyToken.getUser().getIsEnabled()) {
             return new ResponseEntity<>("Аканутът е вече потвърден, моля впишете се.", HttpStatus.IM_USED);
         }
-        String verificationResult = userService.validateVarificationToken(verificationToken, appUrl);
+        String verificationResult = userService.validateVerificationToken(verificationToken, appUrl);
         return new ResponseEntity<>(verificationResult, HttpStatus.ACCEPTED);
     }
 
@@ -82,7 +78,7 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest) {
-        AuthenticationResponse authentication = authenticationService.authenticate(authRequest);
+         authenticationService.authenticate(authRequest);
         String token = jwtService.getGeneratedToken(authRequest.getUserName());
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, "sessionToken=" + token + "; Path=/");

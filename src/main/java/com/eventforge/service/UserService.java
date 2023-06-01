@@ -48,8 +48,7 @@ public class UserService {
         emailVerificationTokenService.saveVerificationToken(verificationToken);
     }
 
-    public String validateVarificationToken(String verificationToken, String url) {
-        System.out.println(url);
+    public String validateVerificationToken(String verificationToken, String url) {
         VerificationToken verificationTokenDb = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
         if (verificationTokenDb == null) {
             throw new GlobalException("Линкът за активация е невалиден");

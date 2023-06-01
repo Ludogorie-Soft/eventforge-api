@@ -1,6 +1,7 @@
 package com.eventforge.email.listener;
 
 import com.eventforge.email.RegistrationCompleteEvent;
+import com.eventforge.exception.GlobalException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.service.UserService;
@@ -48,7 +49,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         try {
             sendVerificationEmail(url , theUser);
         } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new GlobalException("Възникна грешка при изпращането на потвърждение за регистрация");
         }
     }
 

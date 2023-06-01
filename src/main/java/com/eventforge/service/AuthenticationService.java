@@ -7,7 +7,6 @@ import com.eventforge.exception.GlobalException;
 import com.eventforge.factory.OrganisationBuilder;
 import com.eventforge.model.Token;
 import com.eventforge.model.User;
-import com.eventforge.repository.OrganisationRepository;
 import com.eventforge.repository.TokenRepository;
 import com.eventforge.repository.UserRepository;
 import com.eventforge.security.jwt.JWTAuthenticationRequest;
@@ -43,7 +42,7 @@ public class AuthenticationService {
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
                 .user(user)
-                .token(jwtToken)
+                .tokenValue(jwtToken)
                 .tokenType(TokenType.BEARER)
                 .expired(false)
                 .revoked(false)
@@ -70,7 +69,6 @@ public class AuthenticationService {
 
         var jwtToken = jwtService.getGeneratedToken(user.getUsername());
         var refreshToken = jwtService.generateRefreshToken(user.getUsername());
-//        revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)

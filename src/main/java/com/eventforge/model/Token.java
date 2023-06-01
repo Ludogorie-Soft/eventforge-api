@@ -24,7 +24,7 @@ public class Token {
     private UUID id;
 
     @Column(unique = true)
-    private String token;
+    private String tokenValue;
 
     @Enumerated(EnumType.STRING)
     private TokenType tokenType = TokenType.BEARER;
