@@ -26,7 +26,7 @@ public class User {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
-    @Size(min = 4, max = 30, message = "Username must be between 4 and 30 characters")
+    @Size(min = 4, max = 30, message = "Името на събитието трява да е между 4 и 30 символа!")
     @Column(unique = true)
     private String username;
     @Column(length = 64, nullable = false)

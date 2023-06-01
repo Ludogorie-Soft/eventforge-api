@@ -27,13 +27,14 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventResponse getEventById(UUID eventId) {
-        return eventRepository.findById(eventId).map(event -> mapper.map(event, EventResponse.class)).orElseThrow(() -> new EventRequestException("Event not found for id " + eventId));
+        return eventRepository.findById(eventId).map(event ->
+                mapper.map(event, EventResponse.class)).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено."));
     }
 
     @Override
     public EventResponse getEventByName(String name) {
         Optional<Event> event = Optional.ofNullable(eventRepository.findByName(name)
-                .orElseThrow(() -> new EventRequestException("Event not found for id " + name)));
+                .orElseThrow(() -> new EventRequestException("Събитие с име " + name + " не е намерено!")));
 
         return mapper.map(event, EventResponse.class);
     }
@@ -41,7 +42,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventResponse saveEvent(EventRequest eventRequest) {
         if (eventRepository.findById(eventRequest.getId()).isPresent()) {
-            throw new EventRequestException("Event with Id " + eventRequest.getId() + " already exists!");
+            throw new EventRequestException("Има създадено събитие с номер " + eventRequest.getId() + "!");
         }
         Event event = mapper.map(eventRequest, Event.class);
         return mapper.map(eventRepository.save(event), EventResponse.class);
@@ -49,7 +50,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void updateEvent(UUID eventId, EventRequest eventRequest) {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventRequestException("Event with Id " + eventId + " already exists!"));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено!"));
 
         event.setName(eventRequest.getName());
         event.setDescription(eventRequest.getDescription());

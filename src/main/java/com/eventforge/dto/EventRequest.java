@@ -32,8 +32,8 @@ public class EventRequest {
     @NotBlank
     @NotNull
     private boolean isOnline;
-    @FutureOrPresent(message = "Date must be in the future")
+    @FutureOrPresent(message = "Трябва да въведете текуща или дата!")
     private LocalDateTime startsAt;
-    @FutureOrPresent(message = "Date must be in the future")
+    @FutureOrPresent(message = "Трябва да въведете текуща или дата!")
     private LocalDateTime endsAt;
 }
