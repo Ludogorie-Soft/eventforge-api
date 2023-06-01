@@ -96,6 +96,7 @@ public class AuthenticationController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorization) {
+        userService.setLoggedUser(null);
         return ResponseEntity.ok("Logged out successfully");
     }
 }

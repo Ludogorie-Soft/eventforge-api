@@ -4,6 +4,7 @@ import com.eventforge.exception.GlobalException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,11 +16,12 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Data
 public class UserService {
 
     private final UserRepository userRepository;
     private final EmailVerificationTokenService emailVerificationTokenService;
-
+    private User loggedUser;
 
     public void saveUserInDb(User user) {
         userRepository.save(user);

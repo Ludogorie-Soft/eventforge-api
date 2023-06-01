@@ -18,11 +18,10 @@ create table if not exists organisation_priority (
                                        category VARCHAR(255) NOT NULL
 );
 
-create table if not exists priority_id_organisation_id (
-                                                           organisation_id BINARY(16),
-                                                           organisation_priority_id BINARY(16),
-                                                           priority_id BINARY(16),
-                                                           FOREIGN KEY (organisation_id) REFERENCES organisation(id),
-                                                           FOREIGN KEY (organisation_priority_id) REFERENCES organisation_priority(id),
-                                                           PRIMARY KEY (organisation_id, organisation_priority_id)
+CREATE TABLE IF NOT EXISTS priority_id_organisation_id (
+    organisation_id BINARY(16),
+    organisation_priority_id BINARY(16),
+    FOREIGN KEY (organisation_id) REFERENCES organisation(id),
+    FOREIGN KEY (organisation_priority_id) REFERENCES organisation_priority(id),
+    PRIMARY KEY (organisation_id, organisation_priority_id)
 );

@@ -3,6 +3,7 @@ package com.eventforge.security.jwt;
 import com.eventforge.repository.TokenRepository;
 import com.eventforge.security.MyUserDetails;
 import com.eventforge.security.MyUserDetailsService;
+import com.eventforge.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +25,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private final JWTService jwtService;
     private final MyUserDetailsService userDetailsService;
     private final TokenRepository tokenRepository;
+
+    private final UserService userService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                      FilterChain filterChain) throws ServletException, IOException {
@@ -45,6 +48,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
                 // Set the session token in the Feign client headers
                 RequestContextHolder.currentRequestAttributes().setAttribute("sessionToken", token, RequestAttributes.SCOPE_REQUEST);
+
+                logger.info(userService.getLoggedUser().getUsername());
+            } else {
+                userService.setLoggedUser(null);
             }
 
         }

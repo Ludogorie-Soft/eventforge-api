@@ -37,9 +37,9 @@ public class Organisation {
 
     @ManyToMany
     @JoinTable(
-            name = "priorityId_organisationId",
-            joinColumns = @JoinColumn(name = "priority_id"),
-            inverseJoinColumns = @JoinColumn(name = "organisation_id")
+            name = "priority_id_organisation_id",
+            joinColumns = @JoinColumn(name = "organisation_id"),
+            inverseJoinColumns = @JoinColumn(name = "organisation_priority_id")
     )
     private Set<OrganisationPriority> organisationPriorities;
 

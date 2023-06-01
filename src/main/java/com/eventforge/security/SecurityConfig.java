@@ -37,7 +37,7 @@ public class SecurityConfig {
     }
 
     private static final String[] SECURED_URLs = {"/admin/**", "/organisation/**"};
-    private static final String[] UNSECURED_URLs = { "/menu/**", "/auth/**"};
+    private static final String[] UNSECURED_URLs = { "/menu/**", "/auth/**" };
 
 
     @Bean
@@ -57,7 +57,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable().cors().disable()
                 .authorizeHttpRequests().requestMatchers(UNSECURED_URLs).permitAll()
-                .and().authorizeHttpRequests().requestMatchers("/proba").authenticated().and()
+                .and().authorizeHttpRequests().requestMatchers("/organisation/proba").authenticated().and()
                 .authorizeHttpRequests().requestMatchers(SECURED_URLs).hasAuthority(Role.ADMIN.toString())
                 .anyRequest().authenticated()
                 .and().httpBasic().disable().formLogin().disable()
