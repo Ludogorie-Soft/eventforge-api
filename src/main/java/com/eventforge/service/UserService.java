@@ -22,10 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final EmailVerificationTokenService emailVerificationTokenService;
     private final JWTService jwtService;
-
     private  String tokenForCurrentUser;
-
-    private final JWTService jwtService;
 
 
     public User getCurrentAuthenticatedUser(){
