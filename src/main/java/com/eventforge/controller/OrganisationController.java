@@ -1,5 +1,4 @@
 package com.eventforge.controller;
-
 import com.eventforge.dto.EventRequest;
 import com.eventforge.dto.EventResponse;
 import com.eventforge.dto.OrganisationRequest;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 
 @RestController
@@ -19,12 +17,17 @@ import java.util.UUID;
 @RequestMapping("/organisation")
 public class OrganisationController {
 
-    private final OrganisationService organisationService;
+    private final UserService userService;
+
+    private final JWTService jwtService;
 
 
     @GetMapping("/proba")
-    public String proba(@RequestHeader("Authorization") String authorization){
-        return "proba";
+    public ResponseEntity<String> proba(@RequestHeader("Authorization") String authorization){
+
+        User user = userService.getLoggedUserByToken(jwtService.extractTokenValueFromHeader(authorization));
+
+        return ResponseEntity.ok().body(user.getUsername());
     }
     @PutMapping("/update-account")
     public ResponseEntity<String> updateOrganisation(@Valid @RequestBody OrganisationRequest organisationRequest) {

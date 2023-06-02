@@ -2,8 +2,6 @@ package com.eventforge.security;
 
 import com.eventforge.enums.Role;
 import com.eventforge.security.jwt.JWTAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
 @EnableWebSecurity
@@ -37,7 +36,7 @@ public class SecurityConfig {
     }
 
     private static final String[] SECURED_URLs = {"/admin/**", "/organisation/**"};
-    private static final String[] UNSECURED_URLs = { "/menu/**", "/auth/**"};
+    private static final String[] UNSECURED_URLs = { "/menu/**", "/auth/**" };
 
 
     @Bean
@@ -52,6 +51,15 @@ public class SecurityConfig {
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
+        return authConfiguration.getAuthenticationManager();
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -60,11 +68,11 @@ public class SecurityConfig {
                 .and().authorizeHttpRequests().requestMatchers("/organisation/proba").authenticated().and()
                 .authorizeHttpRequests().requestMatchers(SECURED_URLs).hasAuthority(Role.ADMIN.toString())
                 .anyRequest().authenticated()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().httpBasic().disable().formLogin().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authenticationProvider(authenticationProvider()).addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout()
-                .logoutUrl("/logout")
+                .logoutUrl("/auth/logout")
                 .addLogoutHandler(logoutHandler)
                 .logoutSuccessHandler(((request, response, authentication) -> SecurityContextHolder.clearContext())).and()
                 .build();
@@ -72,8 +80,7 @@ public class SecurityConfig {
     }
 
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
-        return authConfiguration.getAuthenticationManager();
-    }
+
+
+
 }

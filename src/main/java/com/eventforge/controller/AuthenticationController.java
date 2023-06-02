@@ -44,8 +44,6 @@ public class AuthenticationController {
 
     private final OrganisationPriorityService organisationPriorityService;
 
-
-
     @GetMapping("/registration")
     public ResponseEntity<Set<String>>registrationForm(){
         return new ResponseEntity<>(organisationPriorityService.getAllPriorityCategories(), HttpStatus.OK);
@@ -99,7 +97,7 @@ public class AuthenticationController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorization) {
-        userService.setTokenForCurrentUser(null);
+
         return ResponseEntity.ok("Logged out successfully");
     }
 }
