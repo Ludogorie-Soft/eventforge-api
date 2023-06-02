@@ -22,16 +22,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final EmailVerificationTokenService emailVerificationTokenService;
     private final JWTService jwtService;
-    private  String tokenForCurrentUser;
 
 
-    public User getCurrentAuthenticatedUser(){
-        String username = jwtService.extractUsernameFromToken(tokenForCurrentUser);
-        if(username!= null){
-            return getUserByEmail(username);
-        }
-        return null;
-    }
     public void saveUserInDb(User user) {
         userRepository.save(user);
     }

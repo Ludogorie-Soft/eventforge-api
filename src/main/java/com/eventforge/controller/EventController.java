@@ -18,6 +18,8 @@ import java.util.UUID;
 public class EventController {
     private final EventService eventService;
 
+    private static final String AUTHORIZATION = "Authorization";
+
     @GetMapping
     public ResponseEntity<List<EventResponse>> getAllEvents() {
         return ResponseEntity.ok(eventService.getAllEvents());
@@ -33,7 +35,7 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<EventResponse> createEvent(@Valid @RequestBody EventRequest eventRequest) {
+    public ResponseEntity<EventResponse> createEvent(@Valid @RequestBody EventRequest eventRequest ,@RequestHeader(AUTHORIZATION) String authHeader) {
         return new ResponseEntity<>(eventService.saveEvent(eventRequest), HttpStatus.CREATED);
     }
 

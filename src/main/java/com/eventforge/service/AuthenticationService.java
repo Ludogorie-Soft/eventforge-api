@@ -65,7 +65,6 @@ public class AuthenticationService {
 
         User user = userService.getUserByEmail(request.getUserName());
         var jwtToken = jwtService.getGeneratedToken(user.getUsername());
-        userService.setTokenForCurrentUser(jwtToken);
         var refreshToken = jwtService.generateRefreshToken(user.getUsername());
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()

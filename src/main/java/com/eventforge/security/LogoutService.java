@@ -42,10 +42,7 @@ public class LogoutService implements LogoutHandler {
             if (session != null) {
                 session.invalidate();
             }
-            Cookie cookie = new Cookie("JSESSIONID", null);
-            cookie.setMaxAge(0); // Setting the MaxAge to 0 will delete the cookie
-            cookie.setPath("/");
-            response.addCookie(cookie);
+
             log.info("User successfully log out");
         }
     }

@@ -30,8 +30,8 @@ public class OrganisationService {
     public Organisation getOrganisationByUserUsername(String username){
         return organisationRepository.findOrganisationByEmail(username);
     }
-    public void updateOrganisation(OrganisationRequest organisationRequest) {
-        User currentLoggedUser = userService.getCurrentAuthenticatedUser();
+    public void updateOrganisation(OrganisationRequest organisationRequest , String token) {
+        User currentLoggedUser = userService.getLoggedUserByToken(token);
         if(currentLoggedUser!=null) {
             currentLoggedUser.setUsername(organisationRequest.getUsername());
             currentLoggedUser.setName(organisationRequest.getFullName());

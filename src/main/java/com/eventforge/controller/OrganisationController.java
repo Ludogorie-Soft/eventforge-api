@@ -26,17 +26,19 @@ public class OrganisationController {
 
     private final OrganisationService organisationService;
 
+    private static final String AUTHORIZATION ="Authorization";
+
 
     @GetMapping("/proba")
-    public ResponseEntity<String> proba(@RequestHeader("Authorization") String authorization){
+    public ResponseEntity<String> proba(@RequestHeader(AUTHORIZATION) String authorization){
 
         User user = userService.getLoggedUserByToken(jwtService.extractTokenValueFromHeader(authorization));
 
         return ResponseEntity.ok().body(user.getUsername());
     }
     @PutMapping("/update-account")
-    public ResponseEntity<String> updateOrganisation(@Valid @RequestBody OrganisationRequest organisationRequest) {
-        organisationService.updateOrganisation(organisationRequest);
+    public ResponseEntity<String> updateOrganisation(@Valid @RequestBody OrganisationRequest organisationRequest ,@RequestHeader(AUTHORIZATION) String authHeader) {
+        organisationService.updateOrganisation(organisationRequest, jwtService.extractTokenValueFromHeader(authHeader));
         return new ResponseEntity<>("Успешно обновихте акаунта си.", HttpStatus.OK);
     }
     @GetMapping(path = "{organisationId}")

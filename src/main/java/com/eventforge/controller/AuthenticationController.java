@@ -44,8 +44,8 @@ public class AuthenticationController {
 
     private final OrganisationPriorityService organisationPriorityService;
 
-    @GetMapping("/registration")
-    public ResponseEntity<Set<String>>registrationForm(){
+    @GetMapping("/getAllPriorityCategories")
+    public ResponseEntity<Set<String>>getAllPriorityCategories(){
         return new ResponseEntity<>(organisationPriorityService.getAllPriorityCategories(), HttpStatus.OK);
     }
 
@@ -78,12 +78,9 @@ public class AuthenticationController {
 
 
     @PostMapping("/authenticate")
-    public ResponseEntity<String> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest) {
+    public ResponseEntity<AuthenticationResponse> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest) {
         AuthenticationResponse authenticationResponse= authenticationService.authenticate(authRequest);
-        String token = authenticationResponse.getAccessToken();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, "sessionToken=" + token + "; Path=/");
-        return ResponseEntity.ok().headers(headers).body(token);
+        return ResponseEntity.ok().body(authenticationResponse);
     }
 
 
