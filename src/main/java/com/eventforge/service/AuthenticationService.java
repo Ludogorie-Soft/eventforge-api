@@ -32,7 +32,7 @@ public class AuthenticationService {
     private final OrganisationBuilder organisationBuilder;
     private final TokenRepository tokenRepository;
     private final JWTService jwtService;
-    private final UserService userService;
+
 
     public User register(RegistrationRequest registrationRequest){
         return organisationBuilder.createOrganisation(registrationRequest);

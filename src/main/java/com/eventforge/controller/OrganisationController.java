@@ -4,7 +4,10 @@ import com.eventforge.dto.EventResponse;
 import com.eventforge.dto.OrganisationRequest;
 import com.eventforge.dto.OrganisationResponse;
 import com.eventforge.model.Organisation;
+import com.eventforge.model.User;
+import com.eventforge.security.jwt.JWTService;
 import com.eventforge.service.OrganisationService;
+import com.eventforge.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,8 @@ public class OrganisationController {
     private final UserService userService;
 
     private final JWTService jwtService;
+
+    private final OrganisationService organisationService;
 
 
     @GetMapping("/proba")
