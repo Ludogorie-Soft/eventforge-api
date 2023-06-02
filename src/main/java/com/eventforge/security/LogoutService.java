@@ -1,10 +1,12 @@
 package com.eventforge.security;
 
 import com.eventforge.repository.TokenRepository;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LogoutService implements LogoutHandler {
 
     private final TokenRepository tokenRepository;
@@ -24,6 +27,7 @@ public class LogoutService implements LogoutHandler {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+            log.warn("The authorization header is invalid/empty -? "+authHeader);
             return;
         }
         jwt = authHeader.substring(7);
@@ -38,6 +42,11 @@ public class LogoutService implements LogoutHandler {
             if (session != null) {
                 session.invalidate();
             }
+            Cookie cookie = new Cookie("JSESSIONID", null);
+            cookie.setMaxAge(0); // Setting the MaxAge to 0 will delete the cookie
+            cookie.setPath("/");
+            response.addCookie(cookie);
+            log.info("User successfully log out");
         }
     }
 }

@@ -29,6 +29,13 @@ public class JWTService {
     private int JWT_EXPIRATION_TIME;
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long REFRESH_EXPIRATION;
+
+    public String extractTokenValueFromHeader(String authHeader){
+        if(authHeader.startsWith("Bearer ")){
+            return authHeader.substring(7);
+        }
+        return null;
+    }
     public String getGeneratedToken(String username) {
         Map<String , Object> claims = new HashMap<>();
         return generateTokenForUser(claims , username);
@@ -42,6 +49,7 @@ public class JWTService {
                 .setExpiration(new Date(System.currentTimeMillis()+JWT_EXPIRATION_TIME))
                 .signWith(getSignKey() , SignatureAlgorithm.HS256).compact();
     }
+
 
     private Key getSignKey(){
         byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);

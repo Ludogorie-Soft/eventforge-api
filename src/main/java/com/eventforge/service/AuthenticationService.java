@@ -21,7 +21,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
-    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final OrganisationBuilder organisationBuilder;
     private final TokenRepository tokenRepository;
@@ -64,8 +62,6 @@ public class AuthenticationService {
            throw new GlobalException("Моля потвърдете имейла си");
        }
         User user = userService.getUserByEmail(request.getUserName());
-        userService.setLoggedUser(user);
-
 
         var jwtToken = jwtService.getGeneratedToken(user.getUsername());
         var refreshToken = jwtService.generateRefreshToken(user.getUsername());
@@ -98,9 +94,9 @@ public class AuthenticationService {
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsernameFromToken(refreshToken);
         if (userEmail != null) {
-            var user = userService.getUserByEmail(userEmail);
+            User user = userService.getUserByEmail(userEmail);
             if (jwtService.validateToken(refreshToken, (UserDetails) user)) {
-                var accessToken = jwtService.getGeneratedToken(user.getUsername());
+                String accessToken = jwtService.getGeneratedToken(user.getUsername());
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
                 var authResponse = AuthenticationResponse.builder()

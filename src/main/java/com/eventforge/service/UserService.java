@@ -4,13 +4,13 @@ import com.eventforge.exception.GlobalException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
+import com.eventforge.security.jwt.JWTService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,20 +21,23 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final EmailVerificationTokenService emailVerificationTokenService;
-    private User loggedUser;
+
+    private final JWTService jwtService;
 
     public void saveUserInDb(User user) {
         userRepository.save(user);
     }
 
 
-    public Optional<User> getOptionalUserByEmail(String email) {
-        return userRepository.findByUsername(email);
-    }
-
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    public User getLoggedUserByToken(String token){
+        String username = jwtService.extractUsernameFromToken(token);
+        return getUserByEmail(username);
+    }
+
 
     public void updateUserIsEnabledFieldAfterConfirmedEmail(User user) {
         if (user != null) {
