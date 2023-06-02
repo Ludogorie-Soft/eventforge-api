@@ -26,12 +26,13 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-
+    
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final OrganisationBuilder organisationBuilder;
     private final TokenRepository tokenRepository;
     private final JWTService jwtService;
+    private final UserService userService;
 
     public User register(RegistrationRequest registrationRequest){
         return organisationBuilder.createOrganisation(registrationRequest);
@@ -61,9 +62,10 @@ public class AuthenticationService {
        } catch (DisabledException ex){
            throw new GlobalException("Моля потвърдете имейла си");
        }
-        User user = userService.getUserByEmail(request.getUserName());
 
+        User user = userService.getUserByEmail(request.getUserName());
         var jwtToken = jwtService.getGeneratedToken(user.getUsername());
+        userService.setTokenForCurrentUser(jwtToken);
         var refreshToken = jwtService.generateRefreshToken(user.getUsername());
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
@@ -94,8 +96,11 @@ public class AuthenticationService {
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsernameFromToken(refreshToken);
         if (userEmail != null) {
-            User user = userService.getUserByEmail(userEmail);
-            if (jwtService.validateToken(refreshToken, (UserDetails) user)) {
+
+      
+         User user = userService.getUserByEmail(userEmail);
+            
+          if (jwtService.validateToken(refreshToken, (UserDetails) user)) {
                 String accessToken = jwtService.getGeneratedToken(user.getUsername());
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);

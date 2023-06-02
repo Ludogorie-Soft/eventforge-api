@@ -1,14 +1,16 @@
 package com.eventforge.controller;
-
-import com.eventforge.model.User;
-import com.eventforge.security.jwt.JWTService;
-import com.eventforge.service.UserService;
+import com.eventforge.dto.EventRequest;
+import com.eventforge.dto.EventResponse;
+import com.eventforge.dto.OrganisationRequest;
+import com.eventforge.dto.OrganisationResponse;
+import com.eventforge.model.Organisation;
+import com.eventforge.service.OrganisationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,5 +28,14 @@ public class OrganisationController {
         User user = userService.getLoggedUserByToken(jwtService.extractTokenValueFromHeader(authorization));
 
         return ResponseEntity.ok().body(user.getUsername());
+    }
+    @PutMapping("/update-account")
+    public ResponseEntity<String> updateOrganisation(@Valid @RequestBody OrganisationRequest organisationRequest) {
+        organisationService.updateOrganisation(organisationRequest);
+        return new ResponseEntity<>("Успешно обновихте акаунта си.", HttpStatus.OK);
+    }
+    @GetMapping(path = "{organisationId}")
+    public ResponseEntity<OrganisationResponse> getOrganisation(@PathVariable("organisationId") UUID uuid) {
+        return ResponseEntity.ok(organisationService.getOrganisationById(uuid));
     }
 }
