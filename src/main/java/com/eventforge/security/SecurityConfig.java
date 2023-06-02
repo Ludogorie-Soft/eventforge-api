@@ -2,8 +2,6 @@ package com.eventforge.security;
 
 import com.eventforge.enums.Role;
 import com.eventforge.security.jwt.JWTAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,21 +22,16 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private static final String[] SECURED_URLs = {"/admin/**", "/organisation/**"};
+    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**", "/api/v1/**"};
     private final JWTAuthenticationFilter authenticationFilter;
-
     private final MyUserDetailsService userDetailsService;
-
     private final LogoutHandler logoutHandler;
-
     public SecurityConfig(JWTAuthenticationFilter authenticationFilter, MyUserDetailsService userDetailsService, LogoutHandler logoutHandler) {
         this.authenticationFilter = authenticationFilter;
         this.userDetailsService = userDetailsService;
         this.logoutHandler = logoutHandler;
     }
-
-    private static final String[] SECURED_URLs = {"/admin/**", "/organisation/**"};
-    private static final String[] UNSECURED_URLs = { "/menu/**", "/auth/**"};
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

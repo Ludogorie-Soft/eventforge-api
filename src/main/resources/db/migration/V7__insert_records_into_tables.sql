@@ -6,6 +6,8 @@ VALUES (UUID(),"charity","000245",null,"Sofia","wwwHTTp1","facebook link","taram
 
 -- Event records:
 INSERT INTO event (id, address, created_at, description, ends_at, event_categories, is_online, name, starts_at, updated_at, organisation_id)
-VALUES (10,"Sofia",CURRENT_TIMESTAMP,"event info",CURRENT_TIMESTAMP,null,true,"namename",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,null);
+VALUES (10,"Sofia",CURRENT_TIMESTAMP,"abv32",CURRENT_TIMESTAMP,null,true,"namename",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,null);
 INSERT INTO event (id, address, created_at, description, ends_at, event_categories, is_online, name, starts_at, updated_at, organisation_id)
 VALUES (11,"Razgrad",CURRENT_TIMESTAMP,"event info",CURRENT_TIMESTAMP,null,true,"event",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,null);
+INSERT INTO event (id, address, created_at, description, ends_at, event_categories, is_online, name, starts_at, updated_at, organisation_id)
+VALUES (12,"Razgrad",CURRENT_TIMESTAMP,"abv-31",CURRENT_TIMESTAMP,null,true,"event",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,null);

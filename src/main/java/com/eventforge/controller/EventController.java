@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.http.HttpStatus.ACCEPTED;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/events")
@@ -41,12 +43,20 @@ public class EventController {
     public ResponseEntity<String> updateEvent(@PathVariable("eventId") UUID id,
                                               @Valid @RequestBody EventRequest eventRequest) {
         eventService.updateEvent(id, eventRequest);
-        return new ResponseEntity<>("All changes are done", HttpStatus.OK);
+        return new ResponseEntity<>("Всички промени са направени", HttpStatus.OK);
     }
 
     @DeleteMapping(path = "{eventId}")
     public ResponseEntity<String> deleteEvent(@PathVariable("eventId") UUID id) {
         eventService.deleteEvent(id);
-        return new ResponseEntity<>("Event has been deleted successfully!!", HttpStatus.OK);
+        return new ResponseEntity<>("Събитието е изтрито успешно!", HttpStatus.OK);
+    }
+    @GetMapping("/filter")
+    public ResponseEntity<List<EventResponse>> filterEvents(@RequestParam(required = false) String name,
+                                                            @RequestParam(required = false) String description,
+                                                            @RequestParam(required = false) String address,
+                                                            @RequestParam(required = false) String organisationName,
+                                                            @RequestParam(required = false) String date) {
+        return new ResponseEntity<>(eventService.filterEventsByCriteria(name, description, address, organisationName, date), ACCEPTED);
     }
 }

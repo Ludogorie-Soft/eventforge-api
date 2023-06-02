@@ -10,11 +10,14 @@ public interface EventService {
     List<EventResponse> getAllEvents();
 
     EventResponse getEventById(UUID eventId);
+
     EventResponse getEventByName(String name);
 
     EventResponse saveEvent(EventRequest eventRequest);
+
     void updateEvent(UUID eventId, EventRequest eventRequest);
 
     void deleteEvent(UUID eventId);
 
+    List<EventResponse> filterEventsByCriteria(String name, String description, String address, String organisationName, String date);
 }

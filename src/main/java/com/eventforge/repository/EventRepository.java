@@ -7,8 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface EventRepository extends JpaRepository<Event , UUID> {
-
-    @Query("select e from Event e where e.name=?1")
+public interface EventRepository extends JpaRepository<Event, UUID> {
+    @Query("select e from Event e where e.name=:name")
     Optional<Event> findByName(String name);
 }

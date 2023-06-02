@@ -60,7 +60,7 @@ public class AuthenticationController {
     public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken) {
         String appUrl = url.applicationUrl(servletRequest) + "/auth/resend-verification-token?verificationToken=" + verificationToken;
         VerificationToken verifyToken = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
-        if (verifyToken.getUser().getIsEnabled()) {
+        if (Boolean.TRUE.equals(verifyToken.getUser().getIsEnabled())) {
             return new ResponseEntity<>("Аканутът е вече потвърден, моля впишете се.", HttpStatus.IM_USED);
         }
         String verificationResult = userService.validateVerificationToken(verificationToken, appUrl);
