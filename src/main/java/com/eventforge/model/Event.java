@@ -45,4 +45,6 @@ public class Event {
     private LocalDateTime startsAt;
     @FutureOrPresent(message = "Трябва да въведете текуща или дата!")
     private LocalDateTime endsAt;
+
+    private Boolean isOneTime;
 }
