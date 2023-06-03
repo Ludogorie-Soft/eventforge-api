@@ -1,5 +1,6 @@
 package com.eventforge.service.Impl;
 
+import com.eventforge.dto.EventRequest;
 import com.eventforge.dto.EventResponse;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.model.Event;
@@ -15,15 +16,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -77,7 +81,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void testGetEventIfNonExistingIdShouldThrowApiRequestException() {
+    void testGetEventIfNonExistingIdShouldThrowException() {
         UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
         when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
         assertThrows(EventRequestException.class, () -> eventServiceImpl.getEventById(eventId));
@@ -100,7 +104,125 @@ class EventServiceImplTest {
         assertNotNull(response);
         assertEquals("number1", response.getName());
     }
+    @Test
+    void testGetEventIfNonExistingItShouldThrowException() {
+        UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
+        Event event = Event.builder().id(eventId).name("number1").build();
 
+        when(eventRepository.findByName(event.getName())).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> eventServiceImpl.getEventByName(event.getName()))
+                .isInstanceOf(EventRequestException.class)
+                .hasMessage("Събитие с име " + event.getName() + " не е намерено!");
+
+        verify(eventRepository, times(1)).findByName(event.getName());
+        verifyNoMoreInteractions(eventRepository);
+    }
+    @Test
+    void testGetEventWithGivenNameShouldShouldExists() {
+        UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
+        Event event = Event.builder().id(eventId).name("number1").build();
+
+        when(eventRepository.findByName(event.getName())).thenReturn(Optional.of(event));
+        EventResponse response = eventServiceImpl.getEventByName(event.getName());
+
+        verify(eventRepository, times(1)).findByName(event.getName());
+        verifyNoMoreInteractions(eventRepository);
+
+        assertNotNull(response);
+        assertEquals("number1", response.getName());
+    }
+    @Test
+    void testSaveEventShouldReturnEventResponse() {
+        UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
+        Event event = Event.builder().id(eventId).build();
+        EventRequest eventRequest = EventRequest.builder().id(eventId).build();
+
+        when(eventRepository.findById(eventRequest.getId())).thenReturn(Optional.empty());
+
+        ModelMapper modelMapperMock = Mockito.mock(ModelMapper.class);
+        when(modelMapperMock.map(eventRequest, Event.class)).thenReturn(event);
+        when(eventRepository.save(event)).thenReturn(event);
+        when(modelMapperMock.map(event, EventResponse.class)).thenReturn(new EventResponse());
+
+        EventResponse result = new EventServiceImpl(eventRepository, modelMapperMock,entityManager).saveEvent(eventRequest);
+
+        assertNotNull(result);
+
+        verify(eventRepository, times(1)).findById(eventRequest.getId());
+        verify(eventRepository, times(1)).save(event);
+        verify(modelMapperMock, times(1)).map(eventRequest, Event.class);
+        verify(modelMapperMock, times(1)).map(event, EventResponse.class);
+        verifyNoMoreInteractions(eventRepository, modelMapperMock);
+    }
+
+    @Test
+    void testSaveEventShouldThrowExceptionWhenEventExists() {
+        UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
+        Event existingEvent = Event.builder().id(eventId).build();
+        EventRequest eventRequest = EventRequest.builder().id(eventId).build();
+
+        when(eventRepository.findById(eventRequest.getId())).thenReturn(Optional.of(existingEvent));
+        assertThrows(EventRequestException.class, () -> eventServiceImpl.saveEvent(eventRequest));
+
+        verify(eventRepository, times(1)).findById(eventRequest.getId());
+        verifyNoMoreInteractions(eventRepository);
+    }
+    @Test
+    void testUpdateEventIfExistsShouldBeUpdated() {
+        UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
+        EventRequest eventRequest = EventRequest.builder()
+                .name("Updated Event")
+                .description("Updated description")
+                .address("Updated address")
+                .isOnline(true)
+                .startsAt(LocalDateTime.now())
+                .endsAt(LocalDateTime.now().plusHours(1))
+                .eventCategories(List.of("Category1", "Category2"))
+                .build();
+
+        Event existingEvent = Event.builder().id(eventId).build();
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(existingEvent));
+        when(eventRepository.save(any(Event.class))).thenReturn(existingEvent);
+
+        eventServiceImpl.updateEvent(eventId, eventRequest);
+
+        verify(eventRepository, times(1)).findById(eventId);
+        verify(eventRepository, times(1)).save(any(Event.class));
+
+        assertThat(existingEvent.getName()).isEqualTo(eventRequest.getName());
+        assertThat(existingEvent.getDescription()).isEqualTo(eventRequest.getDescription());
+        assertThat(existingEvent.getAddress()).isEqualTo(eventRequest.getAddress());
+        assertThat(existingEvent.isOnline()).isEqualTo(eventRequest.isOnline());
+        assertThat(existingEvent.getStartsAt()).isEqualTo(eventRequest.getStartsAt());
+        assertThat(existingEvent.getEndsAt()).isEqualTo(eventRequest.getEndsAt());
+        assertThat(existingEvent.getEventCategories()).isEqualTo(eventRequest.getEventCategories());
+    }
+    @Test
+    void testUpdateEventThrowsExceptionWhenEventDoesNotExist() {
+        UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
+        EventRequest eventRequest = EventRequest.builder()
+                .name("Updated Event")
+                .description("Updated Event Description")
+                .address("Updated Event Address")
+                .build();
+
+        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
+        assertThrows(EventRequestException.class, () -> eventServiceImpl.updateEvent(eventId, eventRequest));
+
+        verify(eventRepository, times(1)).findById(eventId);
+        verifyNoMoreInteractions(eventRepository);
+    }
+
+    @Test
+    void testDeleteExistingEventShouldBeDelete() {
+        UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
+
+        eventServiceImpl.deleteEvent(eventId);
+
+        verify(eventRepository, times(1)).deleteById(eventId);
+        verifyNoMoreInteractions(eventRepository);
+    }
 
     @Test
     void testFilterEventsByCriteria_AllNull() {
