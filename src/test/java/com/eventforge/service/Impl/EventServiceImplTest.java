@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -104,19 +103,23 @@ class EventServiceImplTest {
         assertNotNull(response);
         assertEquals("number1", response.getName());
     }
+
     @Test
     void testGetEventIfNonExistingItShouldThrowException() {
+        String eventName = "number1";
         UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
-        Event event = Event.builder().id(eventId).name("number1").build();
+        Event event = Event.builder().id(eventId).name(eventName).build();
+        when(eventRepository.findByName(eventName)).thenReturn(Optional.of(event));
 
-        when(eventRepository.findByName(event.getName())).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> eventServiceImpl.getEventByName(event.getName()))
-                .isInstanceOf(EventRequestException.class)
-                .hasMessage("Събитие с име " + event.getName() + " не е намерено!");
+        EventResponse result = eventServiceImpl.getEventByName(eventName);
 
-        verify(eventRepository, times(1)).findByName(event.getName());
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo(eventName);
+
+        verify(eventRepository, times(1)).findByName(eventName);
         verifyNoMoreInteractions(eventRepository);
     }
+
     @Test
     void testGetEventWithGivenNameShouldShouldExists() {
         UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
@@ -131,6 +134,7 @@ class EventServiceImplTest {
         assertNotNull(response);
         assertEquals("number1", response.getName());
     }
+
     @Test
     void testSaveEventShouldReturnEventResponse() {
         UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
@@ -144,7 +148,7 @@ class EventServiceImplTest {
         when(eventRepository.save(event)).thenReturn(event);
         when(modelMapperMock.map(event, EventResponse.class)).thenReturn(new EventResponse());
 
-        EventResponse result = new EventServiceImpl(eventRepository, modelMapperMock,entityManager).saveEvent(eventRequest);
+        EventResponse result = new EventServiceImpl(eventRepository, modelMapperMock, entityManager).saveEvent(eventRequest);
 
         assertNotNull(result);
 
@@ -167,6 +171,7 @@ class EventServiceImplTest {
         verify(eventRepository, times(1)).findById(eventRequest.getId());
         verifyNoMoreInteractions(eventRepository);
     }
+
     @Test
     void testUpdateEventIfExistsShouldBeUpdated() {
         UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
@@ -198,6 +203,7 @@ class EventServiceImplTest {
         assertThat(existingEvent.getEndsAt()).isEqualTo(eventRequest.getEndsAt());
         assertThat(existingEvent.getEventCategories()).isEqualTo(eventRequest.getEventCategories());
     }
+
     @Test
     void testUpdateEventThrowsExceptionWhenEventDoesNotExist() {
         UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -39,8 +38,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventResponse getEventByName(String name) {
-        Optional<Event> event = Optional.ofNullable(eventRepository.findByName(name).orElseThrow(() -> new EventRequestException("Събитие с име " + name + " не е намерено!")));
-
+        Event event = eventRepository.findByName(name).orElseThrow(() -> new EventRequestException("Събитие с име " + name + " не е намерено!"));
         return mapper.map(event, EventResponse.class);
     }
 
