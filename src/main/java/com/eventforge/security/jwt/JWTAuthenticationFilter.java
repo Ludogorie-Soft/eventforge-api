@@ -50,7 +50,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
                 logger.info("JWT filter is successful for user with email : "+username);
             }
-
         }
         filterChain.doFilter(request , response);
     }

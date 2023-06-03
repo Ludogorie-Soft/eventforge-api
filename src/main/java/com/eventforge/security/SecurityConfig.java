@@ -1,6 +1,8 @@
 package com.eventforge.security;
 
 import com.eventforge.enums.Role;
+import com.eventforge.exception.AuthenticationEntryPoint;
+import com.eventforge.exception.CustomAccessDeniedHandler;
 import com.eventforge.security.jwt.JWTAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -29,36 +32,38 @@ public class SecurityConfig {
 
     private final LogoutHandler logoutHandler;
 
-    public SecurityConfig(JWTAuthenticationFilter authenticationFilter, MyUserDetailsService userDetailsService, LogoutHandler logoutHandler) {
+    private final PasswordEncoder passwordEncoder;
+
+    private final AuthenticationEntryPoint authenticationEntryPoint;
+
+    private final AccessDeniedHandler accessDeniedHandler;
+
+    public SecurityConfig(JWTAuthenticationFilter authenticationFilter,
+                          MyUserDetailsService userDetailsService,
+                          LogoutHandler logoutHandler,
+                          PasswordEncoder passwordEncoder,
+                          AuthenticationEntryPoint authenticationEntryPoint,
+                          AccessDeniedHandler accessDeniedHandler) {
         this.authenticationFilter = authenticationFilter;
         this.userDetailsService = userDetailsService;
         this.logoutHandler = logoutHandler;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
 
     private static final String[] SECURED_URLs = {"/admin/**", "/organisation/**"};
-    private static final String[] UNSECURED_URLs = { "/menu/**", "/auth/**" };
+    private static final String[] ADMIN_URLs = {"/admin/**"};
+    private static final String[] ORGANISATION_URLs = {"/organisation/**"};
+    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**"};
 
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         var authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
         return authenticationProvider;
-    }
-    @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
-        return authConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -70,6 +75,10 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().httpBasic().disable().formLogin().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
+                .and()
                 .authenticationProvider(authenticationProvider()).addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout()
                 .logoutUrl("/auth/logout")
@@ -78,9 +87,5 @@ public class SecurityConfig {
                 .build();
 
     }
-
-
-
-
 
 }
