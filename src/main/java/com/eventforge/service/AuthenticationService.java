@@ -70,6 +70,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .userRole(user.getRole())
                 .build();
     }
     private void revokeAllUserTokens(User user) {
@@ -106,6 +107,7 @@ public class AuthenticationService {
                 var authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
+                        .userRole(user.getRole())
                         .build();
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }

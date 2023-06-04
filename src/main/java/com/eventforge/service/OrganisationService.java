@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,6 +27,8 @@ public class OrganisationService {
         organisationRepository.save(organisation);
         log.info("Успешна регистрация");
     }
+
+
 
     public Organisation getOrganisationByUserUsername(String username){
         return organisationRepository.findOrganisationByEmail(username);
@@ -49,8 +52,13 @@ public class OrganisationService {
         }
     }
     public OrganisationResponse getOrganisationById(UUID organisationId) {
-        return organisationRepository.findById(organisationId).map(organisation ->
-                mapper.map(organisation, OrganisationResponse.class)).orElseThrow(() -> new OrganisationRequestException("Организация с номер " + organisationId + " не е намерен!"));
+        Optional<Organisation> organisationResponse = organisationRepository.findById(organisationId);
+        return mapper.map(organisationResponse , OrganisationResponse.class);
+    }
+
+    public OrganisationResponse getOrgByName(String orgName){
+        Optional<Organisation> organisationResponse = organisationRepository.findOrganisationByName(orgName);
+        return mapper.map(organisationResponse , OrganisationResponse.class);
     }
 
 }

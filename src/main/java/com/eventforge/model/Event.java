@@ -26,7 +26,6 @@ public class Event {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
-    @Size(min = 4, max = 30, message = "Името на събитието трява да е между 4 и 30 символа!")
     private String name;
     private String description;
     private String address;
@@ -35,16 +34,11 @@ public class Event {
     @JoinColumn(name = "organisation_id")
     private Organisation organisation;
     private boolean isOnline;
-    @FutureOrPresent(message = "Трябва да въведете текуща или дата!")
     @CreationTimestamp
     private LocalDateTime createdAt;
-    @FutureOrPresent(message = "Трябва да въведете текуща или дата!")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    @FutureOrPresent(message = "Трябва да въведете текуща или дата!")
     private LocalDateTime startsAt;
-    @FutureOrPresent(message = "Трябва да въведете текуща или дата!")
     private LocalDateTime endsAt;
-
     private Boolean isOneTime;
 }

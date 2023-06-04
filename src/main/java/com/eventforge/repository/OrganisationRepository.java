@@ -14,4 +14,6 @@ public interface OrganisationRepository extends JpaRepository<Organisation , UUI
     @Query("SELECT o FROM Organisation o WHERE o.user.username = :email")
     Organisation findOrganisationByEmail(@Param("email") String email);
 
+    Optional<Organisation> findOrganisationByName(String name);
+
 }

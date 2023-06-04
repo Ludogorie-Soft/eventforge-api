@@ -1,8 +1,9 @@
 package com.eventforge.security;
 
 import com.eventforge.enums.Role;
+
+
 import com.eventforge.exception.AuthenticationEntryPoint;
-import com.eventforge.exception.CustomAccessDeniedHandler;
 import com.eventforge.security.jwt.JWTAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,9 +42,10 @@ public class SecurityConfig {
     public SecurityConfig(JWTAuthenticationFilter authenticationFilter,
                           MyUserDetailsService userDetailsService,
                           LogoutHandler logoutHandler,
-                          PasswordEncoder passwordEncoder,
-                          AuthenticationEntryPoint authenticationEntryPoint,
-                          AccessDeniedHandler accessDeniedHandler) {
+                          PasswordEncoder passwordEncoder ,
+                          AuthenticationEntryPoint authenticationEntryPoint ,
+                          AccessDeniedHandler accessDeniedHandler
+) {
         this.authenticationFilter = authenticationFilter;
         this.userDetailsService = userDetailsService;
         this.logoutHandler = logoutHandler;
@@ -52,10 +54,8 @@ public class SecurityConfig {
         this.accessDeniedHandler = accessDeniedHandler;
     }
 
-    private static final String[] SECURED_URLs = {"/admin/**", "/organisation/**"};
-    private static final String[] ADMIN_URLs = {"/admin/**"};
-    private static final String[] ORGANISATION_URLs = {"/organisation/**"};
-    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**"};
+    private static final String[] SECURED_URLs = {"/admin/**"};
+    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**","/organisation/**" , "/api/**"};
 
 
     @Bean
