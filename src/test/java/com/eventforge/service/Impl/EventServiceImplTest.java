@@ -4,13 +4,13 @@ import com.eventforge.dto.EventRequest;
 import com.eventforge.dto.EventResponse;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.model.Event;
+import com.eventforge.model.Organisation;
+import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
+import com.eventforge.repository.OrganisationRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,11 +48,14 @@ class EventServiceImplTest {
     private Root<Event> root;
     @Mock
     private TypedQuery<Event> typedQueryMock;
+    @Mock
+    private OrganisationRepository organisationRepository;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        eventServiceImpl = new EventServiceImpl(eventRepository, modelMapper, entityManager);
+        modelMapper = new ModelMapper();
+        eventServiceImpl = new EventServiceImpl(eventRepository, organisationRepository, modelMapper, entityManager);
     }
 
     @Test
@@ -136,43 +140,6 @@ class EventServiceImplTest {
     }
 
     @Test
-    void testSaveEventShouldReturnEventResponse() {
-        UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
-        Event event = Event.builder().id(eventId).build();
-        EventRequest eventRequest = EventRequest.builder().id(eventId).build();
-
-        when(eventRepository.findById(eventRequest.getId())).thenReturn(Optional.empty());
-
-        ModelMapper modelMapperMock = Mockito.mock(ModelMapper.class);
-        when(modelMapperMock.map(eventRequest, Event.class)).thenReturn(event);
-        when(eventRepository.save(event)).thenReturn(event);
-        when(modelMapperMock.map(event, EventResponse.class)).thenReturn(new EventResponse());
-
-        EventResponse result = new EventServiceImpl(eventRepository, modelMapperMock, entityManager).saveEvent(eventRequest);
-
-        assertNotNull(result);
-
-        verify(eventRepository, times(1)).findById(eventRequest.getId());
-        verify(eventRepository, times(1)).save(event);
-        verify(modelMapperMock, times(1)).map(eventRequest, Event.class);
-        verify(modelMapperMock, times(1)).map(event, EventResponse.class);
-        verifyNoMoreInteractions(eventRepository, modelMapperMock);
-    }
-
-    @Test
-    void testSaveEventShouldThrowExceptionWhenEventExists() {
-        UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
-        Event existingEvent = Event.builder().id(eventId).build();
-        EventRequest eventRequest = EventRequest.builder().id(eventId).build();
-
-        when(eventRepository.findById(eventRequest.getId())).thenReturn(Optional.of(existingEvent));
-        assertThrows(EventRequestException.class, () -> eventServiceImpl.saveEvent(eventRequest));
-
-        verify(eventRepository, times(1)).findById(eventRequest.getId());
-        verifyNoMoreInteractions(eventRepository);
-    }
-
-    @Test
     void testUpdateEventIfExistsShouldBeUpdated() {
         UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
         EventRequest eventRequest = EventRequest.builder()
@@ -244,6 +211,18 @@ class EventServiceImplTest {
         when(criteriaQuery.from(Event.class)).thenReturn(root);
         when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQueryMock);
 
+        var orgJoin = mock(Join.class);
+        var userJoin = mock(Join.class);
+        var isNonLockedPath = mock(Path.class);
+        Predicate isNonLockedPredicate = mock(Predicate.class);
+
+        orgJoin = mock(Join.class);
+
+        when(root.join("organisation")).thenReturn(orgJoin);
+        when(orgJoin.join("user")).thenReturn(userJoin);
+        when(userJoin.get("isNonLocked")).thenReturn(isNonLockedPath);
+        when(criteriaBuilder.isTrue(isNonLockedPath)).thenReturn(isNonLockedPredicate);
+
         List<EventResponse> result = eventServiceImpl.filterEventsByCriteria(name, description, address, organisationName, date);
 
         assertEquals(0, result.size());
@@ -258,26 +237,40 @@ class EventServiceImplTest {
         String organisationName = null;
         String date = null;
 
-        when(typedQueryMock.getResultList()).thenReturn(List.of(new Event()));
-
         when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
         when(criteriaBuilder.createQuery(Event.class)).thenReturn(criteriaQuery);
         when(criteriaQuery.from(Event.class)).thenReturn(root);
         when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQueryMock);
 
+        var orgJoin = mock(Join.class);
+        var userJoin = mock(Join.class);
+        var isNonLockedPath = mock(Path.class);
+        Predicate isNonLockedPredicate = mock(Predicate.class);
+
+        orgJoin = mock(Join.class);
+
+        when(root.join("organisation")).thenReturn(orgJoin);
+        when(orgJoin.join("user")).thenReturn(userJoin);
+        when(userJoin.get("isNonLocked")).thenReturn(isNonLockedPath);
+        when(criteriaBuilder.isTrue(isNonLockedPath)).thenReturn(isNonLockedPredicate);
+
+        List<Event> events = new ArrayList<>();
+        events.add(new Event());
+        when(typedQueryMock.getResultList()).thenReturn(events);
+
         List<EventResponse> result = eventServiceImpl.filterEventsByCriteria(name, description, address, organisationName, date);
+
 
         assertEquals(1, result.size());
     }
 
     @Test
-    void testFilterEventsByCriteria_NameAndDescriptionProvided() {
-
+    void testFilterEventsByAllCriteriaProvided() {
         String name = "Example Name";
-        String description = "Music";
-        String address = null;
-        String organisationName = null;
-        String date = null;
+        String description = "null";
+        String address = "null";
+        String organisationName = "Example Organization";
+        String date = "null";
 
         when(typedQueryMock.getResultList()).thenReturn(List.of(new Event()));
 
@@ -286,46 +279,13 @@ class EventServiceImplTest {
         when(criteriaQuery.from(Event.class)).thenReturn(root);
         when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQueryMock);
 
-        List<EventResponse> result = eventServiceImpl.filterEventsByCriteria(name, description, address, organisationName, date);
+        Join orgJoin = mock(Join.class);
+        Join<Organisation, User> userJoin = mock(Join.class);
+        Predicate isNonLockedPredicate = Mockito.<Predicate>mock(Predicate.class);
 
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void testFilterEventsByCriteria_AddressAndStartsAtProvided() {
-
-        String name = null;
-        String description = null;
-        String address = "Varna";
-        String organisationName = null;
-        String date = "2023-12-01";
-
-        when(typedQueryMock.getResultList()).thenReturn(List.of(new Event()));
-
-        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
-        when(criteriaBuilder.createQuery(Event.class)).thenReturn(criteriaQuery);
-        when(criteriaQuery.from(Event.class)).thenReturn(root);
-        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQueryMock);
-
-        List<EventResponse> result = eventServiceImpl.filterEventsByCriteria(name, description, address, organisationName, date);
-
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void testFilterEventsByCriteria_OrganisationNameProvided() {
-        String name = null;
-        String description = null;
-        String address = null;
-        String organisationName = "Example Organisation";
-        String date = null;
-
-        when(typedQueryMock.getResultList()).thenReturn(List.of(new Event()));
-
-        when(entityManager.getCriteriaBuilder()).thenReturn(criteriaBuilder);
-        when(criteriaBuilder.createQuery(Event.class)).thenReturn(criteriaQuery);
-        when(criteriaQuery.from(Event.class)).thenReturn(root);
-        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQueryMock);
+        when(root.join("organisation")).thenReturn(orgJoin);
+        when(orgJoin.join("user")).thenReturn(userJoin);
+        when(criteriaBuilder.isTrue(userJoin.get("isNonLocked"))).thenReturn(isNonLockedPredicate);
 
         when(root.get("organisation")).thenReturn(mock(Path.class));
         when(root.get("organisation").get("name")).thenReturn(mock(Path.class));

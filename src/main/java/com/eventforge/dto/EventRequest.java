@@ -1,7 +1,6 @@
 package com.eventforge.dto;
 
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -26,10 +25,8 @@ public class EventRequest {
     @Size(min = 5, max = 128,message = "Адресът трява да е между 5 и 128 символа!")
     private String address;
     private List<String> eventCategories;
-    @NotBlank
     @NotNull
     private UUID organisationId;
-    @NotBlank
     @NotNull
     private boolean isOnline;
     @FutureOrPresent(message = "Трябва да въведете текуща или дата!")

@@ -25,11 +25,11 @@ public class EventController {
         return ResponseEntity.ok(eventService.getAllEvents());
     }
 
-    @GetMapping(path = "{eventId}")
+    @GetMapping("/{eventId}")
     public ResponseEntity<EventResponse> getEvent(@PathVariable("eventId") UUID uuid) {
         return ResponseEntity.ok(eventService.getEventById(uuid));
     }
-    @GetMapping(path = "{name}")
+    @GetMapping("/{name}")
     public ResponseEntity<EventResponse> getEvent(@PathVariable("name") String name) {
         return ResponseEntity.ok(eventService.getEventByName(name));
     }
@@ -39,14 +39,14 @@ public class EventController {
         return new ResponseEntity<>(eventService.saveEvent(eventRequest), HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "{eventId}")
+    @PutMapping("/{eventId}")
     public ResponseEntity<String> updateEvent(@PathVariable("eventId") UUID id,
                                               @Valid @RequestBody EventRequest eventRequest) {
         eventService.updateEvent(id, eventRequest);
         return new ResponseEntity<>("Всички промени са направени", HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "{eventId}")
+    @DeleteMapping("/{eventId}")
     public ResponseEntity<String> deleteEvent(@PathVariable("eventId") UUID id) {
         eventService.deleteEvent(id);
         return new ResponseEntity<>("Събитието е изтрито успешно!", HttpStatus.OK);

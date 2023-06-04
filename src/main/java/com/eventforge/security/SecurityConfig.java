@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 public class SecurityConfig {
 
     private static final String[] SECURED_URLs = {"/admin/**", "/organisation/**"};
-    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**", "/api/v1/**"};
+    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**", "/api/v1/events/**"};
     private final JWTAuthenticationFilter authenticationFilter;
     private final MyUserDetailsService userDetailsService;
     private final LogoutHandler logoutHandler;

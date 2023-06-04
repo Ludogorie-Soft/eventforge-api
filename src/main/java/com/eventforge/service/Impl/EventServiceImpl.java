@@ -4,13 +4,13 @@ import com.eventforge.dto.EventRequest;
 import com.eventforge.dto.EventResponse;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.model.Event;
+import com.eventforge.model.Organisation;
+import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
+import com.eventforge.repository.OrganisationRepository;
 import com.eventforge.service.EventService;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,7 @@ import java.util.UUID;
 @Service
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
+    private final OrganisationRepository organisationRepository;
     private final ModelMapper mapper;
     private final EntityManager entityManager;
 
@@ -44,10 +45,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventResponse saveEvent(EventRequest eventRequest) {
-        if (eventRepository.findById(eventRequest.getId()).isPresent()) {
-            throw new EventRequestException("Има създадено събитие с номер " + eventRequest.getId() + "!");
-        }
-        Event event = mapper.map(eventRequest, Event.class);
+        Event event = mapEventRequestToEvent(eventRequest);
         return mapper.map(eventRepository.save(event), EventResponse.class);
     }
 
@@ -101,8 +99,19 @@ public class EventServiceImpl implements EventService {
             predicates.add(cb.equal(root.get("startsAt"), date));
         }
 
+        Join<Event, Organisation> orgJoin = root.join("organisation");
+        Join<Organisation, User> userJoin = orgJoin.join("user");
+        predicates.add(cb.isTrue(userJoin.get("isNonLocked")));
+
         query.where(predicates.toArray(new Predicate[0]));
 
         return entityManager.createQuery(query).getResultList().stream().map(event -> mapper.map(event, EventResponse.class)).toList();
+    }
+
+    public Event mapEventRequestToEvent(EventRequest eventRequest) {
+        Event event = Event.builder().id(eventRequest.getId()).name(eventRequest.getName()).description(eventRequest.getDescription()).address(eventRequest.getAddress()).eventCategories(eventRequest.getEventCategories()).isOnline(eventRequest.isOnline()).startsAt(eventRequest.getStartsAt()).endsAt(eventRequest.getEndsAt()).build();
+
+        organisationRepository.findById(eventRequest.getOrganisationId()).ifPresent(event::setOrganisation);
+        return event;
     }
 }
