@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -108,21 +109,19 @@ class EventServiceImplTest {
         assertEquals("number1", response.getName());
     }
 
-    @Test
-    void testGetEventIfNonExistingItShouldThrowException() {
-        String eventName = "number1";
-        UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
-        Event event = Event.builder().id(eventId).name(eventName).build();
-        when(eventRepository.findByName(eventName)).thenReturn(Optional.of(event));
+@Test
+void testGetEventIfNonExistingItShouldThrowException() {
+    String eventName = "number1";
+    Event event = Event.builder().name(eventName).build();
+    when(eventRepository.findByName(eventName)).thenReturn(Optional.empty());
 
-        EventResponse result = eventServiceImpl.getEventByName(eventName);
+    assertThatThrownBy(() -> eventServiceImpl.getEventByName(eventName))
+            .isInstanceOf(EventRequestException.class)
+            .hasMessageContaining("Събитие с име number1 не е намерено!");
 
-        assertThat(result).isNotNull();
-        assertThat(result.getName()).isEqualTo(eventName);
-
-        verify(eventRepository, times(1)).findByName(eventName);
-        verifyNoMoreInteractions(eventRepository);
-    }
+    verify(eventRepository, times(1)).findByName(eventName);
+    verifyNoMoreInteractions(eventRepository);
+}
 
     @Test
     void testGetEventWithGivenNameShouldShouldExists() {
