@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface EventEnrollmentRepository extends JpaRepository<EventEnrollment , UUID> {
+public interface EventEnrollmentRepository extends JpaRepository<EventEnrollment , Long> {
 }

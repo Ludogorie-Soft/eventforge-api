@@ -7,6 +7,7 @@ import com.eventforge.model.User;
 import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.OrganisationService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -20,6 +21,8 @@ public class OrganisationBuilder {
     private final UserBuilder userBuilder;
     private final OrganisationPriorityService organisationPriorityService;
 
+    private final ModelMapper mapper;
+
 
     public User createOrganisation(RegistrationRequest request) {
         User user = userBuilder.createUser(request);
@@ -28,15 +31,16 @@ public class OrganisationBuilder {
                 .bullstat(request.getBullstat())
                 .user(user)
                 .address(request.getAddress())
-                .organisationPriorities(assignOrganisationPrioritiesToOrganisation(request.getCategories()))
+                .organisationPriorities(assignOrganisationPrioritiesToOrganisation(request.getOrganisationPriorities()))
                 .website(request.getWebsite())
                 .facebookLink(request.getFacebookLink())
-                .charityOption(request.getOptionalCharity())
-                .purposeOfOrganisation(request.getPurposeOfOrganisation())
+                .charityOption(request.getCharityOption())
+                .organisationPurpose(request.getOrganisationPurpose())
                 .build();
         organisationService.saveOrganisationInDb(org);
         return user;
     }
+
 
     private Set<OrganisationPriority> assignOrganisationPrioritiesToOrganisation(Set<String> priorityCategories) {
         Set<OrganisationPriority> organisationPriorities = new HashSet<>();

@@ -26,7 +26,7 @@ public class EventController {
     }
 
     @GetMapping(path = "{eventId}")
-    public ResponseEntity<EventResponse> getEvent(@PathVariable("eventId") UUID uuid) {
+    public ResponseEntity<EventResponse> getEvent(@PathVariable("eventId") Long uuid) {
         return ResponseEntity.ok(eventService.getEventById(uuid));
     }
     @GetMapping(path = "{name}")
@@ -34,21 +34,28 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventByName(name));
     }
 
-    @PostMapping
-    public ResponseEntity<EventResponse> createEvent(@Valid @RequestBody EventRequest eventRequest ,@RequestHeader(AUTHORIZATION) String authHeader) {
-        return new ResponseEntity<>(eventService.saveEvent(eventRequest), HttpStatus.CREATED);
-    }
 
     @PutMapping(path = "{eventId}")
-    public ResponseEntity<String> updateEvent(@PathVariable("eventId") UUID id,
+    public ResponseEntity<String> updateEvent(@PathVariable("eventId") Long id,
                                               @Valid @RequestBody EventRequest eventRequest) {
         eventService.updateEvent(id, eventRequest);
         return new ResponseEntity<>("All changes are done", HttpStatus.OK);
     }
 
     @DeleteMapping(path = "{eventId}")
-    public ResponseEntity<String> deleteEvent(@PathVariable("eventId") UUID id) {
+    public ResponseEntity<String> deleteEvent(@PathVariable("eventId") Long id) {
         eventService.deleteEvent(id);
         return new ResponseEntity<>("Event has been deleted successfully!!", HttpStatus.OK);
+    }
+
+    @GetMapping("/get-all")
+    public ResponseEntity<List<EventResponse>> showAllEvents(){
+        return new ResponseEntity<>(eventService.getAllEvents1() ,HttpStatus.OK);
+    }
+
+    @PostMapping("/create-event")
+    public ResponseEntity<String> createEvent(@RequestBody EventRequest eventRequest){
+        eventService.createEvent(eventRequest);
+        return new ResponseEntity<>("Успешно създано събитие" , HttpStatus.CREATED);
     }
 }

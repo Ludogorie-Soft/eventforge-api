@@ -1,8 +1,6 @@
 package com.eventforge.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,10 +20,8 @@ import java.util.UUID;
 @Builder
 public class Event {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private String description;
     private String address;
@@ -33,7 +29,7 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "organisation_id")
     private Organisation organisation;
-    private boolean isOnline;
+    private Boolean isOnline;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp

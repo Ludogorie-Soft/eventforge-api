@@ -16,10 +16,8 @@ import java.util.UUID;
 @Table(name = "verification_token")
 public class VerificationToken {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String token;
     private Date expirationTime;
     @OneToOne

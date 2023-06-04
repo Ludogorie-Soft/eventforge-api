@@ -14,7 +14,7 @@ public class ImageRequest {
     private String type;
     @NotNull
     @NotBlank
-    private Event evenId;
+    private Long evenId;
     @NotNull
     @NotBlank
     private Organisation organisationId;

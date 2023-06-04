@@ -31,7 +31,7 @@ public class PostConstruct {
             User adminDb = User.builder()
                     .username("admin@admin.com")
                     .password(passwordEncoder.encode("admin"))
-                    .name("admin")
+                    .fullName("admin")
                     .role(Role.ADMIN.toString())
                     .isEnabled(true)
                     .isNonLocked(true)

@@ -7,14 +7,16 @@ import java.util.List;
 import java.util.UUID;
 
 public interface EventService {
+    List<EventResponse> getAllEvents1();
+
+    void createEvent(EventRequest eventRequest);
     List<EventResponse> getAllEvents();
 
-    EventResponse getEventById(UUID eventId);
+    EventResponse getEventById(Long eventId);
     EventResponse getEventByName(String name);
 
-    EventResponse saveEvent(EventRequest eventRequest);
-    void updateEvent(UUID eventId, EventRequest eventRequest);
+    void updateEvent(Long eventId, EventRequest eventRequest);
 
-    void deleteEvent(UUID eventId);
+    void deleteEvent(Long eventId);
 
 }

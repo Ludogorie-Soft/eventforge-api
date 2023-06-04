@@ -42,7 +42,7 @@ public class OrganisationController {
         return new ResponseEntity<>("Успешно обновихте акаунта си.", HttpStatus.OK);
     }
     @GetMapping("/{organisationId}")
-    public ResponseEntity<OrganisationResponse> getOrganisation(@PathVariable("organisationId") UUID uuid) {
+    public ResponseEntity<OrganisationResponse> getOrganisation(@PathVariable("organisationId") Long uuid) {
         return ResponseEntity.ok(organisationService.getOrganisationById(uuid));
     }
     @GetMapping("/getOrgByName/{name}")

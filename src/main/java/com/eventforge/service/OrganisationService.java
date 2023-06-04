@@ -2,7 +2,6 @@ package com.eventforge.service;
 
 import com.eventforge.dto.OrganisationRequest;
 import com.eventforge.dto.OrganisationResponse;
-import com.eventforge.exception.OrganisationRequestException;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.OrganisationRepository;
@@ -37,8 +36,8 @@ public class OrganisationService {
         User currentLoggedUser = userService.getLoggedUserByToken(token);
         if(currentLoggedUser!=null) {
             currentLoggedUser.setUsername(organisationRequest.getUsername());
-            currentLoggedUser.setName(organisationRequest.getFullName());
-            currentLoggedUser.setPhone(organisationRequest.getPhone());
+            currentLoggedUser.setFullName(organisationRequest.getFullName());
+            currentLoggedUser.setPhoneNumber(organisationRequest.getPhone());
             userService.saveUserInDb(currentLoggedUser);
             Organisation organisation = getOrganisationByUserUsername(currentLoggedUser.getUsername());
             organisation.setName(organisationRequest.getName());
@@ -47,11 +46,11 @@ public class OrganisationService {
             organisation.setAddress(organisationRequest.getAddress());
             organisation.setOrganisationPriorities(organisationRequest.getOrganisationPriorities());
             organisation.setCharityOption(organisationRequest.getCharityOption());
-            organisation.setPurposeOfOrganisation(organisationRequest.getPurposeOfOrganisation());
+            organisation.setOrganisationPurpose(organisationRequest.getOrganisationPurpose());
             organisationRepository.save(organisation);
         }
     }
-    public OrganisationResponse getOrganisationById(UUID organisationId) {
+    public OrganisationResponse getOrganisationById(Long organisationId) {
         Optional<Organisation> organisationResponse = organisationRepository.findById(organisationId);
         return mapper.map(organisationResponse , OrganisationResponse.class);
     }

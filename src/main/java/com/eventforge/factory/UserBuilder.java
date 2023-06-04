@@ -19,14 +19,14 @@ public class UserBuilder {
     private final PasswordEncoder passwordEncoder;
 
     public User createUser(RegistrationRequest request) {
-        User user = userService.getUserByEmail(request.getEmail());
+        User user = userService.getUserByEmail(request.getUsername());
         if (user == null) {
             User user1 = User.builder()
-                    .username(request.getEmail())
+                    .username(request.getUsername())
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.ORGANISATION.toString())
-                    .phone(request.getPhoneNumber())
-                    .name(request.getFirstAndLastName())
+                    .phoneNumber(request.getPhoneNumber())
+                    .fullName(request.getFullName())
                     .isEnabled(false)
                     .isNonLocked(true)
                     .build();
@@ -34,7 +34,7 @@ public class UserBuilder {
             return user1;
         } else {
             log.warn("Неуспешна регистрация");
-            throw new GlobalException(String.format("Потребител с електронна поща %s вече съществува", request.getEmail()));
+            throw new GlobalException(String.format("Потребител с електронна поща %s вече съществува", request.getUsername()));
         }
 
     }

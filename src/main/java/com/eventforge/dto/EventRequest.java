@@ -1,5 +1,7 @@
 package com.eventforge.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.UUIDDeserializer;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class EventRequest {
-    private UUID id;
+
     @Size(min = 5, max = 30, message = "Името на събитието трява да е между 5 и 30 символа!")
     private String name;
     @Size(min = 5, max = 255, message = "Описанието трява да е между 5 и 255 символа!")
@@ -26,12 +28,10 @@ public class EventRequest {
     @Size(min = 5, max = 128,message = "Адресът трява да е между 5 и 128 символа!")
     private String address;
     private List<String> eventCategories;
-    @NotBlank
     @NotNull
-    private UUID organisationId;
-    @NotBlank
+    private Long organisationId;
     @NotNull
-    private boolean isOnline;
+    private Boolean isOnline;
     @FutureOrPresent(message = "Трябва да въведете текуща или дата!")
     private LocalDateTime startsAt;
     @FutureOrPresent(message = "Трябва да въведете текуща или дата!")
