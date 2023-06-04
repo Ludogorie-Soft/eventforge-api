@@ -122,6 +122,20 @@ void testGetEventIfNonExistingItShouldThrowException() {
     verify(eventRepository, times(1)).findByName(eventName);
     verifyNoMoreInteractions(eventRepository);
 }
+    @Test
+    void testSaveEvent() {
+        EventRequest eventRequest = EventRequest.builder().name("Event Name").build();
+        Event event = eventServiceImpl.mapEventRequestToEvent(eventRequest);
+
+        EventResponse expectedResponse = EventResponse.builder().name(eventRequest.getName()).build();
+        when(eventRepository.save(any(Event.class))).thenReturn(event);
+
+        EventResponse result = eventServiceImpl.saveEvent(eventRequest);
+        verify(eventRepository).save(event);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo(expectedResponse.getName());
+    }
 
     @Test
     void testGetEventWithGivenNameShouldShouldExists() {
@@ -189,7 +203,6 @@ void testGetEventIfNonExistingItShouldThrowException() {
     @Test
     void testDeleteExistingEventShouldBeDelete() {
         UUID eventId = UUID.fromString("8c1dadab-8f53-45ad-8d8e-c136803ffade");
-
         eventServiceImpl.deleteEvent(eventId);
 
         verify(eventRepository, times(1)).deleteById(eventId);
