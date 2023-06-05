@@ -28,46 +28,37 @@ public class EventServiceImpl implements EventService {
     private final OrganisationRepository organisationRepository;
     private final ModelMapper mapper;
     private final EntityManager entityManager;
-
     private final ResponseFactory responseFactory;
-
     private final EntityFactory entityFactory;
 
 
     @Override
     public List<EventResponse> getAllEvents(String orderBy) {
-        return eventRepository
-                .findAllValidEvents(orderBy)
-                .stream()
-                .map(event -> responseFactory.buildEventResponse(event , event.getOrganisation().getName())).toList();
+        return eventRepository.findAllValidEvents(orderBy).stream().map(event -> responseFactory.buildEventResponse(event, event.getOrganisation().getName())).toList();
     }
 
     @Override
-    public void saveEvent(EventRequest eventRequest , String authHeader) {
-        Event event = entityFactory.createEvent(eventRequest , authHeader);
+    public void saveEvent(EventRequest eventRequest, String authHeader) {
+        Event event = entityFactory.createEvent(eventRequest, authHeader);
         eventRepository.save(event);
     }
 
     @Override
     public EventResponse getEventById(Long eventId) {
-        return eventRepository.findById(eventId).map(event ->
-                mapper.map(event, EventResponse.class)).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено."));
+        return eventRepository.findById(eventId).map(event -> mapper.map(event, EventResponse.class)).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено."));
     }
 
     @Override
     public EventResponse getEventByName(String name) {
-        Optional<Event> event = Optional.ofNullable(eventRepository.findByName(name)
-                .orElseThrow(() -> new EventRequestException("Събитие с име " + name + " не е намерено!")));
+        Optional<Event> event = Optional.ofNullable(eventRepository.findByName(name).orElseThrow(() -> new EventRequestException("Събитие с име " + name + " не е намерено!")));
 
         return mapper.map(event, EventResponse.class);
     }
 
 
-
     @Override
     public void updateEvent(Long eventId, EventRequest eventRequest) {
-        Event event = eventRepository.findById(eventId).
-                orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено!"));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено!"));
 
         event.setName(eventRequest.getName());
         event.setDescription(eventRequest.getDescription());
@@ -89,11 +80,7 @@ public class EventServiceImpl implements EventService {
 
     //method for filtering
     @Override
-    public List<EventResponse> filterEventsByCriteria(String name,
-                                                      String description,
-                                                      String address,
-                                                      String organisationName,
-                                                      String date) {
+    public List<EventResponse> filterEventsByCriteria(String name, String description, String address, String organisationName, String date) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = cb.createQuery(Event.class);
         Root<Event> root = query.from(Event.class);
@@ -122,6 +109,7 @@ public class EventServiceImpl implements EventService {
         Join<Event, Organisation> orgJoin = root.join("organisation");
         Join<Organisation, User> userJoin = orgJoin.join("user");
         predicates.add(cb.isTrue(userJoin.get("isNonLocked")));
+        predicates.add(cb.isTrue(userJoin.get("isApprovedByAdmin")));
 
         query.where(predicates.toArray(new Predicate[0]));
 
