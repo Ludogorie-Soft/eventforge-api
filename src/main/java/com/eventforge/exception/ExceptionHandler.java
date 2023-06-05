@@ -20,12 +20,9 @@ import java.util.Queue;
 @RestControllerAdvice
 public class ExceptionHandler {
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(GlobalException.class)
-    public void handleRuntimeException(GlobalException ex, HttpServletResponse response) throws  IOException {
-        response.setStatus(ex.getHttpStatus());
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-        response.getWriter().write(ex.getMessage());
+    @org.springframework.web.bind.annotation.ExceptionHandler(EmailAlreadyTakenException.class)
+    public void handleEmailAlreadyTakenException(EmailAlreadyTakenException ex, HttpServletResponse response) throws IOException {
+        setResponse(response , ex.getHttpStatus() , ex.getMessage());
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
@@ -43,6 +40,33 @@ public class ExceptionHandler {
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
         response.getWriter().write(errorMessages.toString());
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(EmailConfirmationNotSentException.class)
+    public void handleEmailConfirmationNotSentException(EmailConfirmationNotSentException ex , HttpServletResponse response) throws IOException {
+        setResponse(response , ex.getHTTP_STATUS_CODE() , ex.getMessage());
+
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(InvalidCredentialsException.class)
+    public void handleInvalidCredentialsException(InvalidCredentialsException ex , HttpServletResponse response) throws IOException {
+        setResponse(response , ex.getHTTP_STATUS_CODE() , ex.getMessage());
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(InvalidEmailConfirmationLinkException.class)
+    public void handleInvalidEmailConfirmationLinkException(InvalidEmailConfirmationLinkException ex , HttpServletResponse response) throws IOException {
+        setResponse(response , ex.getHTTP_STATUS_CODE() , ex.getMessage());
+    }
+    @org.springframework.web.bind.annotation.ExceptionHandler(UserDisabledException.class)
+    public void handleUserDisabledException(UserDisabledException ex , HttpServletResponse response) throws IOException {
+        setResponse(response , ex.getHTTP_STATUS_CODE() , ex.getMessage());
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(UserLockedException.class)
+    public void handleUserLockedException(UserLockedException ex , HttpServletResponse response) throws IOException {
+        setResponse(response , ex.getHTTP_STATUS_CODE() , ex.getMessage());
+    }
+
+
     @org.springframework.web.bind.annotation.ExceptionHandler(value = EventRequestException.class)
     private ResponseEntity<Object> handleEventRequestException(EventRequestException exception) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
@@ -53,5 +77,13 @@ public class ExceptionHandler {
                 ZonedDateTime.now(ZoneId.of("Z"))
         );
         return new ResponseEntity<>(eventErrorMessage, badRequest);
+    }
+
+
+    private void setResponse(HttpServletResponse response, int httpStatusCode, String message) throws IOException {
+        response.setStatus(httpStatusCode);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+        response.getWriter().write(message);
     }
 }

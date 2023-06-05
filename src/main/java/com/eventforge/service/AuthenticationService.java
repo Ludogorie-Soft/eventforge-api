@@ -3,7 +3,9 @@ package com.eventforge.service;
 import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.enums.TokenType;
-import com.eventforge.exception.GlobalException;
+import com.eventforge.exception.InvalidCredentialsException;
+import com.eventforge.exception.UserDisabledException;
+import com.eventforge.exception.UserLockedException;
 import com.eventforge.factory.EntityFactory;
 import com.eventforge.model.Token;
 import com.eventforge.model.User;
@@ -16,10 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -58,9 +57,11 @@ public class AuthenticationService {
                 )
         );}
        catch (BadCredentialsException ex){
-           throw new GlobalException("Невалидна потребителска поща или парола");
+           throw new InvalidCredentialsException();
        } catch (DisabledException ex){
-           throw new GlobalException("Моля потвърдете имейла си");
+           throw new UserDisabledException();
+       } catch (LockedException ex){
+           throw new UserLockedException();
        }
 
         User user = userService.getUserByEmail(request.getUserName());

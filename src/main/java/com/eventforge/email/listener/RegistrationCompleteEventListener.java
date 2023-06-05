@@ -1,7 +1,7 @@
 package com.eventforge.email.listener;
 
 import com.eventforge.email.RegistrationCompleteEvent;
-import com.eventforge.exception.GlobalException;
+import com.eventforge.exception.EmailConfirmationNotSentException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.service.UserService;
@@ -16,6 +16,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Component
@@ -49,7 +50,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         try {
             sendVerificationEmail(url , theUser);
         } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new GlobalException("Възникна грешка при изпращането на потвърждение за регистрация");
+            throw new EmailConfirmationNotSentException(theUser.getUsername());
         }
     }
 
@@ -62,7 +63,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
                 "<a href=\"" +url+ "\">Потвърждаване на електронна поща за активиране на акаунт</a>"+
                 "<p> Благодарим <br> ЧАЙНА ТАААУННН";
         MimeMessage message =mailSender.createMimeMessage();
-        var messageHelper = new MimeMessageHelper(message);
+        var messageHelper = new MimeMessageHelper(message ,MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
         messageHelper.setFrom(senderEmail ,senderName);
         messageHelper.setTo(user.getUsername());
         messageHelper.setSubject(subject);

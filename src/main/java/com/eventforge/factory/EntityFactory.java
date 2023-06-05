@@ -3,7 +3,7 @@ package com.eventforge.factory;
 import com.eventforge.dto.EventRequest;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.enums.Role;
-import com.eventforge.exception.GlobalException;
+import com.eventforge.exception.EmailAlreadyTakenException;
 import com.eventforge.model.Event;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.OrganisationPriority;
@@ -83,12 +83,13 @@ public class EntityFactory {
                     .fullName(request.getFullName())
                     .isEnabled(false)
                     .isNonLocked(true)
+                    .isApprovedByAdmin(false)
                     .build();
             userService.saveUserInDb(user1);
             return user1;
         } else {
             log.warn("Неуспешна регистрация");
-            throw new GlobalException(String.format("Потребител с електронна поща %s вече съществува", request.getUsername()));
+            throw new EmailAlreadyTakenException();
         }
 
     }
