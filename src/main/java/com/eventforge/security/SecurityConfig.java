@@ -29,6 +29,7 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final AccessDeniedHandler accessDeniedHandler;
+
     public SecurityConfig(JWTAuthenticationFilter authenticationFilter,
                           MyUserDetailsService userDetailsService,
                           LogoutHandler logoutHandler,

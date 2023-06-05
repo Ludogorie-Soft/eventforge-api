@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class ResponseFactory {
 
     public EventResponse buildEventResponse(Event event , String organisationName){
-        EventResponse eventResponse =EventResponse.builder()
+        return EventResponse.builder()
                 .id(event.getId())
                 .name(event.getName())
                 .description(event.getDescription())
@@ -23,6 +23,5 @@ public class ResponseFactory {
                 .startsAt(event.getStartsAt())
                 .endsAt(event.getEndsAt())
                 .build();
-        return eventResponse;
     }
 }

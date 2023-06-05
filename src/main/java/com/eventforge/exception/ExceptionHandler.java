@@ -1,7 +1,6 @@
 package com.eventforge.exception;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ import java.util.Queue;
 public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(GlobalException.class)
-    public void handleRuntimeException(GlobalException ex, HttpServletResponse response) throws  IOException {
+    public void handleRuntimeException(GlobalException ex, HttpServletResponse response) throws IOException {
         response.setStatus(ex.getHttpStatus());
         response.setCharacterEncoding("UTF-8");
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
@@ -29,7 +28,7 @@ public class ExceptionHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
-    public void handleValidationException(MethodArgumentNotValidException ex , HttpServletResponse response) throws IOException {
+    public void handleValidationException(MethodArgumentNotValidException ex, HttpServletResponse response) throws IOException {
         BindingResult bindingResult = ex.getBindingResult();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         Queue<String> errorMessages = new LinkedList<>();
@@ -43,6 +42,7 @@ public class ExceptionHandler {
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
         response.getWriter().write(errorMessages.toString());
     }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(value = EventRequestException.class)
     private ResponseEntity<Object> handleEventRequestException(EventRequestException exception) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;

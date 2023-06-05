@@ -32,7 +32,7 @@ public class EntityFactory {
     public Event createEvent(EventRequest eventRequest , String authHeader){
         User user = userService.getLoggedUserByToken(authHeader);
         Organisation organisation = organisationService.getOrganisationByUserId(user.getId());
-        Event event = Event.builder()
+        return Event.builder()
                 .name(eventRequest.getName())
                 .description(eventRequest.getDescription())
                 .address(eventRequest.getAddress())
@@ -42,7 +42,7 @@ public class EntityFactory {
                 .startsAt(eventRequest.getStartsAt())
                 .endsAt(eventRequest.getEndsAt())
                 .build();
-        return event;
+
     }
 
 

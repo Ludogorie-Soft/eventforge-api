@@ -19,7 +19,7 @@ import java.util.Set;
 public class RegistrationRequest {
     @Email(message = "Моля въведете валидна електронна поща")
     private String username;
-    @Size(min=5, max = 30, message = "Името на организацията трябва да е между 5 и 30 символа!")
+    @Size(min = 5, max = 30, message = "Името на организацията трябва да е между 5 и 30 символа!")
     private String name;
     @Nullable
     private MultipartFile logo;

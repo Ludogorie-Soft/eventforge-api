@@ -30,15 +30,16 @@ public class JWTService {
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long REFRESH_EXPIRATION;
 
-    public String extractTokenValueFromHeader(String authHeader){
-        if(authHeader.startsWith("Bearer ")){
+    public String extractTokenValueFromHeader(String authHeader) {
+        if (authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
         return null;
     }
+
     public String getGeneratedToken(String username) {
-        Map<String , Object> claims = new HashMap<>();
-        return generateTokenForUser(claims , username);
+        Map<String, Object> claims = new HashMap<>();
+        return generateTokenForUser(claims, username);
     }
 
     private String generateTokenForUser(Map<String, Object> claims, String userName) {
@@ -46,35 +47,35 @@ public class JWTService {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+JWT_EXPIRATION_TIME))
-                .signWith(getSignKey() , SignatureAlgorithm.HS256).compact();
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_TIME))
+                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
 
-    private Key getSignKey(){
+    private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String extractUsernameFromToken(String theToken){
-        return extractClaim(theToken , Claims :: getSubject);
+    public String extractUsernameFromToken(String theToken) {
+        return extractClaim(theToken, Claims::getSubject);
     }
 
-    public Date extractExpirationTimeFromToken(String theToken){
-        return extractClaim(theToken , Claims:: getExpiration);
+    public Date extractExpirationTimeFromToken(String theToken) {
+        return extractClaim(theToken, Claims::getExpiration);
     }
 
-    public Boolean validateToken(String theToken , UserDetails userDetails){
+    public Boolean validateToken(String theToken, UserDetails userDetails) {
         final String username = extractUsernameFromToken(theToken);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(theToken));
     }
 
-    private <T> T extractClaim(String theToken , Function<Claims , T> claimsResolver){
+    private <T> T extractClaim(String theToken, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(theToken);
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token){
+    private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignKey())
                 .build()
@@ -82,11 +83,11 @@ public class JWTService {
                 .getBody();
     }
 
-    private boolean isTokenExpired(String theToken){
+    private boolean isTokenExpired(String theToken) {
         return extractExpirationTimeFromToken(theToken).before(new Date());
     }
 
     public String generateRefreshToken(String username) {
-        return generateTokenForUser(new HashMap<>(),username);
+        return generateTokenForUser(new HashMap<>(), username);
     }
 }

@@ -1,7 +1,6 @@
 package com.eventforge.dto;
 
 import com.eventforge.model.OrganisationPriority;
-import com.eventforge.model.User;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
@@ -18,7 +17,7 @@ public class OrganisationRequest {
     private String bullstat;
     @NotNull
     private String username;
-   private String fullName;
+    private String fullName;
     @Pattern(regexp = "^[0-9]{10}$", message = "Телефонният номер трябва да вклъчва 10 цифри!")
     private String phone;
     private String address;

@@ -16,19 +16,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/events")
 public class EventController {
+    private static final String AUTHORIZATION = "Authorization";
     private final EventService eventService;
 
-    private static final String AUTHORIZATION = "Authorization";
-
     @GetMapping
-    public ResponseEntity<List<EventResponse>> showAllEvents(@Param("orderBy")String orderBy){
-        return new ResponseEntity<>(eventService.getAllEvents(orderBy) ,HttpStatus.OK);
+    public ResponseEntity<List<EventResponse>> showAllEvents(@Param("orderBy") String orderBy) {
+        return new ResponseEntity<>(eventService.getAllEvents(orderBy), HttpStatus.OK);
     }
 
     @GetMapping(path = "{eventId}")
     public ResponseEntity<EventResponse> getEvent(@PathVariable("eventId") Long uuid) {
         return ResponseEntity.ok(eventService.getEventById(uuid));
     }
+
     @GetMapping(path = "{name}")
     public ResponseEntity<EventResponse> getEvent(@PathVariable("name") String name) {
         return ResponseEntity.ok(eventService.getEventByName(name));
@@ -39,19 +39,19 @@ public class EventController {
     public ResponseEntity<String> updateEvent(@PathVariable("eventId") Long id,
                                               @Valid @RequestBody EventRequest eventRequest) {
         eventService.updateEvent(id, eventRequest);
-        return new ResponseEntity<>("All changes are done", HttpStatus.OK);
+        return new ResponseEntity<>("Всички промени са извършени успешно", HttpStatus.OK);
     }
 
     @DeleteMapping(path = "{eventId}")
     public ResponseEntity<String> deleteEvent(@PathVariable("eventId") Long id) {
         eventService.deleteEvent(id);
-        return new ResponseEntity<>("Event has been deleted successfully!!", HttpStatus.OK);
+        return new ResponseEntity<>("Събитието е изтрито успешно!!", HttpStatus.OK);
     }
 
 
     @PostMapping("/create-event")
-    public ResponseEntity<String> createEvent(@RequestBody EventRequest eventRequest , @RequestHeader(AUTHORIZATION) String authHeader){
-        eventService.saveEvent(eventRequest , authHeader);
-        return new ResponseEntity<>("Успешно създано събитие" , HttpStatus.CREATED);
+    public ResponseEntity<String> createEvent(@RequestBody EventRequest eventRequest, @RequestHeader(AUTHORIZATION) String authHeader) {
+        eventService.saveEvent(eventRequest, authHeader);
+        return new ResponseEntity<>("Успешно създано събитие", HttpStatus.CREATED);
     }
 }

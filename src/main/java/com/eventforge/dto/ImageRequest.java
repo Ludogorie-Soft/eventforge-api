@@ -1,6 +1,5 @@
 package com.eventforge.dto;
 
-import com.eventforge.model.Event;
 import com.eventforge.model.Organisation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

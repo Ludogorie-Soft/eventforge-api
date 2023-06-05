@@ -20,7 +20,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +45,7 @@ public class AuthenticationController {
     private final OrganisationPriorityService organisationPriorityService;
 
     @GetMapping("/getAllPriorityCategories")
-    public ResponseEntity<Set<String>>getAllPriorityCategories(){
+    public ResponseEntity<Set<String>> getAllPriorityCategories() {
         return new ResponseEntity<>(organisationPriorityService.getAllPriorityCategories(), HttpStatus.OK);
     }
 
@@ -80,7 +79,7 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest) {
-        AuthenticationResponse authenticationResponse= authenticationService.authenticate(authRequest);
+        AuthenticationResponse authenticationResponse = authenticationService.authenticate(authRequest);
         return ResponseEntity.ok().body(authenticationResponse);
     }
 
