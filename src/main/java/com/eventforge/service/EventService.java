@@ -4,13 +4,11 @@ import com.eventforge.dto.EventRequest;
 import com.eventforge.dto.EventResponse;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface EventService {
-    List<EventResponse> getAllEvents1();
+    List<EventResponse> getAllEvents(String orderBy);
 
-    void createEvent(EventRequest eventRequest);
-    List<EventResponse> getAllEvents();
+    void saveEvent(EventRequest eventRequest , String authHeader);
 
     EventResponse getEventById(Long eventId);
     EventResponse getEventByName(String name);

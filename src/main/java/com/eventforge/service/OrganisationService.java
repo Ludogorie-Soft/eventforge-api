@@ -9,9 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
-import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,9 @@ public class OrganisationService {
     }
 
 
-
+    public Organisation getOrganisationByUserId(Long userId){
+        return organisationRepository.findOrganisationByUserId(userId);
+    }
     public Organisation getOrganisationByUserUsername(String username){
         return organisationRepository.findOrganisationByEmail(username);
     }

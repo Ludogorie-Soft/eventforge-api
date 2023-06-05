@@ -15,5 +15,7 @@ public interface OrganisationRepository extends JpaRepository<Organisation , Lon
     Organisation findOrganisationByEmail(@Param("email") String email);
 
     Optional<Organisation> findOrganisationByName(String name);
+    @Query("SELECT o FROM Organisation o WHERE o.user.id = :userId")
+    Organisation findOrganisationByUserId(Long userId);
 
 }

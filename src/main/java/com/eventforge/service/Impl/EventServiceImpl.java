@@ -6,7 +6,6 @@ import com.eventforge.exception.EventRequestException;
 import com.eventforge.factory.EntityFactory;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
-import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
 import com.eventforge.service.EventService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -27,20 +25,20 @@ public class EventServiceImpl implements EventService {
     private final ResponseFactory responseFactory;
 
     private final EntityFactory entityFactory;
+
+
     @Override
-    public List<EventResponse> getAllEvents1(){
-        return eventRepository.findAll().stream().map(event -> responseFactory.buildEventResponse(event , event.getOrganisation().getName())).collect(Collectors.toList());
+    public List<EventResponse> getAllEvents(String orderBy) {
+        return eventRepository
+                .findAllValidEvents(orderBy)
+                .stream()
+                .map(event -> responseFactory.buildEventResponse(event , event.getOrganisation().getName())).collect(Collectors.toList());
     }
 
     @Override
-    public void createEvent(EventRequest eventRequest) {
-        Event event = entityFactory.createEvent(eventRequest);
+    public void saveEvent(EventRequest eventRequest , String authHeader) {
+        Event event = entityFactory.createEvent(eventRequest , authHeader);
         eventRepository.save(event);
-    }
-
-    @Override
-    public List<EventResponse> getAllEvents() {
-        return eventRepository.findAll().stream().map(event -> mapper.map(event, EventResponse.class)).toList();
     }
 
     @Override
