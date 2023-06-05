@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -40,7 +39,7 @@ public class EventServiceImpl implements EventService {
         return eventRepository
                 .findAllValidEvents(orderBy)
                 .stream()
-                .map(event -> responseFactory.buildEventResponse(event , event.getOrganisation().getName())).collect(Collectors.toList());
+                .map(event -> responseFactory.buildEventResponse(event , event.getOrganisation().getName())).toList();
     }
 
     @Override
@@ -67,7 +66,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void updateEvent(Long eventId, EventRequest eventRequest) {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено!"));
+        Event event = eventRepository.findById(eventId).
+                orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено!"));
 
         event.setName(eventRequest.getName());
         event.setDescription(eventRequest.getDescription());
@@ -89,7 +89,11 @@ public class EventServiceImpl implements EventService {
 
     //method for filtering
     @Override
-    public List<EventResponse> filterEventsByCriteria(String name, String description, String address, String organisationName, String date) {
+    public List<EventResponse> filterEventsByCriteria(String name,
+                                                      String description,
+                                                      String address,
+                                                      String organisationName,
+                                                      String date) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = cb.createQuery(Event.class);
         Root<Event> root = query.from(Event.class);
@@ -125,9 +129,9 @@ public class EventServiceImpl implements EventService {
     }
 
     public Event mapEventRequestToEvent(EventRequest eventRequest) {
-        Event event = Event.builder().id(eventRequest.getId()).name(eventRequest.getName()).description(eventRequest.getDescription()).address(eventRequest.getAddress()).eventCategories(eventRequest.getEventCategories()).isOnline(eventRequest.isOnline()).startsAt(eventRequest.getStartsAt()).endsAt(eventRequest.getEndsAt()).build();
+        Event event = Event.builder().name(eventRequest.getName()).description(eventRequest.getDescription()).address(eventRequest.getAddress()).eventCategories(eventRequest.getEventCategories()).isOnline(eventRequest.getIsOnline()).startsAt(eventRequest.getStartsAt()).endsAt(eventRequest.getEndsAt()).build();
 
-        organisationRepository.findById(eventRequest.getOrganisationId()).ifPresent(event::setOrganisation);
+        organisationRepository.findOrganisationByName(eventRequest.getOrganisationName()).ifPresent(event::setOrganisation);
         return event;
     }
 }

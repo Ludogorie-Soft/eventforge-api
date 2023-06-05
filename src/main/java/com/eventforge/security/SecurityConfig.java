@@ -1,51 +1,41 @@
 package com.eventforge.security;
 
 import com.eventforge.enums.Role;
-
-
 import com.eventforge.exception.AuthenticationEntryPoint;
 import com.eventforge.security.jwt.JWTAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private static final String[] SECURED_URLs = {"/admin/**"};
+    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**", "/organisation/**", "/api/**"};
     private final JWTAuthenticationFilter authenticationFilter;
-
     private final MyUserDetailsService userDetailsService;
-
     private final LogoutHandler logoutHandler;
-
     private final PasswordEncoder passwordEncoder;
-
     private final AuthenticationEntryPoint authenticationEntryPoint;
-
     private final AccessDeniedHandler accessDeniedHandler;
-
     public SecurityConfig(JWTAuthenticationFilter authenticationFilter,
                           MyUserDetailsService userDetailsService,
                           LogoutHandler logoutHandler,
-                          PasswordEncoder passwordEncoder ,
-                          AuthenticationEntryPoint authenticationEntryPoint ,
+                          PasswordEncoder passwordEncoder,
+                          AuthenticationEntryPoint authenticationEntryPoint,
                           AccessDeniedHandler accessDeniedHandler
-) {
+    ) {
         this.authenticationFilter = authenticationFilter;
         this.userDetailsService = userDetailsService;
         this.logoutHandler = logoutHandler;
@@ -53,10 +43,6 @@ public class SecurityConfig {
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
     }
-
-    private static final String[] SECURED_URLs = {"/admin/**"};
-    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**","/organisation/**" , "/api/**"};
-
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
