@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 @Builder
 public class EventEnrollmentResponse {
-    private UUID id;
+    private Long id;
     private List<Event> eventId;
     private String phone;
     private String externalLink;

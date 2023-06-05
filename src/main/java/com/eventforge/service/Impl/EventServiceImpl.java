@@ -3,6 +3,8 @@ package com.eventforge.service.Impl;
 import com.eventforge.dto.EventRequest;
 import com.eventforge.dto.EventResponse;
 import com.eventforge.exception.EventRequestException;
+import com.eventforge.factory.EntityFactory;
+import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
@@ -17,7 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -27,30 +30,43 @@ public class EventServiceImpl implements EventService {
     private final ModelMapper mapper;
     private final EntityManager entityManager;
 
+    private final ResponseFactory responseFactory;
+
+    private final EntityFactory entityFactory;
+
+
     @Override
-    public List<EventResponse> getAllEvents() {
-        return eventRepository.findAll().stream().map(event -> mapper.map(event, EventResponse.class)).toList();
+    public List<EventResponse> getAllEvents(String orderBy) {
+        return eventRepository
+                .findAllValidEvents(orderBy)
+                .stream()
+                .map(event -> responseFactory.buildEventResponse(event , event.getOrganisation().getName())).collect(Collectors.toList());
     }
 
     @Override
-    public EventResponse getEventById(UUID eventId) {
-        return eventRepository.findById(eventId).map(event -> mapper.map(event, EventResponse.class)).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено."));
+    public void saveEvent(EventRequest eventRequest , String authHeader) {
+        Event event = entityFactory.createEvent(eventRequest , authHeader);
+        eventRepository.save(event);
+    }
+
+    @Override
+    public EventResponse getEventById(Long eventId) {
+        return eventRepository.findById(eventId).map(event ->
+                mapper.map(event, EventResponse.class)).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено."));
     }
 
     @Override
     public EventResponse getEventByName(String name) {
-        Event event = eventRepository.findByName(name).orElseThrow(() -> new EventRequestException("Събитие с име " + name + " не е намерено!"));
+        Optional<Event> event = Optional.ofNullable(eventRepository.findByName(name)
+                .orElseThrow(() -> new EventRequestException("Събитие с име " + name + " не е намерено!")));
+
         return mapper.map(event, EventResponse.class);
     }
 
-    @Override
-    public EventResponse saveEvent(EventRequest eventRequest) {
-        Event event = mapEventRequestToEvent(eventRequest);
-        return mapper.map(eventRepository.save(event), EventResponse.class);
-    }
+
 
     @Override
-    public void updateEvent(UUID eventId, EventRequest eventRequest) {
+    public void updateEvent(Long eventId, EventRequest eventRequest) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено!"));
 
         event.setName(eventRequest.getName());
@@ -60,14 +76,14 @@ public class EventServiceImpl implements EventService {
         if (!eventRequest.getEventCategories().isEmpty()) {
             event.setEventCategories(eventRequest.getEventCategories());
         }
-        event.setOnline(eventRequest.isOnline());
+        event.setIsOnline(eventRequest.getIsOnline());
         event.setStartsAt(eventRequest.getStartsAt());
         event.setEndsAt(eventRequest.getEndsAt());
         eventRepository.save(event);
     }
 
     @Override
-    public void deleteEvent(UUID eventId) {
+    public void deleteEvent(Long eventId) {
         eventRepository.deleteById(eventId);
     }
 

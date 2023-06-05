@@ -10,11 +10,11 @@ import java.util.UUID;
 @Data
 @Builder
 public class ImageResponse {
-    private UUID id;
+    private Long id;
     private String url;
     private LocalDateTime uploadAt;
     private LocalDateTime updateAt;
     private String type;
-    private Event evenId;
+    private Long evenId;
     private Organisation organisationId;
 }

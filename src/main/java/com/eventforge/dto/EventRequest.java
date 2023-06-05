@@ -10,14 +10,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class EventRequest {
-    private UUID id;
+
     @Size(min = 5, max = 30, message = "Името на събитието трява да е между 5 и 30 символа!")
     private String name;
     @Size(min = 5, max = 255, message = "Описанието трява да е между 5 и 255 символа!")
@@ -26,9 +25,7 @@ public class EventRequest {
     private String address;
     private List<String> eventCategories;
     @NotNull
-    private UUID organisationId;
-    @NotNull
-    private boolean isOnline;
+    private Boolean isOnline;
     @FutureOrPresent(message = "Трябва да въведете текуща или дата!")
     private LocalDateTime startsAt;
     @FutureOrPresent(message = "Трябва да въведете текуща или дата!")

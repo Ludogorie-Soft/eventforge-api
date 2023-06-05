@@ -1,5 +1,6 @@
 package com.eventforge.controller;
 
+import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.email.CreateApplicationUrl;
 import com.eventforge.email.RegistrationCompleteEvent;
@@ -16,9 +17,10 @@ import io.jsonwebtoken.io.IOException;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,14 +45,14 @@ public class AuthenticationController {
 
     private final OrganisationPriorityService organisationPriorityService;
 
-    @GetMapping("/registration")
-    public ResponseEntity<Set<String>>registrationForm(){
+    @GetMapping("/getAllPriorityCategories")
+    public ResponseEntity<Set<String>>getAllPriorityCategories(){
         return new ResponseEntity<>(organisationPriorityService.getAllPriorityCategories(), HttpStatus.OK);
     }
 
     @PostMapping("/register")
     public ResponseEntity<String> register(
-            @RequestBody RegistrationRequest request, final HttpServletRequest httpServletRequest) {
+            @Valid @RequestBody RegistrationRequest request, final HttpServletRequest httpServletRequest) {
         User user = authenticationService.register(request);
         publisher.publishEvent(new RegistrationCompleteEvent(user, url.applicationUrl(httpServletRequest)));
         return new ResponseEntity<>("Успешна регистрация. Моля потвърдете имейла си.", HttpStatus.CREATED);
@@ -77,12 +79,9 @@ public class AuthenticationController {
 
 
     @PostMapping("/authenticate")
-    public ResponseEntity<String> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest) {
-         authenticationService.authenticate(authRequest);
-        String token = jwtService.getGeneratedToken(authRequest.getUserName());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, "sessionToken=" + token + "; Path=/");
-        return ResponseEntity.ok().headers(headers).body(token);
+    public ResponseEntity<AuthenticationResponse> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest) {
+        AuthenticationResponse authenticationResponse= authenticationService.authenticate(authRequest);
+        return ResponseEntity.ok().body(authenticationResponse);
     }
 
 
@@ -96,6 +95,7 @@ public class AuthenticationController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorization) {
+
         return ResponseEntity.ok("Logged out successfully");
     }
 }
