@@ -52,10 +52,10 @@ public class SecurityConfig {
         this.accessDeniedHandler = accessDeniedHandler;
     }
 
-    private static final String[] SECURED_URLs = {"/admin/**", "/organisation/**"};
+    private static final String[] SECURED_URLs = {"/admin/**"};
     private static final String[] ADMIN_URLs = {"/admin/**"};
     private static final String[] ORGANISATION_URLs = {"/organisation/**"};
-    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**"};
+    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**", "/organisation/**"};
 
 
     @Bean

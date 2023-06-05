@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -41,8 +43,17 @@ public class OrganisationController {
         organisationService.updateOrganisation(organisationRequest, jwtService.extractTokenValueFromHeader(authHeader));
         return new ResponseEntity<>("Успешно обновихте акаунта си.", HttpStatus.OK);
     }
-    @GetMapping(path = "{organisationId}")
+    @GetMapping("/{organisationId}")
     public ResponseEntity<OrganisationResponse> getOrganisation(@PathVariable("organisationId") UUID uuid) {
         return ResponseEntity.ok(organisationService.getOrganisationById(uuid));
+    }
+
+    @GetMapping("/getOrgByName/{name}")
+    public ResponseEntity<OrganisationResponse> getOrganisationByName(@PathVariable("name")String name){
+        return ResponseEntity.ok(organisationService.getOrgByName(name));
+    }
+    @GetMapping("/allOrganisations")
+    public ResponseEntity<List<OrganisationResponse>> getAllOrganisations(){
+        return ResponseEntity.ok(organisationService.getAllOrganisations());
     }
 }

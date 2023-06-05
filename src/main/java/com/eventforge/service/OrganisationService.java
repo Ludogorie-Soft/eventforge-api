@@ -1,8 +1,8 @@
 package com.eventforge.service;
 
+import com.eventforge.dto.EventResponse;
 import com.eventforge.dto.OrganisationRequest;
 import com.eventforge.dto.OrganisationResponse;
-import com.eventforge.exception.OrganisationRequestException;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.OrganisationRepository;
@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -48,9 +50,17 @@ public class OrganisationService {
             organisationRepository.save(organisation);
         }
     }
+    public List<OrganisationResponse> getAllOrganisations() {
+        return organisationRepository.findAll().stream().map(event -> mapper.map(event, OrganisationResponse.class)).toList();
+    }
     public OrganisationResponse getOrganisationById(UUID organisationId) {
-        return organisationRepository.findById(organisationId).map(organisation ->
-                mapper.map(organisation, OrganisationResponse.class)).orElseThrow(() -> new OrganisationRequestException("Организация с номер " + organisationId + " не е намерен!"));
+        Optional<Organisation> organisationResponse = organisationRepository.findById(organisationId);
+        return mapper.map(organisationResponse , OrganisationResponse.class);
+    }
+
+    public OrganisationResponse getOrgByName(String orgName){
+        Optional<Organisation> organisationResponse = organisationRepository.findOrganisationByName(orgName);
+        return mapper.map(organisationResponse , OrganisationResponse.class);
     }
 
 }
