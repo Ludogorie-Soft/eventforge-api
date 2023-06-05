@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -45,8 +47,22 @@ public class OrganisationController {
     public ResponseEntity<OrganisationResponse> getOrganisation(@PathVariable("organisationId") Long uuid) {
         return ResponseEntity.ok(organisationService.getOrganisationById(uuid));
     }
+    @GetMapping("/allOrganisations")
+    public ResponseEntity<List<OrganisationResponse>> getAllOrganisations() {
+        return ResponseEntity.ok(organisationService.getAllOrganisations());
+    }
     @GetMapping("/getOrgByName/{name}")
     public ResponseEntity<OrganisationResponse> getOrganisationByName(@PathVariable("name")String name){
         return ResponseEntity.ok(organisationService.getOrgByName(name));
+    }
+    @DeleteMapping(path = "{organisationId}")
+    public ResponseEntity<String> deleteOrganisation(@PathVariable("organisationId") Long id) {
+        organisationService.deleteOrganisation(id);
+        return new ResponseEntity<>("Успешно изтрита организация!", HttpStatus.OK);
+    }
+    @PostMapping("/updateOrganisationIsEnabled")
+    public ResponseEntity<String> updateOrganisationIsEnabled(@RequestParam("orgName") String orgName) {
+        organisationService.updateUserEnabled(orgName);
+        return ResponseEntity.ok("Успешно одобрихте организацията!");
     }
 }

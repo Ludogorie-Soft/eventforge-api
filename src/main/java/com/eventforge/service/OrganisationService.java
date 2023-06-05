@@ -5,10 +5,13 @@ import com.eventforge.dto.OrganisationResponse;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.OrganisationRepository;
+import com.eventforge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 
 
@@ -20,6 +23,7 @@ public class OrganisationService {
     private final OrganisationRepository organisationRepository;
     private final ModelMapper mapper;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     public void saveOrganisationInDb(Organisation organisation){
         organisationRepository.save(organisation);
@@ -55,10 +59,31 @@ public class OrganisationService {
         Optional<Organisation> organisationResponse = organisationRepository.findById(organisationId);
         return mapper.map(organisationResponse , OrganisationResponse.class);
     }
+    public List<OrganisationResponse> getAllOrganisations() {
+        return organisationRepository.findAll().stream().map(event -> mapper.map(event, OrganisationResponse.class)).toList();
+    }
+    public void deleteOrganisation(Long organisationId) {
+        organisationRepository.deleteById(organisationId);
+    }
 
     public OrganisationResponse getOrgByName(String orgName){
         Optional<Organisation> organisationResponse = organisationRepository.findOrganisationByName(orgName);
         return mapper.map(organisationResponse , OrganisationResponse.class);
+    }
+    private User getUserByOrganisationName(String orgName){
+        for (User user:userRepository.findAll()) {
+            if(user.getUsername().equals(orgName)){
+                return user;
+            }
+        }
+        return null;
+    }
+    public void updateUserEnabled(String orgName) {
+        User user = getUserByOrganisationName(orgName);
+        if (user != null) {
+            user.setIsEnabled(true);
+            userRepository.save(user);
+        }
     }
 
 }

@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 @Data
 @Builder
 @AllArgsConstructor
@@ -22,6 +21,6 @@ public class OrganisationResponse {
     private String charityOption;
     private String organisationPurpose;
     private List<String> organisationPriorities;
-    private LocalDateTime registeredAt;
-    private LocalDateTime updatedAt;
+//    private LocalDateTime registeredAt;
+//    private LocalDateTime updatedAt;
 }
