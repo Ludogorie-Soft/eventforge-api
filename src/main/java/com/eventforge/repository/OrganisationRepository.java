@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 @Repository
-public interface OrganisationRepository extends JpaRepository<Organisation , UUID> {
+public interface OrganisationRepository extends JpaRepository<Organisation , Long> {
 
     @Query("SELECT o FROM Organisation o WHERE o.user.username = :email")
     Organisation findOrganisationByEmail(@Param("email") String email);
@@ -17,5 +17,9 @@ public interface OrganisationRepository extends JpaRepository<Organisation , UUI
     Optional<Organisation> findOrganisationByName(@Param("name") String name);
     @Query("SELECT o FROM Organisation o WHERE o.user.id = :id")
     Optional<Organisation> findOrganisationById(@Param("id") UUID id);
+
+    Optional<Organisation> findOrganisationByName(String name);
+    @Query("SELECT o FROM Organisation o WHERE o.user.id = :userId")
+    Organisation findOrganisationByUserId(Long userId);
 
 }

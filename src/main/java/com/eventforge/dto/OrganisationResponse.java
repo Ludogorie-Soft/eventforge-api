@@ -13,15 +13,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrganisationResponse {
-    private UUID id;
+    private Long id;
     private String name;
     private String bullstat;
-    private String email;
+    private String username;
     private String phone;
     private String address;
     private String charityOption;
-    private String purposeOfOrganisation;
-    private List<String> categories;
-//    private LocalDateTime registeredAt;
-//    private LocalDateTime updatedAt;
+    private String organisationPurpose;
+    private List<String> organisationPriorities;
+    private LocalDateTime registeredAt;
+    private LocalDateTime updatedAt;
 }

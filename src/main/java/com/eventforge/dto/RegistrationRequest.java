@@ -1,6 +1,5 @@
 package com.eventforge.dto;
 
-import com.eventforge.enums.OrganisationPriorityCategory;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -19,17 +18,17 @@ import java.util.Set;
 @NoArgsConstructor
 public class RegistrationRequest {
     @Email(message = "Моля въведете валидна електронна поща")
-    private String email;
+    private String username;
     @Size(min=5, max = 30, message = "Името на организацията трябва да е между 5 и 30 символа!")
     private String name;
     @Nullable
     private MultipartFile logo;
     private String bullstat;
     @Nullable
-    private Set<String> categories;
+    private Set<String> organisationPriorities;
     @Nullable
     private String optionalCategory;
-    private String purposeOfOrganisation;
+    private String organisationPurpose;
     @Nullable
     private MultipartFile backgroundCover;
     @Nullable
@@ -39,11 +38,11 @@ public class RegistrationRequest {
     @Nullable
     private String facebookLink;
 
-    private String firstAndLastName;
+    private String fullName;
 
     private String phoneNumber;
-    private String optionalCharity;
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
+    private String charityOption;
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{6,72}$",
             message = "Паролата трябва да е дълга поне 8 знака и да съдържа поне една цифра, една малка буква, една главна буква, един специален знак и без интервали!")
     private String password;
     private String confirmPassword;

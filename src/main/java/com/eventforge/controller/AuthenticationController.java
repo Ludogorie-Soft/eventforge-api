@@ -17,9 +17,10 @@ import io.jsonwebtoken.io.IOException;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +52,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(
-            @RequestBody RegistrationRequest request, final HttpServletRequest httpServletRequest) {
+            @Valid @RequestBody RegistrationRequest request, final HttpServletRequest httpServletRequest) {
         User user = authenticationService.register(request);
         publisher.publishEvent(new RegistrationCompleteEvent(user, url.applicationUrl(httpServletRequest)));
         return new ResponseEntity<>("Успешна регистрация. Моля потвърдете имейла си.", HttpStatus.CREATED);
@@ -61,7 +62,7 @@ public class AuthenticationController {
     public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken) {
         String appUrl = url.applicationUrl(servletRequest) + "/auth/resend-verification-token?verificationToken=" + verificationToken;
         VerificationToken verifyToken = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
-        if (verifyToken.getUser().getIsEnabled()) {
+        if (Boolean.TRUE.equals(verifyToken.getUser().getIsEnabled())) {
             return new ResponseEntity<>("Аканутът е вече потвърден, моля впишете се.", HttpStatus.IM_USED);
         }
         String verificationResult = userService.validateVerificationToken(verificationToken, appUrl);

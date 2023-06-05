@@ -1,8 +1,6 @@
 package com.eventforge.model;
 
-import com.eventforge.enums.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,17 +20,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class User {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID id;
-    @Size(min = 4, max = 30, message = "Името на събитието трява да е между 4 и 30 символа!")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Column(unique = true)
     private String username;
-    @Column(length = 64, nullable = false)
     private String password;
-    private String name;
-    private String phone;
+    private String fullName;
+    private String phoneNumber;
     private String role;
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;

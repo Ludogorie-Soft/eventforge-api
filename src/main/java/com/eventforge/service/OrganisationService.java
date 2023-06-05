@@ -1,6 +1,5 @@
 package com.eventforge.service;
 
-import com.eventforge.dto.EventResponse;
 import com.eventforge.dto.OrganisationRequest;
 import com.eventforge.dto.OrganisationResponse;
 import com.eventforge.model.Organisation;
@@ -10,10 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +26,10 @@ public class OrganisationService {
         log.info("Успешна регистрация");
     }
 
+
+    public Organisation getOrganisationByUserId(Long userId){
+        return organisationRepository.findOrganisationByUserId(userId);
+    }
     public Organisation getOrganisationByUserUsername(String username){
         return organisationRepository.findOrganisationByEmail(username);
     }
@@ -36,8 +37,8 @@ public class OrganisationService {
         User currentLoggedUser = userService.getLoggedUserByToken(token);
         if(currentLoggedUser!=null) {
             currentLoggedUser.setUsername(organisationRequest.getUsername());
-            currentLoggedUser.setName(organisationRequest.getFullName());
-            currentLoggedUser.setPhone(organisationRequest.getPhone());
+            currentLoggedUser.setFullName(organisationRequest.getFullName());
+            currentLoggedUser.setPhoneNumber(organisationRequest.getPhone());
             userService.saveUserInDb(currentLoggedUser);
             Organisation organisation = getOrganisationByUserUsername(currentLoggedUser.getUsername());
             organisation.setName(organisationRequest.getName());
@@ -46,14 +47,11 @@ public class OrganisationService {
             organisation.setAddress(organisationRequest.getAddress());
             organisation.setOrganisationPriorities(organisationRequest.getOrganisationPriorities());
             organisation.setCharityOption(organisationRequest.getCharityOption());
-            organisation.setPurposeOfOrganisation(organisationRequest.getPurposeOfOrganisation());
+            organisation.setOrganisationPurpose(organisationRequest.getOrganisationPurpose());
             organisationRepository.save(organisation);
         }
     }
-    public List<OrganisationResponse> getAllOrganisations() {
-        return organisationRepository.findAll().stream().map(event -> mapper.map(event, OrganisationResponse.class)).toList();
-    }
-    public OrganisationResponse getOrganisationById(UUID organisationId) {
+    public OrganisationResponse getOrganisationById(Long organisationId) {
         Optional<Organisation> organisationResponse = organisationRepository.findById(organisationId);
         return mapper.map(organisationResponse , OrganisationResponse.class);
     }

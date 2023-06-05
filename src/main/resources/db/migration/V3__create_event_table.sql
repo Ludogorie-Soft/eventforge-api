@@ -1,10 +1,10 @@
 create table if not exists event(
-    id BINARY(16) PRIMARY KEY,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255),
     description VARCHAR(255),
     address VARCHAR(255),
     event_categories VARBINARY(255),
-    organisation_id BINARY(16),
+    organisation_id BIGINT,
     is_online BOOLEAN,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,

@@ -56,7 +56,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
     public void sendVerificationEmail(String url , User user) throws MessagingException, UnsupportedEncodingException {
         String subject = "Потвърждение на акаунт";
         String senderName = "EventForge";
-        String content = "<p> Привет, "+ user.getName()+ ", </p>"+
+        String content = "<p> Привет, "+ user.getFullName()+ ", </p>"+
                 "<p>Благодарим Ви за създадената регистрация,"+"" +
                 "Моля, посетете долният линк за да потвърдите регистрацията си.</p>"+
                 "<a href=\"" +url+ "\">Потвърждаване на електронна поща за активиране на акаунт</a>"+

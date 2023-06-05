@@ -77,6 +77,5 @@ public class UserService {
         verificationToken.setExpirationTime(verificationTokenTime.getTokenExpirationTime());
         emailVerificationTokenService.saveVerificationToken(verificationToken);
         return verificationToken;
-
     }
 }

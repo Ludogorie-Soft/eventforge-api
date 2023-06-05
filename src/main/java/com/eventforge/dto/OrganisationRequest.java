@@ -23,7 +23,7 @@ public class OrganisationRequest {
     private String phone;
     private String address;
     private String charityOption;
-    private String purposeOfOrganisation;
+    private String organisationPurpose;
     private List<String> categories;
     private Set<OrganisationPriority> organisationPriorities;
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public interface OrganisationPriorityRepository extends JpaRepository<OrganisationPriority , UUID> {
+public interface OrganisationPriorityRepository extends JpaRepository<OrganisationPriority , Long> {
     @Query("SELECT c.category FROM OrganisationPriority c")
     Set<String> getAllOrganisationPriorityCategories();
     OrganisationPriority findByCategory(String category);

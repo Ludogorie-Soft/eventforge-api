@@ -4,7 +4,7 @@ import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.enums.TokenType;
 import com.eventforge.exception.GlobalException;
-import com.eventforge.factory.OrganisationBuilder;
+import com.eventforge.factory.EntityFactory;
 import com.eventforge.model.Token;
 import com.eventforge.model.User;
 import com.eventforge.repository.TokenRepository;
@@ -29,13 +29,13 @@ public class AuthenticationService {
     
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
-    private final OrganisationBuilder organisationBuilder;
+    private final EntityFactory entityFactory;
     private final TokenRepository tokenRepository;
     private final JWTService jwtService;
 
 
     public User register(RegistrationRequest registrationRequest){
-        return organisationBuilder.createOrganisation(registrationRequest);
+        return entityFactory.createOrganisation(registrationRequest);
     }
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
@@ -70,6 +70,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .userRole(user.getRole())
                 .build();
     }
     private void revokeAllUserTokens(User user) {
@@ -106,6 +107,7 @@ public class AuthenticationService {
                 var authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
+                        .userRole(user.getRole())
                         .build();
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }

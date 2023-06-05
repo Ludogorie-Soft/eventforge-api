@@ -4,17 +4,18 @@ import com.eventforge.dto.EventRequest;
 import com.eventforge.dto.EventResponse;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface EventService {
-    List<EventResponse> getAllEvents();
+    List<EventResponse> getAllEvents(String orderBy);
 
-    EventResponse getEventById(UUID eventId);
+    void saveEvent(EventRequest eventRequest , String authHeader);
+
+    EventResponse getEventById(Long eventId);
     EventResponse getEventByName(String name);
 
-    EventResponse saveEvent(EventRequest eventRequest);
-    void updateEvent(UUID eventId, EventRequest eventRequest);
+    void updateEvent(Long eventId, EventRequest eventRequest);
 
-    void deleteEvent(UUID eventId);
+    void deleteEvent(Long eventId);
 
+    List<EventResponse> filterEventsByCriteria(String name, String description, String address, String organisationName, String date);
 }

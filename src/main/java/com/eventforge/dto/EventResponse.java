@@ -7,17 +7,18 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class EventResponse {
+    private Long id;
     private String name;
     private String description;
     private String address;
     private List<String> eventCategories;
-    private UUID organisationId;
+    private String organisationName;
     private boolean isOnline;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
