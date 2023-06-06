@@ -1,7 +1,6 @@
 package com.eventforge.exception;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import java.util.StringJoiner;
 
 @RestControllerAdvice
 public class ExceptionHandler {
@@ -29,16 +27,20 @@ public class ExceptionHandler {
     public void handleValidationException(MethodArgumentNotValidException ex , HttpServletResponse response) throws IOException {
         BindingResult bindingResult = ex.getBindingResult();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        Queue<String> errorMessages = new LinkedList<>();
+
+        StringJoiner joiner = new StringJoiner(", ");
         for (FieldError fieldError : fieldErrors) {
             String fieldName = fieldError.getField();
             String errorMessage = fieldError.getDefaultMessage();
-            errorMessages.add(fieldName + ": " + errorMessage);
+            String errorEntry = fieldName + ": " + errorMessage;
+            joiner.add(errorEntry);
         }
-        response.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);
+
+        String errorString = joiner.toString();
+        response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
         response.setCharacterEncoding("UTF-8");
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-        response.getWriter().write(errorMessages.toString());
+        response.getWriter().write(errorString);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(EmailConfirmationNotSentException.class)

@@ -3,12 +3,9 @@ package com.eventforge.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -26,7 +23,11 @@ public class User {
     private String fullName;
     private String phoneNumber;
     private String role;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    private List<Organisation> organisations;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private VerificationToken verificationToken;
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.REMOVE)
     private List<Token> tokens;
     @CreationTimestamp
     private LocalDateTime registeredAt;

@@ -1,12 +1,12 @@
 package com.eventforge.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,7 +22,6 @@ public class VerificationToken {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-
     private static final int EXPIRATION_TIME = 15;
 
     public VerificationToken(String token, User user) {
