@@ -13,6 +13,8 @@ VALUES (2,"charity2","000245",2,"Sofia","wwwHTTp1","facebook link","taramtaram",
 
 -- Event records:
 INSERT INTO event (id, address, created_at, description, ends_at, event_categories, is_online, name, starts_at, updated_at, organisation_id)
-VALUES (10,"Sofia",CURRENT_TIMESTAMP,"event info",CURRENT_TIMESTAMP,null,true,"namename",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,null);
+VALUES (10,"Sofia",CURRENT_TIMESTAMP,"event info",'2023-06-15 00:00:00',null,true,"event10",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,2);
 INSERT INTO event (id, address, created_at, description, ends_at, event_categories, is_online, name, starts_at, updated_at, organisation_id)
-VALUES (11,"Razgrad",CURRENT_TIMESTAMP,"event info",CURRENT_TIMESTAMP,null,true,"event",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,null);
+VALUES (11,"Sofia",CURRENT_TIMESTAMP,"event info",'2023-06-05 00:00:00',null,true,"event11",'2023-06-01 00:00:00',CURRENT_TIMESTAMP,2);
+INSERT INTO event (id, address, created_at, description, ends_at, event_categories, is_online, name, starts_at, updated_at, organisation_id)
+VALUES (1,"Razgrad",CURRENT_TIMESTAMP,"event-12",'2023-06-25 00:00:00',null,true,"event-12",CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,2);

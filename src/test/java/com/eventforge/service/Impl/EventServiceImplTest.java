@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -66,22 +67,28 @@ class EventServiceImplTest {
 
     @Test
     void testShouldGetAllEvents() {
-        String orderBy = "someOrder";
+        LocalDateTime dateTime = LocalDate.now().atStartOfDay();
+        List<Event> events = List.of(
+                Event.builder().name("Event 1").organisation(Organisation.builder().id(1L).name("org1").build()).endsAt(LocalDateTime.now().plusDays(1)).build(),
+                Event.builder().name("Event 2").organisation(Organisation.builder().id(1L).name("org1").build()).endsAt(LocalDateTime.now().minusDays(1)).build(),
+                Event.builder().name("Event 3").organisation(Organisation.builder().id(1L).name("org1").build()).endsAt(LocalDateTime.now().plusHours(1)).build()
+        );
+        List<EventResponse> expectedResponses = List.of(
+                EventResponse.builder().name("Event 1").organisationName("Org 1").build(),
+                EventResponse.builder().name("Event 2").organisationName("Org 2").build()
+        );
 
-        List<Event> events = List.of(Event.builder().id(1L).name("Event 1").organisation(Organisation.builder().name("Org 1").build()).build(), Event.builder().id(2L).name("Event 2").organisation(Organisation.builder().name("Org 2").build()).build());
-        when(eventRepository.findAllValidEvents(orderBy)).thenReturn(events);
 
-        List<EventResponse> expectedResponses = List.of(EventResponse.builder().id(1L).name("Event 1").organisationName("Org 1").build(), EventResponse.builder().id(2L).name("Event 2").organisationName("Org 2").build());
-        when(responseFactory.buildEventResponse(any(Event.class), anyString())).thenAnswer(invocation -> {
-            Event event = invocation.getArgument(0);
-            String organisationName = invocation.getArgument(1);
-            return EventResponse.builder().id(event.getId()).name(event.getName()).organisationName(organisationName).build();
-        });
+        when(eventRepository.findAllValidEvents(dateTime)).thenReturn(events);
+        when(responseFactory.buildEventResponse(events.get(0), events.get(0).getOrganisation().getName()))
+                .thenReturn(expectedResponses.get(0));
+        when(responseFactory.buildEventResponse(events.get(2), events.get(2).getOrganisation().getName()))
+                .thenReturn(expectedResponses.get(1));
 
-        List<EventResponse> result = eventServiceImpl.getAllEvents(orderBy);
-        assertThat(result).isNotNull().hasSize(2).isEqualTo(expectedResponses);
+        List<EventResponse> actualResponses = eventServiceImpl.getAllEvents();
+
+        assertThat(actualResponses).containsExactlyElementsOf(expectedResponses);
     }
-
 
     @Test
     void testGetEventByIdShouldExists() {
@@ -233,7 +240,7 @@ class EventServiceImplTest {
         when(userJoin.get("isNonLocked")).thenReturn(isNonLockedPath);
         when(criteriaBuilder.isTrue(isNonLockedPath)).thenReturn(isNonLockedPredicate);
 
-        List<EventResponse> result = eventServiceImpl.filterEventsByCriteria(name, description, address, organisationName, date);
+        List<EventResponse> result = eventServiceImpl.filterOneTimeEventsByCriteria(name, description, address, organisationName, date);
 
         assertEquals(0, result.size());
     }
@@ -264,7 +271,7 @@ class EventServiceImplTest {
         when(root.get("organisation")).thenReturn(mock(Path.class));
         when(root.get("organisation").get("name")).thenReturn(mock(Path.class));
 
-        List<EventResponse> result = eventServiceImpl.filterEventsByCriteria(name, description, address, organisationName, date);
+        List<EventResponse> result = eventServiceImpl.filterOneTimeEventsByCriteria(name, description, address, organisationName, date);
 
         assertEquals(1, result.size());
     }

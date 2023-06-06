@@ -5,7 +5,6 @@ import com.eventforge.dto.EventResponse;
 import com.eventforge.service.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +19,12 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping
-    public ResponseEntity<List<EventResponse>> showAllEvents(@Param("orderBy") String orderBy) {
-        return new ResponseEntity<>(eventService.getAllEvents(orderBy), HttpStatus.OK);
+    public ResponseEntity<List<EventResponse>> showAllEvents() {
+        return new ResponseEntity<>(eventService.getAllEvents(), HttpStatus.OK);
+    }
+    @GetMapping("/passed")
+    public ResponseEntity<List<EventResponse>> showAllPassedEvents() {
+        return new ResponseEntity<>(eventService.getAllPassedEvents(), HttpStatus.OK);
     }
 
     @GetMapping(path = "{eventId}")

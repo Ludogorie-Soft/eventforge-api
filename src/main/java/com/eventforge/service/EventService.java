@@ -6,7 +6,8 @@ import com.eventforge.dto.EventResponse;
 import java.util.List;
 
 public interface EventService {
-    List<EventResponse> getAllEvents(String orderBy);
+    List<EventResponse> getAllEvents();
+    List<EventResponse> getAllPassedEvents();
 
     void saveEvent(EventRequest eventRequest , String authHeader);
 
@@ -17,5 +18,5 @@ public interface EventService {
 
     void deleteEvent(Long eventId);
 
-    List<EventResponse> filterEventsByCriteria(String name, String description, String address, String organisationName, String date);
+    List<EventResponse> filterOneTimeEventsByCriteria(String name, String description, String address, String organisationName, String date);
 }

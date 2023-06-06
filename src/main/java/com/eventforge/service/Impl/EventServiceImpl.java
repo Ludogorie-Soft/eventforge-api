@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +35,21 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public List<EventResponse> getAllEvents(String orderBy) {
-        return eventRepository.findAllValidEvents(orderBy).stream().map(event -> responseFactory.buildEventResponse(event, event.getOrganisation().getName())).toList();
+    public List<EventResponse> getAllEvents() {
+        LocalDateTime dateTime = LocalDate.now().atStartOfDay();
+        return eventRepository.findAllValidEvents(dateTime)
+                .stream()
+                .filter(event -> event.getEndsAt().isAfter(dateTime) || event.getEndsAt().isEqual(dateTime))
+                .map(event -> responseFactory.buildEventResponse(event, event.getOrganisation().getName()))
+                .toList();
+    }
+    @Override
+    public List<EventResponse> getAllPassedEvents() {
+        LocalDateTime dateTime = LocalDateTime.now();
+        return eventRepository.findAllValidPassedEvents(dateTime)
+                .stream()
+                .map(event -> responseFactory.buildEventResponse(event, event.getOrganisation().getName()))
+                .toList();
     }
 
     @Override
@@ -80,7 +95,7 @@ public class EventServiceImpl implements EventService {
 
     //method for filtering
     @Override
-    public List<EventResponse> filterEventsByCriteria(String name, String description, String address, String organisationName, String date) {
+    public List<EventResponse> filterOneTimeEventsByCriteria(String name, String description, String address, String organisationName, String date) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = cb.createQuery(Event.class);
         Root<Event> root = query.from(Event.class);
@@ -101,7 +116,6 @@ public class EventServiceImpl implements EventService {
         if (organisationName != null) {
             predicates.add(cb.like(root.get("organisation").get("name"), "%" + organisationName + "%"));
         }
-
         if (date != null) {
             predicates.add(cb.equal(root.get("startsAt"), date));
         }
@@ -110,6 +124,8 @@ public class EventServiceImpl implements EventService {
         Join<Organisation, User> userJoin = orgJoin.join("user");
         predicates.add(cb.isTrue(userJoin.get("isNonLocked")));
         predicates.add(cb.isTrue(userJoin.get("isApprovedByAdmin")));
+        predicates.add(cb.isTrue(userJoin.get("isOneTime")));
+        predicates.add(cb.lessThan(root.get("endDate"), LocalDateTime.now()));
 
         query.where(predicates.toArray(new Predicate[0]));
 
