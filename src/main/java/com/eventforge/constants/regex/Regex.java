@@ -10,5 +10,5 @@ public class Regex {
 
         public static final String PHONE_NUMBER_PATTERN = "^\\+?[0-9]+$";
 
-    public static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{6,72}$";
+    public static final String PASSWORD_REGEX_VALIDATION = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{6,72}$";
 }

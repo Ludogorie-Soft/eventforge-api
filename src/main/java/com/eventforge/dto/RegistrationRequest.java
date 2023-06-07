@@ -53,7 +53,7 @@ public class RegistrationRequest {
     private String phoneNumber;
     @Nullable
     private String charityOption;
-    @Pattern(regexp = PASSWORD_PATTERN,
+    @Pattern(regexp = PASSWORD_REGEX_VALIDATION,
             message = "Паролата трябва да е дълга поне 8 знака и да съдържа поне една цифра, една малка буква, една главна буква, един специален знак и без интервали!")
     private String password;
     @NotNull
