@@ -2,7 +2,7 @@ package com.eventforge.service;
 
 import com.eventforge.dto.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
-import com.eventforge.enums.TokenType;
+import com.eventforge.constants.TokenType;
 import com.eventforge.exception.InvalidCredentialsException;
 import com.eventforge.exception.UserDisabledException;
 import com.eventforge.exception.UserLockedException;

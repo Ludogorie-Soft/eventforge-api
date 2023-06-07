@@ -1,6 +1,5 @@
-package com.eventforge.enums;
+package com.eventforge.constants;
 
-import lombok.Data;
 import lombok.Getter;
 
 import java.util.Arrays;

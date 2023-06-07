@@ -1,6 +1,6 @@
 package com.eventforge.security;
 
-import com.eventforge.enums.Role;
+import com.eventforge.constants.Role;
 import com.eventforge.exception.AuthenticationEntryPoint;
 import com.eventforge.security.jwt.JWTAuthenticationFilter;
 import org.springframework.context.annotation.Bean;

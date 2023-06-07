@@ -1,15 +1,13 @@
 package com.eventforge.exception;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -19,53 +17,64 @@ import java.util.StringJoiner;
 public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(EmailAlreadyTakenException.class)
-    public void handleEmailAlreadyTakenException(EmailAlreadyTakenException ex, HttpServletResponse response) throws IOException {
-        setResponse(response , ex.getHttpStatus() , ex.getMessage());
+    public ResponseEntity<String> handleEmailAlreadyTakenException(EmailAlreadyTakenException ex)  {
+        return ResponseEntity.status(ex.getHttpStatus())
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(ex.getMessage());
     }
-
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
-    public void handleValidationException(MethodArgumentNotValidException ex , HttpServletResponse response) throws IOException {
-        BindingResult bindingResult = ex.getBindingResult();
-        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
+        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+        List<ObjectError> globalErrors = ex.getBindingResult().getGlobalErrors();
 
-        StringJoiner joiner = new StringJoiner(", ");
-        for (FieldError fieldError : fieldErrors) {
-            String fieldName = fieldError.getField();
-            String errorMessage = fieldError.getDefaultMessage();
-            String errorEntry = fieldName + ": " + errorMessage;
-            joiner.add(errorEntry);
+        StringJoiner joiner = new StringJoiner("/ ");
+        if(!globalErrors.isEmpty()){
+            for (ObjectError error : globalErrors) {
+                joiner.add(error.getObjectName() + ": " + error.getDefaultMessage());
+            }
         }
 
+        if(!fieldErrors.isEmpty()){
+            for (FieldError error : fieldErrors) {
+                joiner.add(error.getField() + ": " + error.getDefaultMessage());
+            }
+        }
+
+
         String errorString = joiner.toString();
-        response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-        response.getWriter().write(errorString);
+
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(errorString);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(EmailConfirmationNotSentException.class)
-    public void handleEmailConfirmationNotSentException(EmailConfirmationNotSentException ex , HttpServletResponse response) throws IOException {
-        setResponse(response , ex.getHTTP_STATUS_CODE() , ex.getMessage());
-
+    public ResponseEntity<String> handleEmailConfirmationNotSentException(EmailConfirmationNotSentException ex ) {
+        return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
+                .contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(InvalidCredentialsException.class)
-    public void handleInvalidCredentialsException(InvalidCredentialsException ex , HttpServletResponse response) throws IOException {
-        setResponse(response , ex.getHTTP_STATUS_CODE() , ex.getMessage());
+    public ResponseEntity<String> handleInvalidCredentialsException(InvalidCredentialsException ex ) {
+        return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
+                .contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(InvalidEmailConfirmationLinkException.class)
-    public void handleInvalidEmailConfirmationLinkException(InvalidEmailConfirmationLinkException ex , HttpServletResponse response) throws IOException {
-        setResponse(response , ex.getHTTP_STATUS_CODE() , ex.getMessage());
+    public ResponseEntity<String> handleInvalidEmailConfirmationLinkException(InvalidEmailConfirmationLinkException ex) {
+        return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
+                .contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
     @org.springframework.web.bind.annotation.ExceptionHandler(UserDisabledException.class)
-    public void handleUserDisabledException(UserDisabledException ex , HttpServletResponse response) throws IOException {
-        setResponse(response , ex.getHTTP_STATUS_CODE() , ex.getMessage());
+    public ResponseEntity<String> handleUserDisabledException(UserDisabledException ex) {
+        return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
+                .contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(UserLockedException.class)
-    public void handleUserLockedException(UserLockedException ex , HttpServletResponse response) throws IOException {
-        setResponse(response , ex.getHTTP_STATUS_CODE() , ex.getMessage());
+    public ResponseEntity<String> handleUserLockedException(UserLockedException ex){
+        return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
+                .contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
 
 
@@ -81,11 +90,4 @@ public class ExceptionHandler {
         return new ResponseEntity<>(eventErrorMessage, badRequest);
     }
 
-
-    private void setResponse(HttpServletResponse response, int httpStatusCode, String message) throws IOException {
-        response.setStatus(httpStatusCode);
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-        response.getWriter().write(message);
-    }
 }
