@@ -25,4 +25,8 @@ public class OrganisationPriorityService {
     public OrganisationPriority getOrganisationPriorityByCategory(String category){
         return organisationPriorityRepository.findByCategory(category);
     }
+
+    public void saveOrganisationPriority(OrganisationPriority organisationPriority){
+        organisationPriorityRepository.save(organisationPriority);
+    }
 }

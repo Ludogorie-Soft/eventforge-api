@@ -1,16 +1,11 @@
 package com.eventforge.model;
 
-import com.eventforge.enums.TokenType;
+import com.eventforge.constants.TokenType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.*;
 
-import java.util.UUID;
-
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

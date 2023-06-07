@@ -1,21 +1,14 @@
 package com.eventforge.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.UUIDDeserializer;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.UUID;
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,13 +20,13 @@ public class Organisation {
     private String name;
 
     private String bullstat;
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade ={CascadeType.MERGE, CascadeType.REMOVE} )
     @JoinColumn(name = "user_id")
     private User user;
 
     private String address;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "priority_id_organisation_id",
             joinColumns = @JoinColumn(name = "organisation_id"),

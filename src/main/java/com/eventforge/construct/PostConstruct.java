@@ -1,7 +1,7 @@
 package com.eventforge.construct;
 
-import com.eventforge.enums.OrganisationPriorityCategory;
-import com.eventforge.enums.Role;
+import com.eventforge.constants.OrganisationPriorityCategory;
+import com.eventforge.constants.Role;
 import com.eventforge.model.OrganisationPriority;
 import com.eventforge.model.User;
 import com.eventforge.repository.OrganisationPriorityRepository;

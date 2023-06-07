@@ -1,4 +1,4 @@
-package com.eventforge.enums;
+package com.eventforge.constants;
 
 import lombok.Getter;
 

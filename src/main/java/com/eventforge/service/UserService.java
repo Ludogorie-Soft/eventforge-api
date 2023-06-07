@@ -1,6 +1,6 @@
 package com.eventforge.service;
 
-import com.eventforge.exception.GlobalException;
+import com.eventforge.exception.InvalidEmailConfirmationLinkException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
@@ -56,7 +56,7 @@ public class UserService {
     public String validateVerificationToken(String verificationToken, String url) {
         VerificationToken verificationTokenDb = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
         if (verificationTokenDb == null) {
-            throw new GlobalException("Линкът за активация е невалиден");
+           throw new InvalidEmailConfirmationLinkException();
         }
 
         User user = verificationTokenDb.getUser();

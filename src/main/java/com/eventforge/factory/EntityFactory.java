@@ -1,9 +1,11 @@
 package com.eventforge.factory;
 
+import com.eventforge.constants.OrganisationPriorityCategory;
+import com.eventforge.constants.Role;
+
 import com.eventforge.dto.EventRequest;
 import com.eventforge.dto.RegistrationRequest;
-import com.eventforge.enums.Role;
-import com.eventforge.exception.GlobalException;
+import com.eventforge.exception.EmailAlreadyTakenException;
 import com.eventforge.model.Event;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.OrganisationPriority;
@@ -25,11 +27,13 @@ import java.util.Set;
 public class EntityFactory {
     private final OrganisationService organisationService;
 
+    private final OrganisationPriorityService organisationPriorityService;
+
     private final UserService userService;
 
     private final PasswordEncoder passwordEncoder;
 
-    public Event createEvent(EventRequest eventRequest , String authHeader){
+    public Event createEvent(EventRequest eventRequest, String authHeader) {
         User user = userService.getLoggedUserByToken(authHeader);
         Organisation organisation = organisationService.getOrganisationByUserId(user.getId());
         return Event.builder()
@@ -46,13 +50,10 @@ public class EntityFactory {
     }
 
 
-    private final OrganisationPriorityService organisationPriorityService;
-
-
-
     public User createOrganisation(RegistrationRequest request) {
         User user = createUser(request);
-        Set<OrganisationPriority>organisationPriorities = assignOrganisationPrioritiesToOrganisation(request.getOrganisationPriorities());
+        Set<OrganisationPriority> organisationPriorities =
+                assignOrganisationPrioritiesToOrganisation(request.getOrganisationPriorities(), request.getOptionalCategory());
 
         Organisation org = Organisation.builder()
                 .name(request.getName())
@@ -71,7 +72,6 @@ public class EntityFactory {
     }
 
 
-
     public User createUser(RegistrationRequest request) {
         User user = userService.getUserByEmail(request.getUsername());
         if (user == null) {
@@ -88,14 +88,22 @@ public class EntityFactory {
             return user1;
         } else {
             log.warn("Неуспешна регистрация");
-            throw new GlobalException(String.format("Потребител с електронна поща %s вече съществува", request.getUsername()));
+            throw new EmailAlreadyTakenException();
         }
 
     }
 
 
-    private Set<OrganisationPriority> assignOrganisationPrioritiesToOrganisation(Set<String> priorityCategories) {
+    private Set<OrganisationPriority> assignOrganisationPrioritiesToOrganisation(Set<String> priorityCategories, String optionalCategory) {
         Set<OrganisationPriority> organisationPriorities = new HashSet<>();
+        OrganisationPriority newOrganisationPriority = null;
+        if (optionalCategory != null) {
+            newOrganisationPriority = createOrganisationPriority(optionalCategory);
+        }
+        if (newOrganisationPriority != null) {
+            organisationPriorities.add(newOrganisationPriority);
+        }
+
         if (priorityCategories != null) {
             for (String category : priorityCategories) {
                 OrganisationPriority organisationPriority = organisationPriorityService.getOrganisationPriorityByCategory(category);
@@ -106,4 +114,16 @@ public class EntityFactory {
         }
         return organisationPriorities;
     }
+
+    private OrganisationPriority createOrganisationPriority(String priority) {
+        OrganisationPriority organisationPriority = null;
+        if (organisationPriorityService.getOrganisationPriorityByCategory(priority) == null) {
+            organisationPriority = new OrganisationPriority(priority);
+            organisationPriorityService.saveOrganisationPriority(organisationPriority);
+            OrganisationPriorityCategory.addNewOrganisationPriorityCategory(priority);
+
+        }
+        return organisationPriority;
+    }
+
 }
