@@ -13,6 +13,6 @@ public class AuthenticationEntryPoint implements org.springframework.security.we
         response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("Сесията Ви е изтекла, моля влезте отново.");
+        response.getWriter().write("Ауторизирайте се за да достъпите страницата!");
     }
 }

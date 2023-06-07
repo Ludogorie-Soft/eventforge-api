@@ -97,7 +97,7 @@ public class EntityFactory {
     private Set<OrganisationPriority> assignOrganisationPrioritiesToOrganisation(Set<String> priorityCategories, String optionalCategory) {
         Set<OrganisationPriority> organisationPriorities = new HashSet<>();
         OrganisationPriority newOrganisationPriority = null;
-        if (optionalCategory != null) {
+        if (optionalCategory != null && !optionalCategory.isEmpty()) {
             newOrganisationPriority = createOrganisationPriority(optionalCategory);
         }
         if (newOrganisationPriority != null) {

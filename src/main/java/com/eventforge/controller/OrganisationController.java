@@ -22,13 +22,6 @@ public class OrganisationController {
     private final JWTService jwtService;
     private final OrganisationService organisationService;
 
-    @GetMapping("/proba")
-    public ResponseEntity<String> proba(@RequestHeader(AUTHORIZATION) String authorization) {
-
-        User user = userService.getLoggedUserByToken(jwtService.extractTokenValueFromHeader(authorization));
-
-        return ResponseEntity.ok().body(user.getUsername());
-    }
 
     @PutMapping("/update-account")
     public ResponseEntity<String> updateOrganisation(@Valid @RequestBody OrganisationRequest organisationRequest, @RequestHeader(AUTHORIZATION) String authHeader) {

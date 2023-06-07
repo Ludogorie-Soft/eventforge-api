@@ -12,11 +12,9 @@ import java.io.IOException;
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex) throws IOException {
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("Нямате достъп до страницата");
-
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("text/plain");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("Нямате достъп до страницата");
     }
-
 }
