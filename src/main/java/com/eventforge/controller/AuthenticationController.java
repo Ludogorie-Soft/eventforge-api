@@ -1,6 +1,6 @@
 package com.eventforge.controller;
 
-import com.eventforge.dto.AuthenticationResponse;
+import com.eventforge.dto.response.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.email.CreateApplicationUrl;
 import com.eventforge.email.RegistrationCompleteEvent;

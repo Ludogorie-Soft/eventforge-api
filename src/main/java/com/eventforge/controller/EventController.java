@@ -1,7 +1,7 @@
 package com.eventforge.controller;
 
-import com.eventforge.dto.EventRequest;
-import com.eventforge.dto.EventResponse;
+import com.eventforge.dto.request.EventRequest;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.service.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

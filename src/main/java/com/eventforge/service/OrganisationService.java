@@ -1,6 +1,6 @@
 package com.eventforge.service;
 
-import com.eventforge.dto.OrganisationRequest;
+import com.eventforge.dto.request.OrganisationRequest;
 import com.eventforge.dto.OrganisationResponse;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;

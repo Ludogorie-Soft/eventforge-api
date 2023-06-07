@@ -1,6 +1,6 @@
 package com.eventforge.service;
 
-import com.eventforge.dto.AuthenticationResponse;
+import com.eventforge.dto.response.AuthenticationResponse;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.constants.TokenType;
 import com.eventforge.exception.InvalidCredentialsException;

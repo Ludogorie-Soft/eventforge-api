@@ -1,6 +1,6 @@
 package com.eventforge.factory;
 
-import com.eventforge.dto.EventResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.model.Event;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

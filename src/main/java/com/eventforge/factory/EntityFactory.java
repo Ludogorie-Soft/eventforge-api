@@ -3,7 +3,7 @@ package com.eventforge.factory;
 import com.eventforge.constants.OrganisationPriorityCategory;
 import com.eventforge.constants.Role;
 
-import com.eventforge.dto.EventRequest;
+import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.RegistrationRequest;
 import com.eventforge.exception.EmailAlreadyTakenException;
 import com.eventforge.model.Event;

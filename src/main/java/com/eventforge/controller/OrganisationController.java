@@ -1,8 +1,7 @@
 package com.eventforge.controller;
 
-import com.eventforge.dto.OrganisationRequest;
+import com.eventforge.dto.request.OrganisationRequest;
 import com.eventforge.dto.OrganisationResponse;
-import com.eventforge.model.User;
 import com.eventforge.security.jwt.JWTService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;

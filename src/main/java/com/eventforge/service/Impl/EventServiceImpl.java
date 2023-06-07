@@ -1,7 +1,7 @@
 package com.eventforge.service.Impl;
 
-import com.eventforge.dto.EventRequest;
-import com.eventforge.dto.EventResponse;
+import com.eventforge.dto.request.EventRequest;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.factory.EntityFactory;
 import com.eventforge.factory.ResponseFactory;
