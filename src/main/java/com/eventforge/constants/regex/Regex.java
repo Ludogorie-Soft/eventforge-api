@@ -8,7 +8,11 @@ public class Regex {
 
     public static final String FULL_NAME_PATTERN = "^([a-zA-Zа-яА-Я -]*)$";
 
-        public static final String PHONE_NUMBER_PATTERN = "^\\+?[0-9]+$";
+    public static final String PHONE_NUMBER_PATTERN = "^\\+?[0-9]+$";
 
     public static final String CREDENTIAL_CHECK_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{6,72}$";
+
+    public static final String EVENT_CATEGORIES_PATTERN = "^([a-zA-Zа-яА-Я ,-]*)$";
+
+    public static final String IMAGE_PATTERN = "(.*\\.)(jpg|jpeg|png|gif)$";
 }

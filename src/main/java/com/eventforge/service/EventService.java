@@ -1,7 +1,7 @@
 package com.eventforge.service;
 
-import com.eventforge.dto.EventRequest;
-import com.eventforge.dto.EventResponse;
+import com.eventforge.dto.request.EventRequest;
+import com.eventforge.dto.response.EventResponse;
 
 import java.util.List;
 

@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +27,9 @@ public class Event {
     private String description;
     private String address;
     private List<String> eventCategories;
+    private Double price;
+    private Integer minAge;
+    private Integer maxAge;
     @ManyToOne
     @JoinColumn(name = "organisation_id")
     private Organisation organisation;

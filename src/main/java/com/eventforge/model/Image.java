@@ -1,5 +1,6 @@
 package com.eventforge.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,9 +34,11 @@ public class Image {
     private String type;
     @ManyToOne
     @JoinColumn(name = "event_id")
+    @Nullable
     private Event evenId;
     @ManyToOne
     @JoinColumn(name = "organisation_id")
+    @Nullable
     private Organisation organisationId;
 
 }

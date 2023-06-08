@@ -1,7 +1,8 @@
 package com.eventforge.factory;
 
-import com.eventforge.dto.EventResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.model.Event;
+import com.eventforge.service.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,17 +10,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ResponseFactory {
 
+    private final Utils utils;
     public EventResponse buildEventResponse(Event event , String organisationName){
+        String eventCategories = utils.convertStringListToString(event.getEventCategories());
         return EventResponse.builder()
                 .id(event.getId())
                 .name(event.getName())
                 .description(event.getDescription())
                 .address(event.getAddress())
-                .eventCategories(event.getEventCategories())
+                .eventCategories(eventCategories)
                 .organisationName(organisationName)
                 .isOnline(event.getIsOnline())
-                .createdAt(event.getCreatedAt())
-                .updatedAt(event.getUpdatedAt())
                 .startsAt(event.getStartsAt())
                 .endsAt(event.getEndsAt())
                 .build();

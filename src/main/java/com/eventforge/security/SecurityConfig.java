@@ -22,7 +22,9 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 public class SecurityConfig {
 
     private static final String[] SECURED_URLs = {"/admin/**"};
-    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**", "/organisation/**", "/api/**"};
+    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**", "/api/**"};
+
+    private static final String ORGANISATION_URLs = "/organisation/**";
     private final JWTAuthenticationFilter authenticationFilter;
     private final MyUserDetailsService userDetailsService;
     private final LogoutHandler logoutHandler;
@@ -58,6 +60,7 @@ public class SecurityConfig {
         return http.csrf().disable().cors().disable()
                 .authorizeHttpRequests().requestMatchers(UNSECURED_URLs).permitAll()
                 .and().authorizeHttpRequests().requestMatchers("/proba").authenticated().and()
+                .authorizeHttpRequests().requestMatchers(ORGANISATION_URLs).hasAnyAuthority(Role.ORGANISATION.toString()).and()
                 .authorizeHttpRequests().requestMatchers(SECURED_URLs).hasAuthority(Role.ADMIN.toString())
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
