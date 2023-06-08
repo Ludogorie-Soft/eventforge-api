@@ -17,15 +17,27 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping
-    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
+    public ResponseEntity<String> uploadImage(@RequestParam MultipartFile file) throws IOException {
         String uploadImage = imageService.uploadImageToFileSystem(file);
         return ResponseEntity.status(HttpStatus.OK).body(uploadImage);
     }
 
-    @GetMapping("/{fileName}")
-    public ResponseEntity<Resource> downloadImage(@PathVariable() String fileName) {
+    @GetMapping("/get/{fileName}")
+    public ResponseEntity<String> getImage(@PathVariable() String fileName) throws IOException {
+        String link = imageService.getImageAddressFromFileSystem(fileName);
+        return ResponseEntity.status(HttpStatus.OK).body(link);
+    }
+
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<Resource> downloadImage(@PathVariable() String fileName) throws IOException {
         Resource resource = imageService.downloadImageFromFileSystem(fileName).getBody();
         return ResponseEntity.status(HttpStatus.OK).body(resource);
+    }
+
+    @PostMapping("/delete/{fileName}")
+    public ResponseEntity<HttpStatus> deleteImage(@PathVariable("fileName") String fileName) {
+        imageService.deleteImageFromFileSystem(fileName);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
 }
