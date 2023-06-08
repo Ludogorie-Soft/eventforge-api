@@ -1,13 +1,13 @@
 package com.eventforge.controller;
 
 import com.eventforge.dto.response.AuthenticationResponse;
-import com.eventforge.dto.RegistrationRequest;
+import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.email.CreateApplicationUrl;
 import com.eventforge.email.RegistrationCompleteEvent;
 import com.eventforge.email.listener.RegistrationCompleteEventListener;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
-import com.eventforge.security.jwt.JWTAuthenticationRequest;
+import com.eventforge.dto.request.JWTAuthenticationRequest;
 import com.eventforge.security.jwt.JWTService;
 import com.eventforge.service.AuthenticationService;
 import com.eventforge.service.EmailVerificationTokenService;

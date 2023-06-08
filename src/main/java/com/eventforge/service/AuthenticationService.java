@@ -1,7 +1,7 @@
 package com.eventforge.service;
 
 import com.eventforge.dto.response.AuthenticationResponse;
-import com.eventforge.dto.RegistrationRequest;
+import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.constants.TokenType;
 import com.eventforge.exception.InvalidCredentialsException;
 import com.eventforge.exception.UserDisabledException;
@@ -10,7 +10,7 @@ import com.eventforge.factory.EntityFactory;
 import com.eventforge.model.Token;
 import com.eventforge.model.User;
 import com.eventforge.repository.TokenRepository;
-import com.eventforge.security.jwt.JWTAuthenticationRequest;
+import com.eventforge.dto.request.JWTAuthenticationRequest;
 import com.eventforge.security.jwt.JWTService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.io.IOException;

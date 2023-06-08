@@ -4,7 +4,7 @@ import com.eventforge.constants.OrganisationPriorityCategory;
 import com.eventforge.constants.Role;
 
 import com.eventforge.dto.request.EventRequest;
-import com.eventforge.dto.RegistrationRequest;
+import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.exception.EmailAlreadyTakenException;
 import com.eventforge.model.Event;
 import com.eventforge.model.Organisation;
@@ -13,6 +13,7 @@ import com.eventforge.model.User;
 import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
+import com.eventforge.service.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,8 +28,7 @@ import java.util.Set;
 public class EntityFactory {
     private final OrganisationService organisationService;
 
-    private final OrganisationPriorityService organisationPriorityService;
-
+    private final Utils utils;
     private final UserService userService;
 
     private final PasswordEncoder passwordEncoder;
@@ -40,7 +40,7 @@ public class EntityFactory {
                 .name(eventRequest.getName())
                 .description(eventRequest.getDescription())
                 .address(eventRequest.getAddress())
-                .eventCategories(eventRequest.getEventCategories())
+                .eventCategories(utils.splitStringByComma(eventRequest.getEventCategories()))
                 .organisation(organisation)
                 .isOnline(eventRequest.getIsOnline())
                 .startsAt(eventRequest.getStartsAt())
@@ -52,7 +52,7 @@ public class EntityFactory {
 
     public User createOrganisation(RegistrationRequest request) {
         User user = createUser(request);
-        Set<OrganisationPriority> organisationPriorities =
+        Set<OrganisationPriority> organisationPriorities =utils.
                 assignOrganisationPrioritiesToOrganisation(request.getOrganisationPriorities(), request.getOptionalCategory());
 
         Organisation org = Organisation.builder()
@@ -92,38 +92,4 @@ public class EntityFactory {
         }
 
     }
-
-
-    private Set<OrganisationPriority> assignOrganisationPrioritiesToOrganisation(Set<String> priorityCategories, String optionalCategory) {
-        Set<OrganisationPriority> organisationPriorities = new HashSet<>();
-        OrganisationPriority newOrganisationPriority = null;
-        if (optionalCategory != null && !optionalCategory.isEmpty()) {
-            newOrganisationPriority = createOrganisationPriority(optionalCategory);
-        }
-        if (newOrganisationPriority != null) {
-            organisationPriorities.add(newOrganisationPriority);
-        }
-
-        if (priorityCategories != null) {
-            for (String category : priorityCategories) {
-                OrganisationPriority organisationPriority = organisationPriorityService.getOrganisationPriorityByCategory(category);
-                if (organisationPriority != null) {
-                    organisationPriorities.add(organisationPriority);
-                }
-            }
-        }
-        return organisationPriorities;
-    }
-
-    private OrganisationPriority createOrganisationPriority(String priority) {
-        OrganisationPriority organisationPriority = null;
-        if (organisationPriorityService.getOrganisationPriorityByCategory(priority) == null) {
-            organisationPriority = new OrganisationPriority(priority);
-            organisationPriorityService.saveOrganisationPriority(organisationPriority);
-            OrganisationPriorityCategory.addNewOrganisationPriorityCategory(priority);
-
-        }
-        return organisationPriority;
-    }
-
 }

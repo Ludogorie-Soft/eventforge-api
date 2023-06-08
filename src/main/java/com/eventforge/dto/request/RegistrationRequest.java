@@ -1,4 +1,4 @@
-package com.eventforge.dto;
+package com.eventforge.dto.request;
 
 import com.eventforge.annotation.OrganisationPriorityNotNull;
 import jakarta.annotation.Nullable;

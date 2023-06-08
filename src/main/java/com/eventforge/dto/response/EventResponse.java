@@ -14,14 +14,13 @@ import java.util.List;
 @Builder
 public class EventResponse {
     private Long id;
+    private String image;
     private String name;
     private String description;
     private String address;
-    private List<String> eventCategories;
+    private String eventCategories;
     private String organisationName;
     private boolean isOnline;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private LocalDateTime startsAt;
     private LocalDateTime endsAt;
 }

@@ -1,8 +1,10 @@
 package com.eventforge.service;
 
 import com.eventforge.dto.request.OrganisationRequest;
-import com.eventforge.dto.OrganisationResponse;
+import com.eventforge.dto.request.UpdateAccountRequest;
+import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.model.Organisation;
+import com.eventforge.model.OrganisationPriority;
 import com.eventforge.model.User;
 import com.eventforge.repository.OrganisationRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Service
@@ -20,6 +23,8 @@ public class OrganisationService {
     private final OrganisationRepository organisationRepository;
     private final ModelMapper mapper;
     private final UserService userService;
+
+    private final Utils utils;
 
     public void saveOrganisationInDb(Organisation organisation){
         organisationRepository.save(organisation);
@@ -33,21 +38,22 @@ public class OrganisationService {
     public Organisation getOrganisationByUserUsername(String username){
         return organisationRepository.findOrganisationByEmail(username);
     }
-    public void updateOrganisation(OrganisationRequest organisationRequest , String token) {
+    public void updateOrganisation(UpdateAccountRequest request, String token) {
         User currentLoggedUser = userService.getLoggedUserByToken(token);
+        Set<OrganisationPriority> organisationPriorities =utils.
+                assignOrganisationPrioritiesToOrganisation(request.getOrganisationPriorities(), request.getOptionalCategory());
         if(currentLoggedUser!=null) {
-            currentLoggedUser.setUsername(organisationRequest.getUsername());
-            currentLoggedUser.setFullName(organisationRequest.getFullName());
-            currentLoggedUser.setPhoneNumber(organisationRequest.getPhone());
+            currentLoggedUser.setFullName(request.getFullName());
+            currentLoggedUser.setPhoneNumber(request.getPhoneNumber());
             userService.saveUserInDb(currentLoggedUser);
             Organisation organisation = getOrganisationByUserUsername(currentLoggedUser.getUsername());
-            organisation.setName(organisationRequest.getName());
-            organisation.setBullstat(organisationRequest.getBullstat());
+            organisation.setName(request.getName());
+            organisation.setBullstat(request.getBullstat());
             organisation.setUser(currentLoggedUser);
-            organisation.setAddress(organisationRequest.getAddress());
-            organisation.setOrganisationPriorities(organisationRequest.getOrganisationPriorities());
-            organisation.setCharityOption(organisationRequest.getCharityOption());
-            organisation.setOrganisationPurpose(organisationRequest.getOrganisationPurpose());
+            organisation.setAddress(request.getAddress());
+            organisation.setOrganisationPriorities(organisationPriorities);
+            organisation.setCharityOption(request.getCharityOption());
+            organisation.setOrganisationPurpose(request.getOrganisationPurpose());
             organisationRepository.save(organisation);
         }
     }
