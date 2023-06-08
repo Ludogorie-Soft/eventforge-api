@@ -1,5 +1,7 @@
 package com.eventforge.exception;
 
+import com.eventforge.service.Utils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,34 +16,22 @@ import java.util.List;
 import java.util.StringJoiner;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class ExceptionHandler {
 
+    private final Utils utils;
+
     @org.springframework.web.bind.annotation.ExceptionHandler(EmailAlreadyTakenException.class)
-    public ResponseEntity<String> handleEmailAlreadyTakenException(EmailAlreadyTakenException ex)  {
+    public ResponseEntity<String> handleEmailAlreadyTakenException(EmailAlreadyTakenException ex) {
         return ResponseEntity.status(ex.getHttpStatus())
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(ex.getMessage());
     }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
-        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
-        List<ObjectError> globalErrors = ex.getBindingResult().getGlobalErrors();
 
-        StringJoiner joiner = new StringJoiner("/ ");
-        if(!globalErrors.isEmpty()){
-            for (ObjectError error : globalErrors) {
-                joiner.add(error.getObjectName() + ": " + error.getDefaultMessage());
-            }
-        }
-
-        if(!fieldErrors.isEmpty()){
-            for (FieldError error : fieldErrors) {
-                joiner.add(error.getField() + ": " + error.getDefaultMessage());
-            }
-        }
-
-
-        String errorString = joiner.toString();
+        String errorString = utils.generateErrorStringFromMethodArgumentNotValidException(ex.getGlobalErrors(), ex.getFieldErrors());
 
         return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
                 .contentType(MediaType.TEXT_PLAIN)
@@ -49,13 +39,13 @@ public class ExceptionHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(EmailConfirmationNotSentException.class)
-    public ResponseEntity<String> handleEmailConfirmationNotSentException(EmailConfirmationNotSentException ex ) {
+    public ResponseEntity<String> handleEmailConfirmationNotSentException(EmailConfirmationNotSentException ex) {
         return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
                 .contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<String> handleInvalidCredentialsException(InvalidCredentialsException ex ) {
+    public ResponseEntity<String> handleInvalidCredentialsException(InvalidCredentialsException ex) {
         return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
                 .contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
@@ -65,6 +55,7 @@ public class ExceptionHandler {
         return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
                 .contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(UserDisabledException.class)
     public ResponseEntity<String> handleUserDisabledException(UserDisabledException ex) {
         return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
@@ -72,11 +63,15 @@ public class ExceptionHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(UserLockedException.class)
-    public ResponseEntity<String> handleUserLockedException(UserLockedException ex){
+    public ResponseEntity<String> handleUserLockedException(UserLockedException ex) {
         return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
                 .contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<String> handleInvalidPasswordException(InvalidPasswordException ex) {
+        return ResponseEntity.status(ex.getHTTP_STATUS_CODE()).contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
+    }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(value = EventRequestException.class)
     private ResponseEntity<Object> handleEventRequestException(EventRequestException exception) {

@@ -16,10 +16,12 @@ public class EventEnrollment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EVENT_id")
-    private Event eventId;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
     private String phone;
     private String externalLink;
     private String email;
+
+
 }

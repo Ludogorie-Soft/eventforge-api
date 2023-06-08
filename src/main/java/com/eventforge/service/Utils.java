@@ -3,24 +3,24 @@ package com.eventforge.service;
 import com.eventforge.constants.OrganisationPriorityCategory;
 import com.eventforge.model.OrganisationPriority;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class Utils {
     private final OrganisationPriorityService organisationPriorityService;
+    private final PasswordEncoder passwordEncoder;
     public  Set<OrganisationPriority> assignOrganisationPrioritiesToOrganisation(Set<String> priorityCategories, String optionalCategory) {
         Set<OrganisationPriority> organisationPriorities = new HashSet<>();
-        OrganisationPriority newOrganisationPriority = null;
+        OrganisationPriority newOrganisationPriority;
         if (optionalCategory != null && !optionalCategory.isEmpty()) {
             newOrganisationPriority = createOrganisationPriority(optionalCategory);
-        }
-        if (newOrganisationPriority != null) {
             organisationPriorities.add(newOrganisationPriority);
         }
 
@@ -34,6 +34,25 @@ public class Utils {
         }
         return organisationPriorities;
     }
+
+    public Set<String>convertListOfOrganisationPrioritiesToString(Set<OrganisationPriority> organisationPriorityCategories){
+        Set<String> setOfOrgPriorities = new HashSet<>();
+        if(organisationPriorityCategories!= null || organisationPriorityCategories.size()>0){
+            for(OrganisationPriority priority : organisationPriorityCategories){
+                setOfOrgPriorities.add(priority.getCategory());
+            }
+        }
+        return setOfOrgPriorities;
+    }
+
+
+        public String convertStringListToString(List<String> stringList) {
+            List<String> lowercaseList = stringList.stream()
+                    .map(String::toLowerCase)
+                    .collect(Collectors.toList());
+
+            return String.join(",", lowercaseList);
+        }
 
     public OrganisationPriority createOrganisationPriority(String priority) {
         OrganisationPriority organisationPriority = null;
@@ -62,5 +81,28 @@ public class Utils {
         return result;
     }
 
+    public String generateErrorStringFromMethodArgumentNotValidException(List<ObjectError> globalErrors, List<FieldError> fieldErrors) {
+        StringJoiner joiner = new StringJoiner("/ ");
 
+        if (!globalErrors.isEmpty()) {
+            for (ObjectError error : globalErrors) {
+                joiner.add(error.getObjectName() + ": " + error.getDefaultMessage());
+            }
+        }
+
+        if (!fieldErrors.isEmpty()) {
+            for (FieldError error : fieldErrors) {
+                joiner.add(error.getField() + ": " + error.getDefaultMessage());
+            }
+        }
+
+        return joiner.toString();
+    }
+
+    public boolean isPasswordValid(String password , String hashedPassword){
+        return passwordEncoder.matches(password, hashedPassword);
+    }
+    public String encodePassword(String password){
+        return passwordEncoder.encode(password);
+    }
 }

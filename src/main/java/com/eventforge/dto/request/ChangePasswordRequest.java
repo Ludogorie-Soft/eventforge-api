@@ -12,7 +12,7 @@ import static com.eventforge.constants.regex.Regex.CREDENTIAL_CHECK_REGEX;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChangePassword {
+public class ChangePasswordRequest {
 
     private String oldPassword;
     @Pattern(regexp = CREDENTIAL_CHECK_REGEX,

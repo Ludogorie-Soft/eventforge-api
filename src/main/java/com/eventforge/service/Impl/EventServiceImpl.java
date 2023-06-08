@@ -11,6 +11,7 @@ import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
 import com.eventforge.repository.OrganisationRepository;
 import com.eventforge.service.EventService;
+import com.eventforge.service.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,8 @@ public class EventServiceImpl implements EventService {
     private final EntityManager entityManager;
     private final ResponseFactory responseFactory;
     private final EntityFactory entityFactory;
+
+    private final Utils utils;
 
 
     @Override
@@ -74,13 +77,13 @@ public class EventServiceImpl implements EventService {
     @Override
     public void updateEvent(Long eventId, EventRequest eventRequest) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено!"));
-
+        List<String> eventCategories = utils.splitStringByComma(eventRequest.getEventCategories());
         event.setName(eventRequest.getName());
         event.setDescription(eventRequest.getDescription());
         event.setAddress(eventRequest.getAddress());
 
         if (!eventRequest.getEventCategories().isEmpty()) {
-            event.setEventCategories(eventRequest.getEventCategories());
+            event.setEventCategories(eventCategories);
         }
         event.setIsOnline(eventRequest.getIsOnline());
         event.setStartsAt(eventRequest.getStartsAt());
@@ -132,10 +135,10 @@ public class EventServiceImpl implements EventService {
         return entityManager.createQuery(query).getResultList().stream().map(event -> mapper.map(event, EventResponse.class)).toList();
     }
 
-    public Event mapEventRequestToEvent(EventRequest eventRequest) {
-        Event event = Event.builder().name(eventRequest.getName()).description(eventRequest.getDescription()).address(eventRequest.getAddress()).eventCategories(eventRequest.getEventCategories()).isOnline(eventRequest.getIsOnline()).startsAt(eventRequest.getStartsAt()).endsAt(eventRequest.getEndsAt()).build();
-
-        organisationRepository.findOrganisationByName(eventRequest.getOrganisationName()).ifPresent(event::setOrganisation);
-        return event;
-    }
+//    public Event mapEventRequestToEvent(EventRequest eventRequest) {
+//        Event event = Event.builder().name(eventRequest.getName()).description(eventRequest.getDescription()).address(eventRequest.getAddress()).eventCategories(eventRequest.getEventCategories()).isOnline(eventRequest.getIsOnline()).startsAt(eventRequest.getStartsAt()).endsAt(eventRequest.getEndsAt()).build();
+//
+//        organisationRepository.findOrganisationByName(eventRequest.getOrganisationName()).ifPresent(event::setOrganisation);
+//        return event;
+//    }
 }

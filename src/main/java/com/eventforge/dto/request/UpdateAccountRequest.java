@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
@@ -21,17 +20,15 @@ import static com.eventforge.constants.regex.Regex.*;
 public class UpdateAccountRequest {
     @Size(min = 5, max = 30, message = "Името на организацията трябва да е между 5 и 30 символа!")
     private String name;
-    @Nullable
-    private MultipartFile logo;
+
     private String bullstat;
     @Nullable
-    private Set<String> organisationPriorities;
+    private Set<String> chosenPriorities;
     @Nullable
     private String optionalCategory;
     @Size (min = 15 , message = "Обоснованието трябва да е поне 15 символа!")
     private String organisationPurpose;
-    @Nullable
-    private MultipartFile backgroundCover;
+
     @Nullable
     private String address;
     @Nullable
@@ -48,4 +45,5 @@ public class UpdateAccountRequest {
     private String phoneNumber;
     @Nullable
     private String charityOption;
+    private Set<String> allPriorities;
 }

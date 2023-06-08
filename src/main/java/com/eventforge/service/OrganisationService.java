@@ -1,6 +1,5 @@
 package com.eventforge.service;
 
-import com.eventforge.dto.request.OrganisationRequest;
 import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.model.Organisation;
@@ -41,7 +40,7 @@ public class OrganisationService {
     public void updateOrganisation(UpdateAccountRequest request, String token) {
         User currentLoggedUser = userService.getLoggedUserByToken(token);
         Set<OrganisationPriority> organisationPriorities =utils.
-                assignOrganisationPrioritiesToOrganisation(request.getOrganisationPriorities(), request.getOptionalCategory());
+                assignOrganisationPrioritiesToOrganisation(request.getChosenPriorities(), request.getOptionalCategory());
         if(currentLoggedUser!=null) {
             currentLoggedUser.setFullName(request.getFullName());
             currentLoggedUser.setPhoneNumber(request.getPhoneNumber());

@@ -1,6 +1,5 @@
 package com.eventforge.factory;
 
-import com.eventforge.constants.OrganisationPriorityCategory;
 import com.eventforge.constants.Role;
 
 import com.eventforge.dto.request.EventRequest;
@@ -10,16 +9,12 @@ import com.eventforge.model.Event;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.OrganisationPriority;
 import com.eventforge.model.User;
-import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
 import com.eventforge.service.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -30,8 +25,6 @@ public class EntityFactory {
 
     private final Utils utils;
     private final UserService userService;
-
-    private final PasswordEncoder passwordEncoder;
 
     public Event createEvent(EventRequest eventRequest, String authHeader) {
         User user = userService.getLoggedUserByToken(authHeader);
@@ -73,19 +66,18 @@ public class EntityFactory {
 
 
     public User createUser(RegistrationRequest request) {
-        User user = userService.getUserByEmail(request.getUsername());
-        if (user == null) {
-            User user1 = User.builder()
+        if (userService.getUserByEmail(request.getUsername()) == null) {
+            User user = User.builder()
                     .username(request.getUsername())
-                    .password(passwordEncoder.encode(request.getPassword()))
+                    .password(utils.encodePassword(request.getPassword()))
                     .role(Role.ORGANISATION.toString())
                     .phoneNumber(request.getPhoneNumber())
                     .fullName(request.getFullName())
                     .isEnabled(false)
                     .isNonLocked(true)
                     .build();
-            userService.saveUserInDb(user1);
-            return user1;
+            userService.saveUserInDb(user);
+            return user;
         } else {
             log.warn("Неуспешна регистрация");
             throw new EmailAlreadyTakenException();
