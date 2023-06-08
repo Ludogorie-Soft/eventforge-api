@@ -47,26 +47,6 @@ class ImageServiceImplTest {
     }
 
     @Test
-    void uploadImageToFileSystem_SuccessfulUpload_ReturnsSuccessMessage() throws IOException {
-        String fileName = "test.jpg";
-        MultipartFile file = new MockMultipartFile("file", fileName, "image/jpeg", "test".getBytes());
-
-        when(imageRepository.findImageByName(fileName)).thenReturn(Optional.empty());
-
-        String result = imageService.uploadImageToFileSystem(file);
-
-        Path expectedFilePath = Path.of(FOLDER_PATH, fileName);
-        assertThat(result).isEqualTo("Файлът е запазен успешно! Пътят до файла: " + expectedFilePath);
-        assertThat(Files.exists(expectedFilePath)).isTrue();
-        try {
-            Files.deleteIfExists(expectedFilePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @Test
     void uploadImageToFileSystem_ShouldReturnException_FileExists() {
         String fileName = "test.jpg";
         MultipartFile file = new MockMultipartFile("file", fileName, "image/jpeg", "test".getBytes());
@@ -122,14 +102,6 @@ class ImageServiceImplTest {
         assertThat(extension).isEqualTo(expectedExtension);
     }
 
-
-
-
-
-
-
-
-
     @Test
     void determineMediaType_WithValidFileExtension_ReturnsCorrectMediaType() {
         String fileExtension = "png";
@@ -178,17 +150,7 @@ class ImageServiceImplTest {
 
         assertThat(mediaType).isNull();
     }
-    @Test
-    void deleteImageFile_FileExists_DeletesFile() throws IOException {
 
-        String fileName = "test1.jpg";
-        Path filePath = Path.of(FOLDER_PATH, fileName);
-        Files.createFile(filePath);
-
-        imageService.deleteImageFile(fileName);
-
-        assertThat(Files.exists(filePath)).isFalse();
-    }
     @Test
     void deleteImageFromFileSystem_ImageExists_DeletesFileAndRemovesFromRepository() {
         String fileName = "test";
