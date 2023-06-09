@@ -18,13 +18,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class ImageServiceImpl implements ImageService {
-    private static final String FOLDER_PATH = "src/main/resources/static/images/";
+    private static final String FOLDER_PATH = "static/main/resources/static/images/";
     private final ImageRepository imageRepository;
 
     @Override
@@ -36,7 +37,7 @@ public class ImageServiceImpl implements ImageService {
 
         Path filePath = Paths.get(FOLDER_PATH, fileName);
         try {
-            file.transferTo(filePath);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new GlobalException("Грешка със запазването на файла.");
         }
@@ -61,11 +62,12 @@ public class ImageServiceImpl implements ImageService {
 
         if (resource.exists()) {
             String absolutePath = resource.getURI().getPath();
-            return absolutePath.substring(absolutePath.indexOf("src/main/resources"));
+            return absolutePath.substring(absolutePath.indexOf("static/main/resources"));
         } else {
             throw new GlobalException("Файл с това име вече съществува в базата данни.");
         }
     }
+
     public ResponseEntity<Resource> downloadImageFromFileSystem(String fileName) throws IOException {
         File file = new File(FOLDER_PATH, fileName);
         Resource resource = new UrlResource(file.toURI());
