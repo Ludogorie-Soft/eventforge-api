@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -38,7 +37,6 @@ class ImageServiceImplTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.openMocks(this);
         imageService = new ImageServiceImpl(imageRepository);
     }
 
@@ -53,6 +51,7 @@ class ImageServiceImplTest {
                 .isInstanceOf(GlobalException.class)
                 .hasMessage("Файл с това име вече съществува.");
     }
+
 
     @Test
     void uploadImageToFileSystem_ShouldThrowIOException() throws IOException {

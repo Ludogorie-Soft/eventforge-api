@@ -25,7 +25,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class ImageServiceImpl implements ImageService {
-    private static final String FOLDER_PATH = "static/main/resources/static/images/";
+    private static final String FOLDER_PATH = "src/main/resources/static/images/";
     private final ImageRepository imageRepository;
 
     @Override
@@ -35,20 +35,54 @@ public class ImageServiceImpl implements ImageService {
             throw new GlobalException("Файл с това име вече съществува.");
         }
 
-        Path filePath = Paths.get(FOLDER_PATH, fileName);
+        String sanitizedFileName = null;
+        if (fileName != null) {
+            sanitizedFileName = sanitizeFileName(fileName);
+        }
+
+        Path uploadDirectory = Paths.get(FOLDER_PATH);
+        assert sanitizedFileName != null;
+        Path filePath = uploadDirectory.resolve(sanitizedFileName);
+
         try {
+            if (!Files.exists(uploadDirectory)) {
+                Files.createDirectories(uploadDirectory);
+            }
+
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new GlobalException("Грешка със запазването на файла.");
         }
 
+
         imageRepository.save(Image.builder()
-                .url(fileName)
+                .url(sanitizedFileName)
                 .uploadAt(LocalDateTime.now())
                 .type(file.getContentType())
                 .build());
 
         return "Файлът е запазен успешно! Пътят до файла: " + filePath;
+    }
+
+    private String sanitizeFileName(String fileName) {
+        String allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.";
+
+        String sanitizedFileName = fileName.replace("..", "");
+
+        StringBuilder sb = new StringBuilder();
+        for (char c : sanitizedFileName.toCharArray()) {
+            if (allowedCharacters.indexOf(c) != -1) {
+                sb.append(c);
+            }
+        }
+        sanitizedFileName = sb.toString();
+
+        int maxFileNameLength = 255;
+        if (sanitizedFileName.length() > maxFileNameLength) {
+            throw new GlobalException("Името на файла надвишава максималната дължина.");
+        }
+
+        return sanitizedFileName;
     }
 
     private boolean isFileNameExists(String fileName) {
@@ -62,7 +96,7 @@ public class ImageServiceImpl implements ImageService {
 
         if (resource.exists()) {
             String absolutePath = resource.getURI().getPath();
-            return absolutePath.substring(absolutePath.indexOf("static/main/resources"));
+            return absolutePath.substring(absolutePath.indexOf("src/main/resources"));
         } else {
             throw new GlobalException("Файл с това име вече съществува в базата данни.");
         }
