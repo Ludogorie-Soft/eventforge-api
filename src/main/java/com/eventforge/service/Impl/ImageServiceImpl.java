@@ -90,16 +90,39 @@ public class ImageServiceImpl implements ImageService {
         return imageOptional.isPresent();
     }
 
-    public String getImageAddressFromFileSystem(String fileName) throws IOException {
-        File file = new File(FOLDER_PATH, fileName);
-        Resource resource = new UrlResource(file.toURI().toURL());
+//    public String getImageAddressFromFileSystem(String fileName) throws IOException {
+//        File file = new File(FOLDER_PATH, fileName);
+//        Resource resource = new UrlResource(file.toURI().toURL());
+//
+//        if (resource.exists()) {
+//            String absolutePath = resource.getURI().getPath();
+//            return absolutePath.substring(absolutePath.indexOf("src/main/resources"));
+//        } else {
+//            throw new GlobalException("Файл с това име вече съществува в базата данни.");
+//        }
+//    }
+public String getImageAddressFromFileSystem(String fileName) throws IOException {
+    File file = getFileFromPath(fileName);
+    Resource resource = new UrlResource(file.toURI());
 
-        if (resource.exists()) {
-            String absolutePath = resource.getURI().getPath();
-            return absolutePath.substring(absolutePath.indexOf("src/main/resources"));
-        } else {
-            throw new GlobalException("Файл с това име вече съществува в базата данни.");
+    if (resource.exists()) {
+        String absolutePath = resource.getURI().getPath();
+        return absolutePath.substring(absolutePath.indexOf("src/main/resources"));
+    } else {
+        throw new GlobalException("Файл с това име вече съществува в базата данни.");
+    }
+}
+
+    protected File getFileFromPath(String fileName) throws IOException {
+        File folder = new File(FOLDER_PATH);
+        if (!folder.exists()) {
+            throw new GlobalException("Моля, проверете пътят до файла дали е верен!");
         }
+        File file = new File(folder, fileName);
+        if (!file.exists()) {
+            throw new GlobalException("Файл с такова име не съществува");
+        }
+        return file;
     }
 
     public ResponseEntity<Resource> downloadImageFromFileSystem(String fileName) throws IOException {
@@ -137,7 +160,7 @@ public class ImageServiceImpl implements ImageService {
             } else if (fileExtension.equals("jpeg") || fileExtension.equals("jpg")) {
                 return MediaType.IMAGE_JPEG;
             }
-            throw new IllegalStateException("Unexpected value: " + fileExtension);
+            throw new GlobalException("Грешно разширение на файла: " + fileExtension);
         }
         return null;
     }
@@ -161,6 +184,10 @@ public class ImageServiceImpl implements ImageService {
     protected void deleteImageFile(String fileName) {
         String filePath = FOLDER_PATH + fileName;
         Path fileToDelete = Paths.get(filePath);
+        deleteFile(fileToDelete);
+    }
+
+    protected void deleteFile(Path fileToDelete) {
         try {
             Files.deleteIfExists(fileToDelete);
         } catch (IOException e) {

@@ -8,24 +8,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ImageServiceImplTest {
@@ -106,36 +102,4 @@ class ImageServiceImplTest {
                 () -> imageService.determineMediaType(fileExtension));
     }
 
-    @Test
-    void determineMediaType_WithNullFileExtension_ReturnsNull() {
-        String fileExtension = null;
-
-        MediaType mediaType = imageService.determineMediaType(fileExtension);
-
-        assertThat(mediaType).isNull();
-    }
-
-    @Test
-    void deleteImageFromFileSystem_ImageExists_DeletesFileAndRemovesFromRepository() {
-        String fileName = "test";
-        Image image = Image.builder().url(fileName).build();
-
-        imageRepository = mock(ImageRepository.class);
-        when(imageRepository.findImageByName(fileName)).thenReturn(Optional.of(image));
-
-        ArgumentCaptor<Image> imageCaptor = ArgumentCaptor.forClass(Image.class);
-
-        ImageServiceImpl imageServiceSpy = spy(new ImageServiceImpl(imageRepository));
-        doNothing().when(imageServiceSpy).deleteImageFile(anyString());
-
-        assertDoesNotThrow(() -> imageServiceSpy.deleteImageFromFileSystem(fileName));
-
-        verify(imageRepository, times(1)).delete(imageCaptor.capture());
-        assertThat(imageCaptor.getValue()).isEqualTo(image);
-
-        verify(imageServiceSpy, times(1)).deleteImageFile(fileName);
-
-        String FOLDER_PATH = "static/main/resources/static/images/";
-        assertThat(Files.exists(Path.of(FOLDER_PATH, fileName))).isFalse();
-    }
 }

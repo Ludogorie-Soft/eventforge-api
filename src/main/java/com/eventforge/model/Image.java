@@ -31,7 +31,7 @@ public class Image {
     private String type;
     @ManyToOne
     @JoinColumn(name = "event_id")
-    private Event even;
+    private Event event;
     @ManyToOne
     @JoinColumn(name = "organisation_id")
     private Organisation organisation;
