@@ -4,6 +4,7 @@ import com.eventforge.exception.GlobalException;
 import com.eventforge.model.Image;
 import com.eventforge.repository.ImageRepository;
 import com.eventforge.service.ImageService;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -31,7 +32,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public String uploadImageToFileSystem(MultipartFile file) {
         String fileName = file.getOriginalFilename();
-        if (isFileNameExists(fileName)) {
+        if (doesFileNameExists(fileName)) {
             throw new GlobalException("Файл с това име вече съществува.");
         }
 
@@ -85,35 +86,24 @@ public class ImageServiceImpl implements ImageService {
         return sanitizedFileName;
     }
 
-    private boolean isFileNameExists(String fileName) {
+    private boolean doesFileNameExists(String fileName) {
         Optional<Image> imageOptional = imageRepository.findImageByName(fileName);
         return imageOptional.isPresent();
     }
 
-//    public String getImageAddressFromFileSystem(String fileName) throws IOException {
-//        File file = new File(FOLDER_PATH, fileName);
-//        Resource resource = new UrlResource(file.toURI().toURL());
-//
-//        if (resource.exists()) {
-//            String absolutePath = resource.getURI().getPath();
-//            return absolutePath.substring(absolutePath.indexOf("src/main/resources"));
-//        } else {
-//            throw new GlobalException("Файл с това име вече съществува в базата данни.");
-//        }
-//    }
-public String getImageAddressFromFileSystem(String fileName) throws IOException {
-    File file = getFileFromPath(fileName);
-    Resource resource = new UrlResource(file.toURI());
+    public String getImageAddressFromFileSystem(String fileName) throws IOException {
+        File file = getFileFromPath(fileName);
+        Resource resource = new UrlResource(file.toURI());
 
-    if (resource.exists()) {
-        String absolutePath = resource.getURI().getPath();
-        return absolutePath.substring(absolutePath.indexOf("src/main/resources"));
-    } else {
-        throw new GlobalException("Файл с това име вече съществува в базата данни.");
+        if (resource.exists()) {
+            String absolutePath = resource.getURI().getPath();
+            return absolutePath.substring(absolutePath.indexOf("src/main/resources"));
+        } else {
+            throw new GlobalException("Файл с това име вече съществува в базата данни.");
+        }
     }
-}
 
-    protected File getFileFromPath(String fileName) throws IOException {
+    private File getFileFromPath(String fileName) {
         File folder = new File(FOLDER_PATH);
         if (!folder.exists()) {
             throw new GlobalException("Моля, проверете пътят до файла дали е верен!");
@@ -145,6 +135,7 @@ public String getImageAddressFromFileSystem(String fileName) throws IOException 
         }
     }
 
+    @Nullable
     String getFileExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf(".");
         if (dotIndex >= 0 && dotIndex < fileName.length() - 1) {
@@ -152,7 +143,7 @@ public String getImageAddressFromFileSystem(String fileName) throws IOException 
         }
         return null;
     }
-
+    @Nullable
     MediaType determineMediaType(String fileExtension) {
         if (fileExtension != null) {
             if (fileExtension.equals("png")) {

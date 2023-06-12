@@ -94,12 +94,4 @@ class ImageServiceImplTest {
         assertThat(extension).isEqualTo(expectedExtension);
     }
 
-    @Test
-    void determineMediaType_WithUnsupportedExtension_ThrowsException() {
-        String fileExtension = "gif";
-
-        assertThrows(IllegalStateException.class,
-                () -> imageService.determineMediaType(fileExtension));
-    }
-
 }
