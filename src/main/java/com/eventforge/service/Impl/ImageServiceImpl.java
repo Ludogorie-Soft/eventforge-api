@@ -1,6 +1,6 @@
 package com.eventforge.service.Impl;
 
-import com.eventforge.exception.GlobalException;
+import com.eventforge.exception.ImageException;
 import com.eventforge.model.Image;
 import com.eventforge.repository.ImageRepository;
 import com.eventforge.service.ImageService;
@@ -33,7 +33,7 @@ public class ImageServiceImpl implements ImageService {
     public String uploadImageToFileSystem(MultipartFile file) {
         String fileName = file.getOriginalFilename();
         if (doesFileNameExists(fileName)) {
-            throw new GlobalException("Файл с това име вече съществува.");
+            throw new ImageException("Файл с това име вече съществува.");
         }
 
         String sanitizedFileName = null;
@@ -52,7 +52,7 @@ public class ImageServiceImpl implements ImageService {
 
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new GlobalException("Грешка със запазването на файла.");
+            throw new ImageException("Грешка със запазването на файла.");
         }
 
 
@@ -80,7 +80,7 @@ public class ImageServiceImpl implements ImageService {
 
         int maxFileNameLength = 255;
         if (sanitizedFileName.length() > maxFileNameLength) {
-            throw new GlobalException("Името на файла надвишава максималната дължина.");
+            throw new ImageException("Името на файла надвишава максималната дължина.");
         }
 
         return sanitizedFileName;
@@ -99,18 +99,18 @@ public class ImageServiceImpl implements ImageService {
             String absolutePath = resource.getURI().getPath();
             return absolutePath.substring(absolutePath.indexOf("src/main/resources"));
         } else {
-            throw new GlobalException("Файл с това име вече съществува в базата данни.");
+            throw new ImageException("Файл с това име вече съществува в базата данни.");
         }
     }
 
     private File getFileFromPath(String fileName) {
         File folder = new File(FOLDER_PATH);
         if (!folder.exists()) {
-            throw new GlobalException("Моля, проверете пътят до файла дали е верен!");
+            throw new ImageException("Моля, проверете пътят до файла дали е верен!");
         }
         File file = new File(folder, fileName);
         if (!file.exists()) {
-            throw new GlobalException("Файл с такова име не съществува");
+            throw new ImageException("Файл с такова име не съществува");
         }
         return file;
     }
@@ -151,7 +151,7 @@ public class ImageServiceImpl implements ImageService {
             } else if (fileExtension.equals("jpeg") || fileExtension.equals("jpg")) {
                 return MediaType.IMAGE_JPEG;
             }
-            throw new GlobalException("Грешно разширение на файла: " + fileExtension);
+            throw new ImageException("Грешно разширение на файла: " + fileExtension);
         }
         return null;
     }
@@ -164,7 +164,7 @@ public class ImageServiceImpl implements ImageService {
             deleteImageFile(fileName);
             imageRepository.delete(image);
         } else {
-            throw new GlobalException("Файлът не може да бъде открит");
+            throw new ImageException("Файлът не може да бъде открит");
         }
     }
 
@@ -182,7 +182,7 @@ public class ImageServiceImpl implements ImageService {
         try {
             Files.deleteIfExists(fileToDelete);
         } catch (IOException e) {
-            throw new GlobalException("Грешка с изтриването на файла.");
+            throw new ImageException("Грешка с изтриването на файла.");
         }
     }
 }

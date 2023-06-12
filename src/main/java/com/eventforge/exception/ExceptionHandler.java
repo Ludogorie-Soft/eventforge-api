@@ -75,6 +75,11 @@ public class ExceptionHandler {
         return ResponseEntity.status(ex.getHTTP_STATUS_CODE()).contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(ImageException.class)
+    public ResponseEntity<String>handleImageException(ImageException ex) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
+    }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(value = EventRequestException.class)
     private ResponseEntity<Object> handleEventRequestException(EventRequestException exception) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
