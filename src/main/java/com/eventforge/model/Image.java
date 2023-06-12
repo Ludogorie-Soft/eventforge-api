@@ -1,17 +1,14 @@
 package com.eventforge.model;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -34,11 +31,9 @@ public class Image {
     private String type;
     @ManyToOne
     @JoinColumn(name = "event_id")
-    @Nullable
-    private Event evenId;
+    private Event event;
     @ManyToOne
     @JoinColumn(name = "organisation_id")
-    @Nullable
-    private Organisation organisationId;
+    private Organisation organisation;
 
 }
