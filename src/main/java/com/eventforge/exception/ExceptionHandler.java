@@ -5,21 +5,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.StringJoiner;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class ExceptionHandler {
 
     private final Utils utils;
+    @org.springframework.web.bind.annotation.ExceptionHandler(DateTimeException.class)
+    public ResponseEntity<String> handleDateTimeException(DateTimeException e){
+        return ResponseEntity.status(e.getHTTP_STATUS_CODE())
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(e.getMessage());
+    }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(EmailAlreadyTakenException.class)
     public ResponseEntity<String> handleEmailAlreadyTakenException(EmailAlreadyTakenException ex) {
