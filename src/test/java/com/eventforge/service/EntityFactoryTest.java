@@ -73,8 +73,6 @@ public class EntityFactoryTest {
         // Mock interactions
         when(userService.getLoggedUserByToken(authHeader)).thenReturn(user);
         when(organisationService.getOrganisationByUserId(user.getId())).thenReturn(organisation);
-        when(utils.splitStringByComma(eventRequest.getEventCategories())).thenReturn(new ArrayList<>(List.of("Category1", "Category2")));
-
         // Invoke the method under test
         Event result = entityFactory.createEvent(eventRequest, authHeader);
 
@@ -82,7 +80,7 @@ public class EntityFactoryTest {
         assertEquals(eventRequest.getName(), result.getName());
         assertEquals(eventRequest.getDescription(), result.getDescription());
         assertEquals(eventRequest.getAddress(), result.getAddress());
-        assertEquals(new ArrayList<>(List.of("Category1", "Category2")), result.getEventCategories());
+        assertEquals(("Category1, Category2"), result.getEventCategories());
         assertEquals(organisation, result.getOrganisation());
         assertTrue(result.getIsOnline());
         assertEquals(LocalDateTime.of(2023, 1, 1, 10, 0), result.getStartsAt());
