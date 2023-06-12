@@ -33,7 +33,7 @@ public class EntityFactory {
                 .name(eventRequest.getName())
                 .description(eventRequest.getDescription())
                 .address(eventRequest.getAddress())
-                .eventCategories(utils.splitStringByComma(eventRequest.getEventCategories()))
+                .eventCategories(eventRequest.getEventCategories())
                 .organisation(organisation)
                 .isOnline(eventRequest.getIsOnline())
                 .startsAt(eventRequest.getStartsAt())

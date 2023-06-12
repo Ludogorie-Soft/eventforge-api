@@ -1,21 +1,19 @@
 package com.eventforge.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -26,8 +24,8 @@ public class Event {
     private String name;
     private String description;
     private String address;
-    private List<String> eventCategories;
-    private Double price;
+    private String eventCategories;
+    private double price;
     private Integer minAge;
     private Integer maxAge;
     @ManyToOne
@@ -38,7 +36,10 @@ public class Event {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    private Boolean isOneTime;
     private LocalDateTime startsAt;
     private LocalDateTime endsAt;
-    private Boolean isOneTime;
+
+    //for recurrence events
+    private String recurrenceDetails;
 }

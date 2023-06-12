@@ -16,6 +16,34 @@ import java.util.stream.Collectors;
 public class Utils {
     private final OrganisationPriorityService organisationPriorityService;
     private final PasswordEncoder passwordEncoder;
+
+    public String returnOrderByAscendingByDefaultIfParamNotProvided(String order){
+        if(order == null || order.isEmpty()){
+            order = "ASC"; //by default we order them by ASC
+            return order;
+        }
+        return order;
+    }
+
+    public String convertPriceToString(Double price){
+        if(price < 1){
+            return "безплатно";
+        }
+        return price + " лева";
+    }
+
+    public String convertAgeToString(Integer minAge , Integer maxAge){
+        if(minAge == 0 && maxAge == 0){
+            return "Няма ограничение за възрастта";
+        }
+        if (minAge > 0 && maxAge == 0) {
+            return "Минимална възраст: " + minAge + " години";
+        }
+        if (minAge == 0 && maxAge > 0) {
+            return "Максимална възраст: " + maxAge + " години";
+        }
+            return "Възрастов диапазон: " + minAge + " - " + maxAge + " години";
+    }
     public  Set<OrganisationPriority> assignOrganisationPrioritiesToOrganisation(Set<String> priorityCategories, String optionalCategory) {
         Set<OrganisationPriority> organisationPriorities = new HashSet<>();
         OrganisationPriority newOrganisationPriority;
@@ -37,7 +65,7 @@ public class Utils {
 
     public Set<String>convertListOfOrganisationPrioritiesToString(Set<OrganisationPriority> organisationPriorityCategories){
         Set<String> setOfOrgPriorities = new HashSet<>();
-        if(organisationPriorityCategories!= null || organisationPriorityCategories.size()>0){
+        if(organisationPriorityCategories!= null && organisationPriorityCategories.size()>0){
             for(OrganisationPriority priority : organisationPriorityCategories){
                 setOfOrgPriorities.add(priority.getCategory());
             }

@@ -5,6 +5,7 @@ import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.factory.RequestFactory;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
+import com.eventforge.repository.EventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,10 +40,13 @@ class RequestFactoryTest {
     @InjectMocks
     private RequestFactory requestFactory;
 
+    @Mock
+    private EventRepository eventRepository;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        requestFactory = new RequestFactory(userService, organisationService, utils, organisationPriorityService);
+        requestFactory = new RequestFactory(userService, organisationService, utils, organisationPriorityService , eventRepository);
 
     }
 
