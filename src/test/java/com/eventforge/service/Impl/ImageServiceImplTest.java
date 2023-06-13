@@ -77,21 +77,19 @@ class ImageServiceImplTest {
     @Test
     void getFileExtension_WithFileNameWithoutExtension_ReturnsNull() {
         String fileName = "image";
-        String expectedExtension = null;
 
         String extension = imageService.getFileExtension(fileName);
 
-        assertThat(extension).isEqualTo(expectedExtension);
+        assertThat(extension).isNull();
     }
 
     @Test
     void getFileExtension_WithEmptyFileName_ReturnsNull() {
         String fileName = "";
-        String expectedExtension = null;
 
         String extension = imageService.getFileExtension(fileName);
 
-        assertThat(extension).isEqualTo(expectedExtension);
+        assertThat(extension).isNull();
     }
 
 }

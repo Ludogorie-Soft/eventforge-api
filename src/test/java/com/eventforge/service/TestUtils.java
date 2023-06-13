@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.verification.VerificationMode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -19,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class TestUtils {
+class TestUtils {
 
     @Mock
     private OrganisationPriorityService organisationPriorityService;
@@ -34,10 +33,48 @@ public class TestUtils {
         MockitoAnnotations.openMocks(this);
         utils = new Utils(organisationPriorityService, passwordEncoder);
     }
+    @Test
+ void testReturnOrderByAscendingByDefaultIfParamNotProvided() {
+        String result1 = utils.returnOrderByAscendingByDefaultIfParamNotProvided(null);
+        assertEquals("ASC", result1, "Should return 'ASC' when order is null");
+
+        String result2 = utils.returnOrderByAscendingByDefaultIfParamNotProvided("");
+        assertEquals("ASC", result2, "Should return 'ASC' when order is empty");
+
+        String result3 = utils.returnOrderByAscendingByDefaultIfParamNotProvided("DESC");
+        assertEquals("DESC", result3, "Should return the same order when order is provided");
+
+        String result4 = utils.returnOrderByAscendingByDefaultIfParamNotProvided("ASC");
+        assertEquals("ASC", result4, "Should return the same order when order is provided");
+    }
+    @Test
+ void testConvertPriceToString() {
+        String result1 = utils.convertPriceToString(0.5);
+        assertEquals("безплатно", result1, "Should return 'безплатно' when price is less than 1");
+
+        String result2 = utils.convertPriceToString(1.0);
+        assertEquals("1.0 лева", result2, "Should return '1.0 лева' when price is equal to 1");
+
+        String result3 = utils.convertPriceToString(5.99);
+        assertEquals("5.99 лева", result3, "Should return the price with 'лева' when price is greater than 1");
+    }
+    @Test
+    void testConvertAgeToString() {
+        String result1 = utils.convertAgeToString(0, 0);
+        assertEquals("Няма ограничение за възрастта", result1, "Should return 'Няма ограничение за възрастта'");
+
+        String result2 = utils.convertAgeToString(18, 0);
+        assertEquals("Минимална възраст: 18 години", result2, "Should return 'Минимална възраст: 18 години'");
+
+        String result3 = utils.convertAgeToString(0, 65);
+        assertEquals("Максимална възраст: 65 години", result3, "Should return 'Максимална възраст: 65 години'");
+
+        String result4 = utils.convertAgeToString(18, 65);
+        assertEquals("Възрастов диапазон: 18 - 65 години", result4, "Should return 'Възрастов диапазон: 18 - 65 години'");
+    }
 
     @Test
     void testAssignOrganisationPrioritiesToOrganisation_withOptionalCategory() {
-        // Mock data
         Set<String> priorityCategories = new HashSet<>(Arrays.asList("Category1", "Category2"));
         String optionalCategory = "OptionalCategory";
 
@@ -55,10 +92,8 @@ public class TestUtils {
         when(organisationPriorityService.getOrganisationPriorityByCategory("Category1")).thenReturn(category1);
         when(organisationPriorityService.getOrganisationPriorityByCategory("Category2")).thenReturn(category2);
 
-        // Invoke the method under test
         Set<OrganisationPriority> result = utils.assignOrganisationPrioritiesToOrganisation(priorityCategories, optionalCategory);
 
-        // Verify the interactions and assertions
         verify(organisationPriorityService).getOrganisationPriorityByCategory(optionalCategory);
         verify(organisationPriorityService).saveOrganisationPriority(newOrganisationPriority);
         verify(organisationPriorityService).getOrganisationPriorityByCategory("Category1");
@@ -70,7 +105,6 @@ public class TestUtils {
 
     @Test
     void testAssignOrganisationPrioritiesToOrganisation_withoutOptionalCategory() {
-        // Mock data
         Set<String> priorityCategories = new HashSet<>(Arrays.asList("Category1", "Category2"));
 
         OrganisationPriority category1 = new OrganisationPriority("Category1");
@@ -78,10 +112,8 @@ public class TestUtils {
         when(organisationPriorityService.getOrganisationPriorityByCategory("Category1")).thenReturn(category1);
         when(organisationPriorityService.getOrganisationPriorityByCategory("Category2")).thenReturn(category2);
 
-        // Invoke the method under test
         Set<OrganisationPriority> result = utils.assignOrganisationPrioritiesToOrganisation(priorityCategories, null);
 
-        // Verify the interactions and assertions
         verify(organisationPriorityService).getOrganisationPriorityByCategory("Category1");
         verify(organisationPriorityService).getOrganisationPriorityByCategory("Category2");
         verify(organisationPriorityService, never()).saveOrganisationPriority(any(OrganisationPriority.class));
@@ -92,111 +124,82 @@ public class TestUtils {
 
     @Test
     void testConvertListOfOrganisationPrioritiesToString() {
-        // Mock data
         OrganisationPriority priority1 = new OrganisationPriority("Category1");
         OrganisationPriority priority2 = new OrganisationPriority("Category2");
         Set<OrganisationPriority> organisationPriorityCategories = new HashSet<>(Arrays.asList(priority1, priority2));
 
-        // Invoke the method under test
         Set<String> result = utils.convertListOfOrganisationPrioritiesToString(organisationPriorityCategories);
 
-        // Verify the result
         Set<String> expected = new HashSet<>(Arrays.asList("Category1", "Category2"));
         assertEquals(expected, result);
     }
 
     @Test
     void testConvertStringListToString() {
-        // Mock data
         List<String> stringList = Arrays.asList("Apple", "Banana", "Orange");
 
-        // Invoke the method under test
         String result = utils.convertStringListToString(stringList);
 
-        // Verify the result
         String expected = "apple,banana,orange";
         assertEquals(expected, result);
     }
 
     @Test
-    public void testCreateOrganisationPriority() {
-        // Arrange
+    void testCreateOrganisationPriority() {
         String priority = "somePriority";
         OrganisationPriority expectedPriority = new OrganisationPriority(priority);
 
-        // Mock the behavior of the organisationPriorityService
         when(organisationPriorityService.getOrganisationPriorityByCategory(priority)).thenReturn(null);
 
-        // Act
         OrganisationPriority result = utils.createOrganisationPriority(priority);
 
-        // Assert
         assertEquals(expectedPriority, result);
 
-        // Verify that the saveOrganisationPriority method is called
         verify(organisationPriorityService, times(1)).saveOrganisationPriority(expectedPriority);
     }
 
     @Test
-    public void testCreateOrganisationPriority_ExistingPriority() {
-        // Arrange
+    void testCreateOrganisationPriority_ExistingPriority() {
         String priority = "existingPriority";
 
-        // Mock the behavior of the organisationPriorityService
         when(organisationPriorityService.getOrganisationPriorityByCategory(priority)).thenReturn(new OrganisationPriority(priority));
-
-        // Act
         OrganisationPriority result = utils.createOrganisationPriority(priority);
 
-        // Assert
         assertNull(result);
 
-        // Verify that the saveOrganisationPriority method is not called
         verify(organisationPriorityService, never()).saveOrganisationPriority(any());
     }
 
     @Test
-    public void testSplitStringByComma() {
-        // Arrange
+    void testSplitStringByComma() {
         String input = "apple, banana, orange, apple, banana, strawberry";
-
-        // Act
         List<String> result = utils.splitStringByComma(input);
 
-        // Assert
         Set<String> expected = new HashSet<>(Arrays.asList("apple", "banana", "orange", "strawberry"));
         assertEquals(expected.size(), result.size());
         assertTrue(expected.containsAll(result));
     }
 
     @Test
-    public void testSplitStringByComma_EmptyInput() {
-        // Arrange
+    void testSplitStringByComma_EmptyInput() {
         String input = "";
 
-        // Act
         List<String> result = utils.splitStringByComma(input);
 
-        // Assert
-        List<String> expected = Arrays.asList();
-        assertEquals(expected, result);
-    }
-    @Test
-    public void testSplitStringByComma_NullInput() {
-        // Arrange
-        String input = null;
-
-        // Act
-        List<String> result = utils.splitStringByComma(input);
-
-        // Assert
-        List<String> expected = Arrays.asList();
+        List<String> expected = List.of();
         assertEquals(expected, result);
     }
 
     @Test
-    public void testGenerateErrorStringFromMethodArgumentNotValidException() {
-        // Arrange
+    void testSplitStringByComma_NullInput() {
+        List<String> result = utils.splitStringByComma(null);
+
+        List<String> expected = List.of();
+        assertEquals(expected, result);
+    }
+
+    @Test
+     void testGenerateErrorStringFromMethodArgumentNotValidException() {
         List<ObjectError> globalErrors = new ArrayList<>();
         List<FieldError> fieldErrors = new ArrayList<>();
 
@@ -206,57 +209,44 @@ public class TestUtils {
         fieldErrors.add(new FieldError("field1", "field1", "Field error message 1"));
         fieldErrors.add(new FieldError("field2", "field2", "Field error message 2"));
 
-        // Act
         String result = utils.generateErrorStringFromMethodArgumentNotValidException(globalErrors, fieldErrors);
 
-        // Assert
         String expected = "object1: Global error message 1/ object2: Global error message 2/ field1: Field error message 1/ field2: Field error message 2";
         assertEquals(expected, result);
     }
 
     @Test
-    public void testGenerateErrorStringFromMethodArgumentNotValidException_EmptyErrors() {
-        // Arrange
+     void testGenerateErrorStringFromMethodArgumentNotValidException_EmptyErrors() {
         List<ObjectError> globalErrors = new ArrayList<>();
         List<FieldError> fieldErrors = new ArrayList<>();
 
-        // Act
         String result = utils.generateErrorStringFromMethodArgumentNotValidException(globalErrors, fieldErrors);
-
-        // Assert
         assertEquals("", result);
     }
 
     @Test
-    public void testGenerateErrorStringFromMethodArgumentNotValidException_OnlyGlobalErrors() {
-        // Arrange
+    void testGenerateErrorStringFromMethodArgumentNotValidException_OnlyGlobalErrors() {
         List<ObjectError> globalErrors = new ArrayList<>();
         List<FieldError> fieldErrors = new ArrayList<>();
 
         globalErrors.add(new ObjectError("object1", "Global error message 1"));
         globalErrors.add(new ObjectError("object2", "Global error message 2"));
-
-        // Act
         String result = utils.generateErrorStringFromMethodArgumentNotValidException(globalErrors, fieldErrors);
 
-        // Assert
         String expected = "object1: Global error message 1/ object2: Global error message 2";
         assertEquals(expected, result);
     }
 
     @Test
-    public void testGenerateErrorStringFromMethodArgumentNotValidException_OnlyFieldErrors() {
-        // Arrange
+     void testGenerateErrorStringFromMethodArgumentNotValidException_OnlyFieldErrors() {
         List<ObjectError> globalErrors = new ArrayList<>();
         List<FieldError> fieldErrors = new ArrayList<>();
 
         fieldErrors.add(new FieldError("field1", "field1", "Field error message 1"));
         fieldErrors.add(new FieldError("field2", "field2", "Field error message 2"));
 
-        // Act
         String result = utils.generateErrorStringFromMethodArgumentNotValidException(globalErrors, fieldErrors);
 
-        // Assert
         String expected = "field1: Field error message 1/ field2: Field error message 2";
         assertEquals(expected, result);
     }
