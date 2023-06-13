@@ -59,7 +59,7 @@ public class OrganisationController {
         return ResponseEntity.ok(organisationService.getOrgByName(name));
     }
 
-    @GetMapping("/showAllEvents")
+    @GetMapping("/show-my-events")
     public ResponseEntity<EventResponseContainer> getAllEventsByOrganisation(@RequestHeader(AUTHORIZATION) String authHeader) {
         List<OneTimeEventResponse> oneTimeEvents = eventService.getAllOneTimeEventsByUserId(authHeader);
         List<RecurrenceEventResponse> recurrenceEvents = eventService.getAllRecurrenceEventsByUserId(authHeader);
@@ -67,7 +67,7 @@ public class OrganisationController {
         return new ResponseEntity<>(eventResponseContainer, HttpStatus.OK);
     }
 
-    @GetMapping("/getEventsByName")
+    @GetMapping("/get-my-events-by-name")
     public ResponseEntity<EventResponseContainer> getEventsByNameAndByOrganisation(@RequestHeader(AUTHORIZATION) String authHeader,
                                                                   @RequestParam(value = "oneTimeEventName" ,required = false)String oneTimeEventName,
                                                                   @RequestParam(value = "recurrenceEventName" ,required = false)String recurrenceEventName){
@@ -76,9 +76,12 @@ public class OrganisationController {
         EventResponseContainer eventResponseContainer = new EventResponseContainer(oneTimeEventsByName , recurrenceEventsByNames);
         return new ResponseEntity<>(eventResponseContainer , HttpStatus.OK);
     }
-
-    @PostMapping("/create-event")
-    public ResponseEntity<String> createEvent(@RequestBody EventRequest eventRequest, @RequestHeader(AUTHORIZATION) String authHeader) {
+    @GetMapping("/create-event")
+    public ResponseEntity<EventRequest> getEventRequest(@RequestHeader(AUTHORIZATION)String authHeader){
+        return new ResponseEntity<>(new EventRequest() ,HttpStatus.OK);
+    }
+    @PostMapping("create-event")
+    public ResponseEntity<String> submitCreatedEvent(@RequestBody EventRequest eventRequest, @RequestHeader(AUTHORIZATION) String authHeader) {
         entityFactory.createEvent(eventRequest , authHeader);
         return new ResponseEntity<>("Успешно създано събитие", HttpStatus.CREATED);
     }
@@ -88,7 +91,7 @@ public class OrganisationController {
         return new ResponseEntity<>(requestFactory.createEventRequestForUpdateOperation(id) , HttpStatus.CREATED);
     }
     @PutMapping("update/{id}")
-    public ResponseEntity<String> updateEventByOrganisation(@PathVariable("id") Long id,
+    public ResponseEntity<String> updateEventByOrganisation(@RequestHeader(AUTHORIZATION)String authHeader  ,@PathVariable("id") Long id,
                                               @Valid @RequestBody EventRequest eventRequest) {
         eventService.updateEvent(id, eventRequest);
         return new ResponseEntity<>("Всички промени са извършени успешно", HttpStatus.OK);

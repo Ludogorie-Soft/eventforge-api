@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/api/one-time-events")
+@RequestMapping("/api/v1/one-time-events")
 public class OneTimeEventController {
 
     private final EventService eventService;
