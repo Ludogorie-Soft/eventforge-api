@@ -1,7 +1,7 @@
 package com.eventforge.factory;
 
+import com.eventforge.constants.ImageType;
 import com.eventforge.constants.Role;
-
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.exception.EmailAlreadyTakenException;
@@ -9,12 +9,15 @@ import com.eventforge.model.Event;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.OrganisationPriority;
 import com.eventforge.model.User;
+import com.eventforge.service.Impl.EventServiceImpl;
+import com.eventforge.service.Impl.ImageServiceImpl;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
 import com.eventforge.service.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.util.Set;
 
 @Service
@@ -26,10 +29,15 @@ public class EntityFactory {
     private final Utils utils;
     private final UserService userService;
 
+    private final EventServiceImpl eventService;
+
+    private final ImageServiceImpl imageService;
+
+
     public Event createEvent(EventRequest eventRequest, String authHeader) {
         User user = userService.getLoggedUserByToken(authHeader);
         Organisation organisation = organisationService.getOrganisationByUserId(user.getId());
-        return Event.builder()
+        Event event = Event.builder()
                 .name(eventRequest.getName())
                 .description(eventRequest.getDescription())
                 .address(eventRequest.getAddress())
@@ -39,13 +47,15 @@ public class EntityFactory {
                 .startsAt(eventRequest.getStartsAt())
                 .endsAt(eventRequest.getEndsAt())
                 .build();
-
+        eventService.saveEvent(event);
+        imageService.uploadImageToFileSystem(eventRequest.getImage(),ImageType.EVENT_PICTURE ,null, event);
+        return event;
     }
 
 
     public User createOrganisation(RegistrationRequest request) {
         User user = createUser(request);
-        Set<OrganisationPriority> organisationPriorities =utils.
+        Set<OrganisationPriority> organisationPriorities = utils.
                 assignOrganisationPrioritiesToOrganisation(request.getOrganisationPriorities(), request.getOptionalCategory());
 
         Organisation org = Organisation.builder()
@@ -61,6 +71,8 @@ public class EntityFactory {
                 .build();
 
         organisationService.saveOrganisationInDb(org);
+        imageService.uploadImageToFileSystem(request.getLogo(), ImageType.LOGO, org , null);
+        imageService.uploadImageToFileSystem(request.getBackgroundCover(),ImageType.COVER , org , null);
         return user;
     }
 

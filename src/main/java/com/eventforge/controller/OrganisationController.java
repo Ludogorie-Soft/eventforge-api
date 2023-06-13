@@ -7,6 +7,7 @@ import com.eventforge.dto.response.container.EventResponseContainer;
 import com.eventforge.dto.response.OneTimeEventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.RecurrenceEventResponse;
+import com.eventforge.factory.EntityFactory;
 import com.eventforge.factory.RequestFactory;
 import com.eventforge.service.Impl.EventServiceImpl;
 import com.eventforge.service.OrganisationService;
@@ -28,6 +29,8 @@ public class OrganisationController {
     private final UserService userService;
     private final OrganisationService organisationService;
     private final RequestFactory requestFactory;
+
+    private final EntityFactory entityFactory;
 
     private final EventServiceImpl eventService;
 
@@ -76,7 +79,7 @@ public class OrganisationController {
 
     @PostMapping("/create-event")
     public ResponseEntity<String> createEvent(@RequestBody EventRequest eventRequest, @RequestHeader(AUTHORIZATION) String authHeader) {
-        eventService.saveEvent(eventRequest, authHeader);
+        entityFactory.createEvent(eventRequest , authHeader);
         return new ResponseEntity<>("Успешно създано събитие", HttpStatus.CREATED);
     }
 

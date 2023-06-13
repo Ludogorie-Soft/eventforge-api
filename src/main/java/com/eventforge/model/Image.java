@@ -1,5 +1,6 @@
 package com.eventforge.model;
 
+import com.eventforge.constants.ImageType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,8 +28,8 @@ public class Image {
 
     @UpdateTimestamp
     private LocalDateTime updateAt;
-
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private ImageType type;
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;

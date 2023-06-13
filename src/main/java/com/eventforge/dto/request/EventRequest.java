@@ -2,6 +2,7 @@ package com.eventforge.dto.request;
 
 import com.eventforge.annotation.AgeBoundary;
 import com.eventforge.annotation.DateTimeOrder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ import static com.eventforge.constants.regex.Regex.IMAGE_PATTERN;
 @AgeBoundary
 @DateTimeOrder
 public class EventRequest {
+
     @NotNull(message = "Моля прикачете снимка към събитието")
     @Size(max = 5 * 1024 * 1024, message = "Снимката не може да надвишата повече от 5MB.")
     @Pattern(regexp = IMAGE_PATTERN, message = "Файлът трябва да поддържа (JPG, JPEG, PNG, or GIF) формати.")

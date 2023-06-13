@@ -6,7 +6,6 @@ import com.eventforge.dto.response.OneTimeEventResponse;
 import com.eventforge.dto.response.RecurrenceEventResponse;
 import com.eventforge.exception.DateTimeException;
 import com.eventforge.exception.EventRequestException;
-import com.eventforge.factory.EntityFactory;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
 import com.eventforge.model.Organisation;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +35,6 @@ public class EventServiceImpl implements EventService {
     private final ModelMapper mapper;
     private final EntityManager entityManager;
     private final ResponseFactory responseFactory;
-    private final EntityFactory entityFactory;
 
     private final Utils utils;
 
@@ -97,8 +94,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void saveEvent(EventRequest eventRequest, String authHeader) {
-        Event event = entityFactory.createEvent(eventRequest, authHeader);
+    public void saveEvent(Event event) {
         eventRepository.save(event);
     }
 

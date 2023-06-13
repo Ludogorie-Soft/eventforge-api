@@ -6,9 +6,9 @@ import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.factory.EntityFactory;
 import com.eventforge.model.Event;
 import com.eventforge.model.Organisation;
-import com.eventforge.model.OrganisationPriority;
 import com.eventforge.model.User;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import com.eventforge.service.Impl.EventServiceImpl;
+import com.eventforge.service.Impl.ImageServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,15 +18,11 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class EntityFactoryTest {
@@ -39,13 +35,18 @@ public class EntityFactoryTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private  EventServiceImpl eventService;
+    @Mock
+    private  ImageServiceImpl imageService;
+
     @InjectMocks
     private EntityFactory entityFactory;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        entityFactory = new EntityFactory(organisationService ,utils ,userService);
+        entityFactory = new EntityFactory(organisationService ,utils ,userService , eventService , imageService);
     }
 
     @Test

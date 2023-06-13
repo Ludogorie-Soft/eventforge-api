@@ -4,6 +4,7 @@ import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.response.OneTimeEventResponse;
 import com.eventforge.dto.response.RecurrenceEventResponse;
+import com.eventforge.model.Event;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface EventService {
 
     List<RecurrenceEventResponse> getAllExpiredRecurrenceEvents(String order);
 
-    void saveEvent(EventRequest eventRequest , String authHeader);
+    void saveEvent(Event event);
 
     OneTimeEventResponse getEventById(Long eventId);
     List<OneTimeEventResponse> getOneTimeEventsByNameByUserId(String token, String name);

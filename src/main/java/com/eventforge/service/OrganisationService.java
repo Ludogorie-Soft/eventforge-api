@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 import java.util.Set;
 
@@ -54,6 +55,7 @@ public class OrganisationService {
             organisation.setCharityOption(request.getCharityOption());
             organisation.setOrganisationPurpose(request.getOrganisationPurpose());
             organisationRepository.save(organisation);
+            log.info("User with email {} successfully updated his account settings" , currentLoggedUser.getUsername() );
         }
     }
     public OrganisationResponse getOrganisationById(Long organisationId) {

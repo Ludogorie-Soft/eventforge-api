@@ -1,7 +1,10 @@
 package com.eventforge.service.Impl;
 
+import com.eventforge.constants.ImageType;
 import com.eventforge.exception.ImageException;
+import com.eventforge.model.Event;
 import com.eventforge.model.Image;
+import com.eventforge.model.Organisation;
 import com.eventforge.repository.ImageRepository;
 import com.eventforge.service.ImageService;
 import jakarta.annotation.Nullable;
@@ -30,7 +33,7 @@ public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
 
     @Override
-    public String uploadImageToFileSystem(MultipartFile file) {
+    public void uploadImageToFileSystem(MultipartFile file , ImageType imageType , Organisation organisation , Event event) {
         String fileName = file.getOriginalFilename();
         if (doesFileNameExists(fileName)) {
             throw new ImageException("Файл с това име вече съществува.");
@@ -55,14 +58,33 @@ public class ImageServiceImpl implements ImageService {
             throw new ImageException("Грешка със запазването на файла.");
         }
 
+        if(organisation!=null && (imageType!=null && imageType.equals(ImageType.LOGO))){
+            imageRepository.save(Image.builder()
+                    .url(sanitizedFileName)
+                    .uploadAt(LocalDateTime.now())
+                    .type(imageType)
+                            .organisation(organisation)
+                    .build());
+        }
+        if(organisation != null && (imageType!=null && imageType.equals(ImageType.COVER))){
+            imageRepository.save(Image.builder()
+                    .url(sanitizedFileName)
+                    .uploadAt(LocalDateTime.now())
+                    .type(imageType)
+                    .organisation(organisation)
+                    .build());
+        }
 
-        imageRepository.save(Image.builder()
-                .url(sanitizedFileName)
-                .uploadAt(LocalDateTime.now())
-                .type(file.getContentType())
-                .build());
+        if(event!=null && (imageType!=null && imageType.equals(ImageType.EVENT_PICTURE))){
+            imageRepository.save(Image.builder()
+                    .url(sanitizedFileName)
+                    .uploadAt(LocalDateTime.now())
+                    .type(imageType)
+                    .event(event)
+                    .build());
+        }
 
-        return "Файлът е запазен успешно! Пътят до файла: " + filePath;
+
     }
 
     private String sanitizeFileName(String fileName) {

@@ -1,6 +1,7 @@
 package com.eventforge.service.Impl;
 
-import com.eventforge.exception.GlobalException;
+
+import com.eventforge.exception.ImageException;
 import com.eventforge.model.Image;
 import com.eventforge.repository.ImageRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +20,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,8 +43,8 @@ class ImageServiceImplTest {
 
         when(imageRepository.findImageByName(fileName)).thenReturn(Optional.of(new Image()));
 
-        assertThatThrownBy(() -> imageService.uploadImageToFileSystem(file))
-                .isInstanceOf(GlobalException.class)
+        assertThatThrownBy(() -> imageService.uploadImageToFileSystem(file ,null , null , null))
+                .isInstanceOf(ImageException.class)
                 .hasMessage("Файл с това име вече съществува.");
     }
 
@@ -58,8 +58,8 @@ class ImageServiceImplTest {
         when(imageRepository.findImageByName(fileName)).thenReturn(Optional.empty());
         when(file.getInputStream()).thenThrow(IOException.class);
 
-        assertThatThrownBy(() -> imageService.uploadImageToFileSystem(file))
-                .isInstanceOf(GlobalException.class)
+        assertThatThrownBy(() -> imageService.uploadImageToFileSystem(file , null , null , null))
+                .isInstanceOf(ImageException.class)
                 .hasMessage("Грешка със запазването на файла.");
     }
 
