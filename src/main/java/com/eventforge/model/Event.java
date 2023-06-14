@@ -1,15 +1,13 @@
 package com.eventforge.model;
 
-import jakarta.annotation.Nullable;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 
 @Entity
 @Getter
@@ -37,7 +35,10 @@ public class Event {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
     private Boolean isOneTime;
+    @DateTimeFormat(pattern ="dd-MM-yyyy HH:mm" ,iso = DateTimeFormat.ISO.DATE_TIME)
+
     private LocalDateTime startsAt;
+    @DateTimeFormat(pattern ="dd-MM-yyyy HH:mm" ,iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endsAt;
 
     //for recurrence events
