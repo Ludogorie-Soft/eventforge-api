@@ -190,17 +190,17 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-    protected Optional<Image> getImageByName(String fileName) {
+    Optional<Image> getImageByName(String fileName) {
         return imageRepository.findImageByName(fileName);
     }
 
-    protected void deleteImageFile(String fileName) {
+    void deleteImageFile(String fileName) {
         String filePath = FOLDER_PATH + fileName;
         Path fileToDelete = Paths.get(filePath);
         deleteFile(fileToDelete);
     }
 
-    protected void deleteFile(Path fileToDelete) {
+    void deleteFile(Path fileToDelete) {
         try {
             Files.deleteIfExists(fileToDelete);
         } catch (IOException e) {
