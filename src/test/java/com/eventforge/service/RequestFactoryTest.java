@@ -13,12 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,13 +46,11 @@ class RequestFactoryTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        requestFactory = new RequestFactory(userService, organisationService, utils, organisationPriorityService , eventRepository);
-
+        requestFactory = new RequestFactory(userService, organisationService, utils, organisationPriorityService, eventRepository);
     }
 
     @Test
     void testCreateUpdateAccountRequestThenReturnUpdateAccountRequest() {
-        // Mock data
         String token = "exampleToken";
         User user = new User();
         user.setId(1L);
@@ -65,13 +63,11 @@ class RequestFactoryTest {
         allPriorities.add("Priority1");
         allPriorities.add("Priority2");
 
-        // Mock interactions
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
         when(organisationService.getOrganisationByUserId(user.getId())).thenReturn(organisation);
         when(utils.convertListOfOrganisationPrioritiesToString(organisation.getOrganisationPriorities())).thenReturn(chosenPriorities);
         when(organisationPriorityService.getAllPriorityCategories()).thenReturn(allPriorities);
 
-        // Create expected UpdateAccountRequest
         UpdateAccountRequest expectedRequest = UpdateAccountRequest.builder()
                 .name(organisation.getName())
                 .bullstat(organisation.getBullstat())
@@ -86,34 +82,24 @@ class RequestFactoryTest {
                 .allPriorities(allPriorities)
                 .build();
 
-        // Invoke the method under test
         UpdateAccountRequest result = requestFactory.createUpdateAccountRequest(token);
 
-        // Verify the interactions and assertions
         verify(organisationService).getOrganisationByUserId(user.getId());
         verify(utils).convertListOfOrganisationPrioritiesToString(organisation.getOrganisationPriorities());
         verify(organisationPriorityService).getAllPriorityCategories();
 
         assertEquals(expectedRequest, result);
     }
+
     @Test
     void testCreateUpdateAccountRequestThenReturnNull() {
-        // Mock data
-       String token = "tokenExample";
-        User user = null;
+        String token = "tokenExample";
 
+        when(userService.getLoggedUserByToken(token)).thenReturn(null);
 
-        // Mock interactions
-        when(userService.getLoggedUserByToken(token)).thenReturn(user);
-
-
-        // Create expected UpdateAccountRequest
-        UpdateAccountRequest expectedRequest = null;
-
-        // Invoke the method under test
         UpdateAccountRequest result = requestFactory.createUpdateAccountRequest(token);
 
-        assertEquals(expectedRequest, result);
+        assertNull(result);
     }
 }
 
