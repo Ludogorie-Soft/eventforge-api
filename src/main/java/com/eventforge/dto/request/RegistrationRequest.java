@@ -27,6 +27,8 @@ public class RegistrationRequest {
     @Size(min = 5, max = 30, message = "Името на организацията трябва да е между 5 и 30 символа!")
     private String name;
     @Nullable
+    @Size(max = 5 * 1024 * 1024, message = "Снимката не може да надвишата повече от 5MB.")
+    @Pattern(regexp = IMAGE_PATTERN, message = "Файлът трябва да поддържа (JPG, JPEG, PNG, or GIF) формати.")
     private MultipartFile logo;
     private String bullstat;
     @Nullable
@@ -36,6 +38,8 @@ public class RegistrationRequest {
     @Size (min = 15 , message = "Обоснованието трябва да е поне 15 символа!")
     private String organisationPurpose;
     @Nullable
+    @Size(max = 5 * 1024 * 1024, message = "Снимката не може да надвишата повече от 5MB.")
+    @Pattern(regexp = IMAGE_PATTERN, message = "Файлът трябва да поддържа (JPG, JPEG, PNG, or GIF) формати.")
     private MultipartFile backgroundCover;
     @Nullable
     private String address;

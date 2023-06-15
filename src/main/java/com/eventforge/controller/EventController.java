@@ -1,7 +1,6 @@
 package com.eventforge.controller;
 
 import com.eventforge.dto.request.CriteriaFilterRequest;
-import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.response.OneTimeEventResponse;
 import com.eventforge.service.EventService;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +14,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/events")
 public class EventController {
-    private static final String AUTHORIZATION = "Authorization";
     private final EventService eventService;
 
 
-    @GetMapping("/filter-by-criteria")
+    @PostMapping("/filter-by-criteria")
     public ResponseEntity<List<?>>getEventsByCriteria(@RequestBody CriteriaFilterRequest filterRequest){
         return new ResponseEntity<>(eventService.filterEventsByCriteria(filterRequest), HttpStatus.OK);
     }
@@ -29,8 +27,5 @@ public class EventController {
     public ResponseEntity<OneTimeEventResponse> getEvent(@PathVariable("eventId") Long uuid) {
         return ResponseEntity.ok(eventService.getEventById(uuid));
     }
-
-
-
 
 }
