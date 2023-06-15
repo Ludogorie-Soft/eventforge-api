@@ -37,7 +37,8 @@ public class UserService {
     }
 
     public User getLoggedUserByToken(String token){
-        String username = jwtService.extractUsernameFromToken(token);
+        String extractedTokenFromHeader = jwtService.extractTokenValueFromHeader(token);
+        String username = jwtService.extractUsernameFromToken(extractedTokenFromHeader);
         return getUserByEmail(username);
     }
 

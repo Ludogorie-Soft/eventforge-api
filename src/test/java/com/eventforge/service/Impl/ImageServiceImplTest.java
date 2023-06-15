@@ -4,6 +4,8 @@ package com.eventforge.service.Impl;
 import com.eventforge.exception.ImageException;
 import com.eventforge.model.Image;
 import com.eventforge.repository.ImageRepository;
+import com.eventforge.service.OrganisationService;
+import com.eventforge.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,13 +29,20 @@ import static org.mockito.Mockito.when;
 class ImageServiceImplTest {
     @Mock
     private ImageRepository imageRepository;
+    @Mock
+    private EventServiceImpl eventService;
+    @Mock
+    private OrganisationService organisationService;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private ImageServiceImpl imageService;
 
     @BeforeEach
     public void setup() {
-        imageService = new ImageServiceImpl(imageRepository);
+        imageService = new ImageServiceImpl(imageRepository , userService , organisationService , eventService);
     }
 
     @Test
@@ -41,7 +50,7 @@ class ImageServiceImplTest {
         String fileName = "test.jpg";
         MultipartFile file = new MockMultipartFile("file", fileName, "image/jpeg", "test".getBytes());
 
-        when(imageRepository.findImageByName(fileName)).thenReturn(Optional.of(new Image()));
+        when(imageRepository.findImageByUrl(fileName)).thenReturn(Optional.of(new Image()));
 
         assertThatThrownBy(() -> imageService.uploadImageToFileSystem(file ,null , null , null))
                 .isInstanceOf(ImageException.class)
@@ -55,7 +64,7 @@ class ImageServiceImplTest {
         MultipartFile file = mock(MultipartFile.class);
         when(file.getOriginalFilename()).thenReturn(fileName);
 
-        when(imageRepository.findImageByName(fileName)).thenReturn(Optional.empty());
+        when(imageRepository.findImageByUrl(fileName)).thenReturn(Optional.empty());
         when(file.getInputStream()).thenThrow(IOException.class);
 
         assertThatThrownBy(() -> imageService.uploadImageToFileSystem(file , null , null , null))

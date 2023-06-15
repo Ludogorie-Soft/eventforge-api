@@ -22,13 +22,13 @@ public class ResponseFactory {
     private final ImageRepository imageRepository;
 
     public OrganisationResponse buildOrganisationResponse(Organisation org){
-        String logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
-        String background = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
+        Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
+        Image background = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
         Set<String> orgPriorities = utils.convertListOfOrganisationPrioritiesToString(org.getOrganisationPriorities());
         return  OrganisationResponse.builder().
                 orgId(org.getId())
-                .logo(logo)
-                .background(background)
+                .logo(logo.getUrl())
+                .background(background.getUrl())
                 .name(org.getName())
                 .bullstat(org.getBullstat())
                 .username(org.getUser().getUsername())

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +44,8 @@ public class OrganisationService {
     public Organisation getOrganisationByUserUsername(String username){
         return organisationRepository.findOrganisationByEmail(username);
     }
+
+
     public void updateOrganisation(UpdateAccountRequest request, String token) {
         User currentLoggedUser = userService.getLoggedUserByToken(token);
         Set<OrganisationPriority> organisationPriorities =utils.
