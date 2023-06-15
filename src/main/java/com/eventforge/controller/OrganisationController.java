@@ -9,8 +9,6 @@ import com.eventforge.dto.response.RecurrenceEventResponse;
 import com.eventforge.dto.response.container.EventResponseContainer;
 import com.eventforge.factory.EntityFactory;
 import com.eventforge.factory.RequestFactory;
-import com.eventforge.model.Image;
-import com.eventforge.repository.ImageRepository;
 import com.eventforge.service.Impl.EventServiceImpl;
 import com.eventforge.service.Impl.ImageServiceImpl;
 import com.eventforge.service.OrganisationService;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,7 +37,7 @@ public class OrganisationController {
     private final EventServiceImpl eventService;
 
     private final ImageServiceImpl imageService;
-    
+
 
     @PostMapping("/logo-upload")
     public ResponseEntity<String> updateLogo(@RequestHeader(AUTHORIZATION)String authHeader,@RequestParam("file") @Valid MultipartFile image){
