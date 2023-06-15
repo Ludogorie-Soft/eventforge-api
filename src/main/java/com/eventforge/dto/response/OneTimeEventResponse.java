@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class OneTimeEventResponse {
     private Long id;
-//    private String image;
+    private Long imageId;
+    private String imageUrl;
     private String name;
     private String description;
     private String address;

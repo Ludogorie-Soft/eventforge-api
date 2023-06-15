@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -37,6 +38,10 @@ public class EventServiceImpl implements EventService {
     private final ResponseFactory responseFactory;
 
     private final Utils utils;
+
+    public Optional<Event> findEventById(Long id){
+        return eventRepository.findById(id);
+    }
 
 
     @Override

@@ -1,7 +1,6 @@
 package com.eventforge.controller;
 
 import com.eventforge.model.User;
-import com.eventforge.security.jwt.JWTService;
 import com.eventforge.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +14,12 @@ public class ProbController {
 
     private final UserService userService;
 
-    private final JWTService jwtService;
 
     private static final String AUTHORIZATION = "Authorization";
     @GetMapping("/proba")
     public ResponseEntity<String> proba(@RequestHeader(AUTHORIZATION) String authorization) {
 
-        User user = userService.getLoggedUserByToken(jwtService.extractTokenValueFromHeader(authorization));
+        User user = userService.getLoggedUserByToken(authorization);
 
         return ResponseEntity.ok().body(user.getUsername());
     }

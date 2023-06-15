@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 @Repository
@@ -18,4 +19,6 @@ public interface OrganisationRepository extends JpaRepository<Organisation , Lon
     @Query("SELECT o FROM Organisation o WHERE o.user.id = :userId")
     Organisation findOrganisationByUserId(Long userId);
 
+    @Query("SELECT o FROM Organisation o WHERE o.user.isEnabled = true AND o.user.isApprovedByAdmin = true AND o.user.isNonLocked = true")
+    List<Organisation> findAllOrganisations();
 }
