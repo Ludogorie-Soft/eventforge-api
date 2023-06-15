@@ -2,6 +2,7 @@ package com.eventforge.service;
 
 import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.dto.response.OrganisationResponse;
+import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.OrganisationPriority;
 import com.eventforge.model.User;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,6 +25,7 @@ public class OrganisationService {
     private final OrganisationRepository organisationRepository;
     private final ModelMapper mapper;
     private final UserService userService;
+    private final ResponseFactory responseFactory;
 
     private final Utils utils;
 
@@ -30,7 +33,9 @@ public class OrganisationService {
         organisationRepository.save(organisation);
         log.info("Успешна регистрация");
     }
-
+    public List<OrganisationResponse> getAllOrganisations(){
+        return organisationRepository.findAllOrganisations().stream().map(responseFactory::buildOrganisationResponse).toList();
+    }
 
     public Organisation getOrganisationByUserId(Long userId){
         return organisationRepository.findOrganisationByUserId(userId);

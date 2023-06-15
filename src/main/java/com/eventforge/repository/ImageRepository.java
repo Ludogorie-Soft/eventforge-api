@@ -11,4 +11,10 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     Optional<Image> findByUrl(String fileName);
     @Query("SELECT i FROM Image i WHERE i.url = :fileName")
     Optional<Image> findImageByName(String fileName);
+
+    @Query("SELECT i.url FROM Image i WHERE i.organisation.id = :id AND i.type = 'LOGO' ")
+     String findOrganisationLogoByOrgId(Long id);
+
+    @Query("SELECT i.url FROM Image i WHERE i.organisation.id = :id AND i.type = 'COVER'")
+     String findOrganisationCoverPictureByOrgId(Long id);
 }

@@ -1,17 +1,46 @@
 package com.eventforge.factory;
 
 import com.eventforge.dto.response.OneTimeEventResponse;
+import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.RecurrenceEventResponse;
 import com.eventforge.model.Event;
+import com.eventforge.model.Image;
+import com.eventforge.model.Organisation;
+import com.eventforge.repository.ImageRepository;
 import com.eventforge.service.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class ResponseFactory {
 
     private final Utils utils;
+
+    private final ImageRepository imageRepository;
+
+    public OrganisationResponse buildOrganisationResponse(Organisation org){
+        String logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
+        String background = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
+        Set<String> orgPriorities = utils.convertListOfOrganisationPrioritiesToString(org.getOrganisationPriorities());
+        return  OrganisationResponse.builder().
+                orgId(org.getId())
+                .logo(logo)
+                .background(background)
+                .name(org.getName())
+                .bullstat(org.getBullstat())
+                .username(org.getUser().getUsername())
+                .phone(org.getUser().getPhoneNumber())
+                .address(org.getAddress())
+                .charityOption(org.getCharityOption())
+                .organisationPurpose(org.getOrganisationPurpose())
+                .organisationPriorities(orgPriorities)
+                .registeredAt(org.getRegisteredAt())
+                .updatedAt(org.getUpdatedAt())
+                .build();
+    }
 
     public OneTimeEventResponse buildOneTimeEventResponse(Event event) {
 //        String eventCategories = utils.convertStringListToString(event.getEventCategories());
