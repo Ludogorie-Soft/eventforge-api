@@ -7,8 +7,9 @@ import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
 import com.eventforge.security.jwt.JWTService;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,9 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Getter
+@Setter
 @Slf4j
-@Data
 public class UserService {
 
     private final UserRepository userRepository;
@@ -36,7 +38,7 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public User getLoggedUserByToken(String token){
+    public User getLoggedUserByToken(String token) {
         String extractedTokenFromHeader = jwtService.extractTokenValueFromHeader(token);
         String username = jwtService.extractUsernameFromToken(extractedTokenFromHeader);
         return getUserByEmail(username);
@@ -56,15 +58,16 @@ public class UserService {
         VerificationToken verificationToken = new VerificationToken(token, theUser);
         emailVerificationTokenService.saveVerificationToken(verificationToken);
     }
-    public String changeAccountPassword(String token , ChangePasswordRequest request){
+
+    public String changeAccountPassword(String token, ChangePasswordRequest request) {
         User user = getLoggedUserByToken(token);
-        if(user != null){
-            if (!utils.isPasswordValid(request.getOldPassword() , user.getPassword())) {
-                log.info("Unsuccessful attempt to change the password for user" +user.getUsername());
+        if (user != null) {
+            if (!utils.isPasswordValid(request.getOldPassword(), user.getPassword())) {
+                log.info("Unsuccessful attempt to change the password for user" + user.getUsername());
                 throw new InvalidPasswordException("Въвели сте грешна парола.");
             }
             if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
-                log.info("Unsuccessful attempt to change the password for user" +user.getUsername());
+                log.info("Unsuccessful attempt to change the password for user" + user.getUsername());
                 throw new InvalidPasswordException("Новите пароли не съвпадат. Новата парола трябва да съответства на потвърдената парола.");
             }
             String encodedPassword = utils.encodePassword(request.getNewPassword());
@@ -79,7 +82,7 @@ public class UserService {
     public String validateVerificationToken(String verificationToken, String url) {
         VerificationToken verificationTokenDb = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
         if (verificationTokenDb == null) {
-           throw new InvalidEmailConfirmationLinkException();
+            throw new InvalidEmailConfirmationLinkException();
         }
 
         User user = verificationTokenDb.getUser();

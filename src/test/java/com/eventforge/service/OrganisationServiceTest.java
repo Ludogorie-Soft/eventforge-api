@@ -2,16 +2,17 @@ package com.eventforge.service;
 
 import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.dto.response.OrganisationResponse;
+import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.OrganisationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,14 +30,18 @@ class OrganisationServiceTest {
     @Mock
     private UserService userService;
     @Mock
+    private ResponseFactory responseFactory;
+    @Mock
     private Utils utils;
     @Mock
     private ModelMapper mapper;
     private OrganisationService organisationService;
+
     @BeforeEach
-    public void init(){
-        organisationService = new OrganisationService(organizationRepository,mapper,userService,utils);
+    public void init() {
+        organisationService = new OrganisationService(organizationRepository, mapper, userService,responseFactory,utils);
     }
+
     @Test
     void testSaveOrganisationInDb() {
         Organisation organisation = new Organisation();
@@ -72,6 +77,7 @@ class OrganisationServiceTest {
         assertEquals("John Doe", currentLoggedUser.getFullName());
         assertEquals("123456789", currentLoggedUser.getPhoneNumber());
     }
+
     @Test
     void testGetOrgByName_ValidOrgName() {
         String orgName = "Test Org";
@@ -91,6 +97,7 @@ class OrganisationServiceTest {
         verify(mapper).map(Optional.of(organisation), OrganisationResponse.class);
         assertThat(response).isEqualTo(expectedResponse);
     }
+
     @Test
     void testGetOrganisationByUserId_ValidUserId() {
         Long userId = 1L;
@@ -117,15 +124,17 @@ class OrganisationServiceTest {
         verify(organizationRepository).findOrganisationByUserId(userId);
         assertThat(result).isNull();
     }
+
     @Test
     void testGetOrganisationById_OrganisationExists() {
         Long organisationId = 1L;
 
         when(organizationRepository.findById(organisationId)).thenReturn(Optional.of(new Organisation()));
-        OrganisationResponse response = organisationService.getOrganisationById(organisationId);
+        organisationService.getOrganisationById(organisationId);
 
         verify(organizationRepository).findById(organisationId);
     }
+
     @Test
     void testGetOrganisationById_OrganisationDoesNotExist() {
         Long organisationId = 1L;

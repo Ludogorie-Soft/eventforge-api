@@ -59,18 +59,23 @@ class UserServiceTest {
     @Test
     void testGetLoggedUserByToken_ValidToken() {
         String token = "valid-token";
-        String username = "testuser";
+        String username = "test";
         User user = User.builder().username(username).build();
 
-        when(jwtService.extractUsernameFromToken(token)).thenReturn(username);
-        when(userRepository.findByEmail(username)).thenReturn(user);
+        String extractedTokenFromHeader = "extracted-token";
+        when(jwtService.extractTokenValueFromHeader(token)).thenReturn(extractedTokenFromHeader);
+        when(jwtService.extractUsernameFromToken(extractedTokenFromHeader)).thenReturn(username);
 
+        when(userRepository.findByEmail(username)).thenReturn(user);
 
         User result = userService.getLoggedUserByToken(token);
 
         assertEquals(user, result);
-        verify(jwtService).extractUsernameFromToken(token);
+        verify(jwtService).extractTokenValueFromHeader(token);
+        verify(jwtService).extractUsernameFromToken(extractedTokenFromHeader);
         verify(userRepository).findByEmail(username);
+
+        verifyNoMoreInteractions(jwtService, userRepository);
     }
 
     @Test
@@ -136,13 +141,13 @@ class UserServiceTest {
     }
 
     @Test
-    void testChangeAccountPassword_ShouldBeSuccsessfullyChanged() {
+    void testChangeAccountPassword_ShouldBeSuccessfullyChanged() {
         String token = "validToken";
         String oldPassword = "oldPassword";
         String newPassword = "newPassword";
         String confirmNewPassword = "newPassword";
 
-        User user = User.builder().username("testuser").password("encodedPassword").build();
+        User user = User.builder().username("test").password("encodedPassword").build();
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
         when(utils.isPasswordValid(oldPassword, user.getPassword())).thenReturn(true);
         when(utils.encodePassword(newPassword)).thenReturn("encodedNewPassword");
