@@ -11,7 +11,11 @@ import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface OrganisationRepository extends JpaRepository<Organisation , Long> {
+    @Query("SELECT o FROM Organisation o WHERE o.user.isApprovedByAdmin = true ORDER BY o.registeredAt ASC")
+    List<Organisation> findAllApprovedOrganisationsForAdmin();
 
+    @Query("SELECT o FROM Organisation o WHERE o.user.isApprovedByAdmin = false ORDER BY o.registeredAt ASC")
+    public List<Organisation> findAllUnapprovedOrganisationsForAdmin();
     @Query("SELECT o FROM Organisation o WHERE o.user.username = :email")
     Organisation findOrganisationByEmail(@Param("email") String email);
 
@@ -21,4 +25,7 @@ public interface OrganisationRepository extends JpaRepository<Organisation , Lon
 
     @Query("SELECT o FROM Organisation o WHERE o.user.isEnabled = true AND o.user.isApprovedByAdmin = true AND o.user.isNonLocked = true")
     List<Organisation> findAllOrganisations();
+
+    @Query("SELECT o FROM Organisation o WHERE o.user.isEnabled = true AND o.user.isApprovedByAdmin = true AND o.user.isNonLocked = true AND (o.user.username LIKE %:name% OR o.name LIKE %:name%)")
+    List<Organisation> findAllOrganisationsForUserByName(String name);
 }

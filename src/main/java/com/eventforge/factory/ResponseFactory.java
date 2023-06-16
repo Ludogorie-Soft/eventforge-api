@@ -2,6 +2,7 @@ package com.eventforge.factory;
 
 import com.eventforge.dto.response.OneTimeEventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
+import com.eventforge.dto.response.OrganisationResponseForAdmin;
 import com.eventforge.dto.response.RecurrenceEventResponse;
 import com.eventforge.model.Event;
 import com.eventforge.model.Image;
@@ -18,8 +19,23 @@ import java.util.Set;
 public class ResponseFactory {
 
     private final Utils utils;
-
     private final ImageRepository imageRepository;
+
+    public OrganisationResponseForAdmin buildOrganisationResponseForAdmin(Organisation org){
+        Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
+        Integer countEvents = org.getEvents().size();
+        return  OrganisationResponseForAdmin.builder().
+                userId(org.getUser().getId())
+                .logo(logo.getUrl())
+                .email(org.getUser().getUsername())
+                .isEnabled(org.getUser().getIsEnabled())
+                .isApprovedByAdmin(org.getUser().getIsApprovedByAdmin())
+                .isNonLocked(org.getUser().getIsNonLocked())
+                .countEvents(countEvents)
+                .registeredAt(org.getUser().getRegisteredAt())
+                .updatedAt(org.getUser().getUpdatedAt())
+                .build();
+    }
 
     public OrganisationResponse buildOrganisationResponse(Organisation org){
         Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());

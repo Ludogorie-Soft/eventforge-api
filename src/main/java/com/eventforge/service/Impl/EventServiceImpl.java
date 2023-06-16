@@ -90,10 +90,11 @@ public class EventServiceImpl implements EventService {
 
     public List<OneTimeEventResponse> getAllOneTimeEventsByUserId(String token) {
         User user = userService.getLoggedUserByToken(token);
-        return eventRepository.findAllOneTimeEventsByUserId(user.getId())
-                .stream()
-                .map(responseFactory::buildOneTimeEventResponse)
-                .toList();
+
+            return eventRepository.findAllOneTimeEventsByUserId(user.getId())
+                    .stream()
+                    .map(responseFactory::buildOneTimeEventResponse)
+                    .toList();
     }
 
     public List<RecurrenceEventResponse> getAllRecurrenceEventsByUserId(String token) {
@@ -154,11 +155,6 @@ public class EventServiceImpl implements EventService {
         event.setEndsAt(eventRequest.getEndsAt());
         event.setRecurrenceDetails(eventRequest.getRecurrenceDetails());
         eventRepository.save(event);
-    }
-
-    @Override
-    public void deleteEvent(Long eventId) {
-        eventRepository.deleteById(eventId);
     }
 
     public List<?> filterEventsByCriteria(CriteriaFilterRequest request) {

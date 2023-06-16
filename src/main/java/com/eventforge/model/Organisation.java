@@ -27,6 +27,8 @@ public class Organisation {
     @OneToMany(mappedBy = "organisation" ,cascade = CascadeType.REMOVE)
     private List<Image> images;
     private String address;
+    @OneToMany(mappedBy = "organisation" , cascade = CascadeType.REMOVE)
+    private List<Event> events;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(

@@ -82,7 +82,7 @@ public class OrganisationController {
     }
 
     @GetMapping("/show-my-events")
-    public ResponseEntity<EventResponseContainer> getAllEventsByOrganisation(@RequestHeader(AUTHORIZATION) String authHeader) {
+    public ResponseEntity<EventResponseContainer> getAllEventsByOrganisation(@RequestHeader(AUTHORIZATION) String authHeader ) {
         List<OneTimeEventResponse> oneTimeEvents = eventService.getAllOneTimeEventsByUserId(authHeader);
         List<RecurrenceEventResponse> recurrenceEvents = eventService.getAllRecurrenceEventsByUserId(authHeader);
         EventResponseContainer eventResponseContainer = new EventResponseContainer(oneTimeEvents, recurrenceEvents);
@@ -119,9 +119,4 @@ public class OrganisationController {
         return new ResponseEntity<>("Всички промени са извършени успешно", HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-event/{id}")
-    public ResponseEntity<String> deleteEventByUserId(@RequestHeader(AUTHORIZATION) String authHeader , @PathVariable("id")Long id){
-        eventService.deleteEventById(id);
-        return new ResponseEntity<>("Успешно изтрихте събитието" , HttpStatus.OK);
-    }
 }

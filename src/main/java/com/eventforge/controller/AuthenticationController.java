@@ -95,6 +95,6 @@ public class AuthenticationController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorization) {
 
-        return ResponseEntity.ok("Logged out successfully");
+        return ResponseEntity.ok("Успещно се отписахте");
     }
 }
