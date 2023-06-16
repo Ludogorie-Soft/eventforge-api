@@ -30,7 +30,7 @@ public class Image {
     private LocalDateTime updateAt;
     @Enumerated(EnumType.STRING)
     private ImageType type;
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "event_id")
     private Event event;
     @ManyToOne

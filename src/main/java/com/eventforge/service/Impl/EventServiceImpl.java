@@ -42,7 +42,13 @@ public class EventServiceImpl implements EventService {
     public Optional<Event> findEventById(Long id){
         return eventRepository.findById(id);
     }
+    public List<OneTimeEventResponse> getAllOneTimeEventsByOrganisationId(Long id){
+        return eventRepository.findAllOneTimeEventsByOrganisationId(id).stream().map(responseFactory::buildOneTimeEventResponse).toList();
+    }
 
+    public List<RecurrenceEventResponse> getAllRecurrenceEventsByOrganisationId(Long id){
+        return eventRepository.findAllRecurrenceEventsByOrganisationId(id).stream().map(responseFactory::buildRecurrenceEventResponse).toList();
+    }
 
     @Override
     public List<OneTimeEventResponse> getAllActiveOneTimeEvents(String order) {

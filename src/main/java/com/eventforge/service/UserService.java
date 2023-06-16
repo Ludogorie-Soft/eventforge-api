@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -103,5 +104,32 @@ public class UserService {
         verificationToken.setExpirationTime(verificationTokenTime.getTokenExpirationTime());
         emailVerificationTokenService.saveVerificationToken(verificationToken);
         return verificationToken;
+    }
+
+    public void setApproveByAdminToTrue(Long userId){
+        Optional<User> user =userRepository.findById(userId);
+        if(user.isPresent()){
+            user.get().setIsApprovedByAdmin(true);
+            saveUserInDb(user.get());
+            log.info("Account with email {} was approved by the site administrator",user.get().getUsername());
+        }
+    }
+
+    public void lockAccountById(Long id){
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()){
+            user.get().setIsNonLocked(false);
+            saveUserInDb(user.get());
+            log.info("Account with email {} has been locked by the site administrator" , user.get().getUsername());
+        }
+    }
+
+    public void unlockAccountById(Long id){
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()){
+            user.get().setIsNonLocked(true);
+            saveUserInDb(user.get());
+            log.info("Account with email {} has been unlocked by the site administrator" ,user.get().getUsername());
+        }
     }
 }

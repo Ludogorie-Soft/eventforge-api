@@ -16,6 +16,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
 
     // queries accessible for everyone!
+    @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+LEGAL_USER_CONDITION + " AND e.organisation.id = :orgId ORDER BY e.createdAt ASC")
+    List<Event> findAllOneTimeEventsByOrganisationId(Long orgId);
+    @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+LEGAL_USER_CONDITION +" AND e.organisation.id = :orgId ORDER BY e.createdAt ASC")
+    List<Event> findAllRecurrenceEventsByOrganisationId(Long orgId);
     @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+ LEGAL_USER_CONDITION+" AND "+UNEXPIRED_CONDITION + " ORDER BY e.startsAt ASC")
     List<Event> findAllActiveOneTimeEvents(LocalDateTime date , String order);
 
