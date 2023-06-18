@@ -2,6 +2,7 @@ package com.eventforge.service;
 
 import com.eventforge.dto.request.ChangePasswordRequest;
 import com.eventforge.exception.InvalidEmailConfirmationLinkException;
+import com.eventforge.exception.InvalidPasswordException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
@@ -13,11 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -182,5 +183,83 @@ class UserServiceTest {
 
         verify(emailVerificationTokenService).getVerificationTokenByToken(oldToken);
         verify(emailVerificationTokenService).saveVerificationToken(any(VerificationToken.class));
+    }
+
+    @Test
+    void testSetApproveByAdminToTrue_UserPresent() {
+        Long userId = 1L;
+        User user = User.builder().id(userId).username("test@example.com").build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        userService.setApproveByAdminToTrue(userId);
+
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void testLockAccountById_UserPresent() {
+        Long userId = 1L;
+        User user = User.builder().id(userId).username("test@example.com").build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        userService.lockAccountById(userId);
+
+        verify(userRepository).findById(userId);
+
+    }
+
+    @Test
+    void testUnlockAccountById_UserPresent() {
+        Long userId = 1L;
+        User user = User.builder().id(userId).username("test@example.com").build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        userService.unlockAccountById(userId);
+
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void testChangeAccountPassword_invalidOldPassword() {
+        String token = "token";
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .oldPassword("oldPassword")
+                .build();
+        User user = User.builder()
+                .password("hashedPassword")
+                .build();
+
+        when(userService.getLoggedUserByToken(token)).thenReturn(user);
+        when(utils.isPasswordValid(request.getOldPassword(), user.getPassword())).thenReturn(false);
+
+        InvalidPasswordException exception = assertThrows(InvalidPasswordException.class,
+                () -> userService.changeAccountPassword(token, request));
+
+        assertEquals("Въвели сте грешна парола.", exception.getMessage());
+    }
+
+    @Test
+    void testChangeAccountPassword_passwordsDoNotMatch() {
+        String token = "token";
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .oldPassword("oldPassword")
+                .newPassword("newPassword")
+                .confirmNewPassword("differentPassword")
+                .build();
+        User user = User.builder()
+                .password("hashedPassword")
+                .build();
+
+        when(userService.getLoggedUserByToken(token)).thenReturn(user);
+        when(utils.isPasswordValid(request.getOldPassword(), user.getPassword())).thenReturn(true);
+
+        InvalidPasswordException exception = assertThrows(InvalidPasswordException.class,
+                () -> userService.changeAccountPassword(token, request));
+
+        assertEquals("Новите пароли не съвпадат. Новата парола трябва да съответства на потвърдената парола.",
+                exception.getMessage());
     }
 }
