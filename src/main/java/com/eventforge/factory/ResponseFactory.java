@@ -21,12 +21,15 @@ public class ResponseFactory {
     private final Utils utils;
     private final ImageRepository imageRepository;
 
-    public OrganisationResponseForAdmin buildOrganisationResponseForAdmin(Organisation org){
+    public OrganisationResponseForAdmin buildOrganisationResponseForAdmin(Organisation org) {
         Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
         Integer countEvents = org.getEvents().size();
-        return  OrganisationResponseForAdmin.builder().
+
+        String logoUrl = (logo != null) ? logo.getUrl() : null;
+
+        return OrganisationResponseForAdmin.builder().
                 userId(org.getUser().getId())
-                .logo(logo.getUrl())
+                .logo(logoUrl)
                 .email(org.getUser().getUsername())
                 .isEnabled(org.getUser().getIsEnabled())
                 .isApprovedByAdmin(org.getUser().getIsApprovedByAdmin())
@@ -37,14 +40,18 @@ public class ResponseFactory {
                 .build();
     }
 
-    public OrganisationResponse buildOrganisationResponse(Organisation org){
+    public OrganisationResponse buildOrganisationResponse(Organisation org) {
         Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
         Image background = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
         Set<String> orgPriorities = utils.convertListOfOrganisationPrioritiesToString(org.getOrganisationPriorities());
-        return  OrganisationResponse.builder().
+
+        String logoUrl = (logo != null) ? logo.getUrl() : null;
+        String backgroundUrl = (background != null) ? background.getUrl() : null;
+
+        return OrganisationResponse.builder().
                 orgId(org.getId())
-                .logo(logo.getUrl())
-                .background(background.getUrl())
+                .logo(logoUrl)
+                .background(backgroundUrl)
                 .name(org.getName())
                 .bullstat(org.getBullstat())
                 .username(org.getUser().getUsername())
@@ -59,7 +66,6 @@ public class ResponseFactory {
     }
 
     public OneTimeEventResponse buildOneTimeEventResponse(Event event) {
-//        String eventCategories = utils.convertStringListToString(event.getEventCategories());
         Image eventPicture = event.getEventImage();
         return OneTimeEventResponse.builder()
                 .id(event.getId())

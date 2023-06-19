@@ -98,12 +98,11 @@ class ImageServiceImplTest {
     void testUpdateEventPicture_EventPresentAndImageExists() {
         Long eventId = 1L;
         Long imageId = 2L;
-        String url = "http://example.com/src/image.jpg";
+        String url = "https://example.com/src/image.jpg";
         Organisation organisation = Organisation.builder().user(new User()).build();
         Event event = Event.builder().organisation(organisation).build();
         Image eventPicture = Image.builder().url(url).build();
-        MultipartFile file = new MockMultipartFile("test.jpg", new byte[0]);
-
+        MultipartFile file = new MockMultipartFile("test.jpg", "test.jpg", "image/jpeg", new byte[1]);
 
         when(eventService.findEventById(eventId)).thenReturn(Optional.of(event));
         when(imageRepository.findEventPictureByEventIdImage(eventId, imageId)).thenReturn(eventPicture);
@@ -118,11 +117,11 @@ class ImageServiceImplTest {
     @Test
     void testUpdateOrganisationCoverPicture_UserPresentAndCoverExists() {
         String token = "testToken";
-        String url = "http://example.com/src/cover.jpg";
+        String url = "https://example.com/src/cover.jpg";
         User user = User.builder().id(1L).username("test@example.com").build();
         Organisation organisation = Organisation.builder().id(1L).user(user).build();
         Image cover = Image.builder().url(url).build();
-        MultipartFile file = new MockMultipartFile("test.jpg", new byte[0]);
+        MultipartFile file = new MockMultipartFile("test.jpg", "test.jpg", "image/jpeg", new byte[1]);
 
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
         when(organisationService.getOrganisationByUserId(user.getId())).thenReturn(organisation);
@@ -138,11 +137,11 @@ class ImageServiceImplTest {
     @Test
     void testUpdateOrganisationLogo_UserPresentAndLogoExists() {
         String token = "testToken";
-        String url = "http://example.com/src/logo.jpg";
+        String url = "https://example.com/src/logo.jpg";
         User user = User.builder().id(1L).username("test@example.com").build();
         Organisation organisation = Organisation.builder().id(1L).user(user).build();
         Image logo = Image.builder().url(url).build();
-        MultipartFile file = new MockMultipartFile("test.jpg", new byte[0]);
+        MultipartFile file = new MockMultipartFile("test.jpg", "test.jpg", "image/jpeg", new byte[1]);
 
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
         when(organisationService.getOrganisationByUserId(user.getId())).thenReturn(organisation);

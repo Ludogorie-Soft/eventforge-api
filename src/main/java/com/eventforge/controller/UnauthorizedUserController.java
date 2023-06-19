@@ -26,9 +26,9 @@ public class UnauthorizedUserController {
         return new ResponseEntity<>(organisationService.getAllOrganisationsForUnauthorizedUser(search) , HttpStatus.OK);
     }
 
-    @GetMapping("/{orgName}/get-events/{orgId}")
-    public ResponseEntity<EventResponseContainer> showOrgEvents(@PathVariable("orgName")String organisationName , @PathVariable("orgId")Long id){
-
+    @GetMapping("/{orgName}/get-events")
+    public ResponseEntity<EventResponseContainer> showOrgEvents(@PathVariable("orgName")String organisationName){
+        Long id = organisationService.getOrgByName(organisationName).getOrgId();
         List<OneTimeEventResponse> oneTimeEvents = eventService.getAllOneTimeEventsByOrganisationId(id);
         List< RecurrenceEventResponse> recurrenceEvents = eventService.getAllRecurrenceEventsByOrganisationId(id);
         EventResponseContainer eventResponseContainer = new EventResponseContainer(oneTimeEvents , recurrenceEvents);
