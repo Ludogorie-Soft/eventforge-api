@@ -40,6 +40,25 @@ public class ResponseFactory {
                 .build();
     }
 
+
+
+    public OneTimeEventResponse buildOneTimeEventResponse(Event event) {
+        Image eventPicture = event.getEventImage();
+        return OneTimeEventResponse.builder()
+                .id(event.getId())
+                .imageId(eventPicture.getId())
+                .imageUrl(eventPicture.getUrl())
+                .name(event.getName())
+                .description(event.getDescription())
+                .address(event.getAddress())
+                .eventCategories(event.getEventCategories())
+                .organisationName(event.getOrganisation().getName())
+                .price(utils.convertPriceToString(event.getPrice()))
+                .ageBoundary(utils.convertAgeToString(event.getMinAge(), event.getMaxAge()))
+                .startsAt(event.getStartsAt())
+                .endsAt(event.getEndsAt())
+                .build();
+    }
     public OrganisationResponse buildOrganisationResponse(Organisation org) {
         Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
         Image background = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
@@ -62,24 +81,6 @@ public class ResponseFactory {
                 .organisationPriorities(orgPriorities)
                 .registeredAt(org.getRegisteredAt())
                 .updatedAt(org.getUpdatedAt())
-                .build();
-    }
-
-    public OneTimeEventResponse buildOneTimeEventResponse(Event event) {
-        Image eventPicture = event.getEventImage();
-        return OneTimeEventResponse.builder()
-                .id(event.getId())
-                .imageId(eventPicture.getId())
-                .imageUrl(eventPicture.getUrl())
-                .name(event.getName())
-                .description(event.getDescription())
-                .address(event.getAddress())
-                .eventCategories(event.getEventCategories())
-                .organisationName(event.getOrganisation().getName())
-                .price(utils.convertPriceToString(event.getPrice()))
-                .ageBoundary(utils.convertAgeToString(event.getMinAge(), event.getMaxAge()))
-                .startsAt(event.getStartsAt())
-                .endsAt(event.getEndsAt())
                 .build();
     }
 
