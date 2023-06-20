@@ -44,10 +44,11 @@ public class ResponseFactory {
 
     public OneTimeEventResponse buildOneTimeEventResponse(Event event) {
         Image eventPicture = event.getEventImage();
+        Long imageId = eventPicture != null ? eventPicture.getId() : null;
         return OneTimeEventResponse.builder()
                 .id(event.getId())
-                .imageId(eventPicture.getId())
-                .imageUrl(eventPicture.getUrl())
+                .imageId(imageId)
+                .imageUrl(eventPicture != null ? eventPicture.getUrl() : null)
                 .name(event.getName())
                 .description(event.getDescription())
                 .address(event.getAddress())
