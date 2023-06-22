@@ -5,10 +5,7 @@ import com.eventforge.constants.Role;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.exception.EmailAlreadyTakenException;
-import com.eventforge.model.Event;
-import com.eventforge.model.Organisation;
-import com.eventforge.model.OrganisationPriority;
-import com.eventforge.model.User;
+import com.eventforge.model.*;
 import com.eventforge.service.Impl.EventServiceImpl;
 import com.eventforge.service.Impl.ImageServiceImpl;
 import com.eventforge.service.OrganisationService;
@@ -46,6 +43,12 @@ public class EntityFactory {
                 .isOnline(eventRequest.getIsOnline())
                 .startsAt(eventRequest.getStartsAt())
                 .endsAt(eventRequest.getEndsAt())
+                .price(eventRequest.getPrice())
+                .minAge(eventRequest.getMinAge())
+                .maxAge(eventRequest.getMaxAge())
+                .recurrenceDetails(eventRequest.getRecurrenceDetails())
+//                .eventImage((Image) eventRequest.getImage())
+                .isOneTime(eventRequest.getIsOneTime())
                 .build();
         eventService.saveEvent(event);
         imageService.uploadImageToFileSystem(eventRequest.getImage(),ImageType.EVENT_PICTURE ,null, event);
