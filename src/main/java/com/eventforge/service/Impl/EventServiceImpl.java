@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -38,6 +39,16 @@ public class EventServiceImpl implements EventService {
 
     private final Utils utils;
 
+    public Optional<Event> findEventById(Long id){
+        return eventRepository.findById(id);
+    }
+    public List<OneTimeEventResponse> getAllOneTimeEventsByOrganisationId(Long id){
+        return eventRepository.findAllOneTimeEventsByOrganisationId(id).stream().map(responseFactory::buildOneTimeEventResponse).toList();
+    }
+
+    public List<RecurrenceEventResponse> getAllRecurrenceEventsByOrganisationId(Long id){
+        return eventRepository.findAllRecurrenceEventsByOrganisationId(id).stream().map(responseFactory::buildRecurrenceEventResponse).toList();
+    }
 
     @Override
     public List<OneTimeEventResponse> getAllActiveOneTimeEvents(String order) {
@@ -79,10 +90,11 @@ public class EventServiceImpl implements EventService {
 
     public List<OneTimeEventResponse> getAllOneTimeEventsByUserId(String token) {
         User user = userService.getLoggedUserByToken(token);
-        return eventRepository.findAllOneTimeEventsByUserId(user.getId())
-                .stream()
-                .map(responseFactory::buildOneTimeEventResponse)
-                .toList();
+
+            return eventRepository.findAllOneTimeEventsByUserId(user.getId())
+                    .stream()
+                    .map(responseFactory::buildOneTimeEventResponse)
+                    .toList();
     }
 
     public List<RecurrenceEventResponse> getAllRecurrenceEventsByUserId(String token) {
@@ -131,7 +143,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public void updateEvent(Long eventId, EventRequest eventRequest) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено!"));
-//        List<String> eventCategories = utils.splitStringByComma(eventRequest.getEventCategories());
         event.setName(eventRequest.getName());
         event.setDescription(eventRequest.getDescription());
         event.setAddress(eventRequest.getAddress());
@@ -144,11 +155,6 @@ public class EventServiceImpl implements EventService {
         event.setEndsAt(eventRequest.getEndsAt());
         event.setRecurrenceDetails(eventRequest.getRecurrenceDetails());
         eventRepository.save(event);
-    }
-
-    @Override
-    public void deleteEvent(Long eventId) {
-        eventRepository.deleteById(eventId);
     }
 
     public List<?> filterEventsByCriteria(CriteriaFilterRequest request) {
@@ -183,37 +189,37 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void addNamePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+    public void addNamePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getName() != null) {
             predicates.add(cb.like(root.get("name"), "%" + request.getName() + "%"));
         }
     }
 
-    private void addDescriptionPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+    public void addDescriptionPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getDescription() != null) {
             predicates.add(cb.like(root.get("description"), "%" + request.getDescription() + "%"));
         }
     }
 
-    private void addAddressPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+    public void addAddressPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getAddress() != null) {
             predicates.add(cb.like(root.get("address"), "%" + request.getAddress() + "%"));
         }
     }
 
-    private void addOnlinePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+    public void addOnlinePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getIsOnline() != null) {
             predicates.add(cb.equal(root.get("isOnline"), request.getIsOnline()));
         }
     }
 
-    private void addOrganisationNamePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+    public void addOrganisationNamePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getOrganisationName() != null) {
             predicates.add(cb.like(root.get("organisation").get("name"), "%" + request.getOrganisationName() + "%"));
         }
     }
 
-    private void addAgePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+    public void addAgePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getMinAge() != null && request.getMaxAge() != null) {
             if (request.getMinAge() == 0 && request.getMaxAge() == 0) {
                 predicates.add(cb.equal(root.get("minAge"), 0));
@@ -235,7 +241,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void addDateTimePredicates(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+    public void addDateTimePredicates(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getStartsAt() != null) {
             predicates.add(cb.lessThanOrEqualTo(root.get("startsAt").as(LocalDateTime.class), request.getStartsAt()));
         }
@@ -247,7 +253,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void addOneTimePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+    public void addOneTimePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getIsOneTime()) {
             predicates.add(cb.isTrue(root.get("isOneTime")));
         } else {
@@ -255,14 +261,14 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void addUserPredicates(CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+    public void addUserPredicates(CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         Join<Event, Organisation> orgJoin = root.join("organisation");
         Join<Organisation, User> userJoin = orgJoin.join("user");
         predicates.add(cb.isTrue(userJoin.get("isNonLocked")));
         predicates.add(cb.isTrue(userJoin.get("isApprovedByAdmin")));
     }
 
-    private void addExpiredPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+    public void addExpiredPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.isSortByExpired()) {
             predicates.add(cb.lessThan(root.get("endsAt"), LocalDateTime.now()));
 

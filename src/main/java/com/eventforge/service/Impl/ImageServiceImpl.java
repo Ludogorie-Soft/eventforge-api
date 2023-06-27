@@ -5,19 +5,16 @@ import com.eventforge.exception.ImageException;
 import com.eventforge.model.Event;
 import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
+import com.eventforge.model.User;
 import com.eventforge.repository.ImageRepository;
-import com.eventforge.service.ImageService;
+import com.eventforge.service.OrganisationService;
+import com.eventforge.service.UserService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,12 +25,21 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class ImageServiceImpl implements ImageService {
+@Slf4j
+public class ImageServiceImpl {
     private static final String FOLDER_PATH = "src/main/resources/static/images/";
+
+
     private final ImageRepository imageRepository;
 
-    @Override
-    public void uploadImageToFileSystem(MultipartFile file , ImageType imageType , Organisation organisation , Event event) {
+    private final UserService userService;
+
+    private final OrganisationService organisationService;
+
+    private final EventServiceImpl eventService;
+
+
+    public void uploadImageToFileSystem(MultipartFile file, ImageType imageType, Organisation organisation, Event event) {
         String fileName = file.getOriginalFilename();
         if (doesFileNameExists(fileName)) {
             throw new ImageException("Файл с това име вече съществува.");
@@ -42,49 +48,115 @@ public class ImageServiceImpl implements ImageService {
         String sanitizedFileName = null;
         if (fileName != null) {
             sanitizedFileName = sanitizeFileName(fileName);
+
         }
 
         Path uploadDirectory = Paths.get(FOLDER_PATH);
         assert sanitizedFileName != null;
         Path filePath = uploadDirectory.resolve(sanitizedFileName);
+        String imageUrlAbsolutePath = filePath.toAbsolutePath().toString();
 
         try {
             if (!Files.exists(uploadDirectory)) {
                 Files.createDirectories(uploadDirectory);
             }
+            if (Files.exists(uploadDirectory)) {
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            }
 
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new ImageException("Грешка със запазването на файла.");
+            throw new ImageException("Грешка със запазването на файла. Моля уверете се , че подавате валиден файл и не е празен.");
         }
 
-        if(organisation!=null && (imageType!=null && imageType.equals(ImageType.LOGO))){
+        if (organisation != null && (imageType != null && imageType.equals(ImageType.LOGO))) {
             imageRepository.save(Image.builder()
-                    .url(sanitizedFileName)
-                    .uploadAt(LocalDateTime.now())
-                    .type(imageType)
-                            .organisation(organisation)
-                    .build());
-        }
-        if(organisation != null && (imageType!=null && imageType.equals(ImageType.COVER))){
-            imageRepository.save(Image.builder()
-                    .url(sanitizedFileName)
+                    .url(imageUrlAbsolutePath)
                     .uploadAt(LocalDateTime.now())
                     .type(imageType)
                     .organisation(organisation)
                     .build());
+            log.info("Successfully uploaded picture for user with email:" + organisation.getUser().getUsername());
+            return;
+        }
+        if (organisation != null && (imageType != null && imageType.equals(ImageType.COVER))) {
+            imageRepository.save(Image.builder()
+                    .url(imageUrlAbsolutePath)
+                    .uploadAt(LocalDateTime.now())
+                    .type(imageType)
+                    .organisation(organisation)
+                    .build());
+            log.info("Successfully uploaded picture for user with email:" + organisation.getUser().getUsername());
+            return;
         }
 
-        if(event!=null && (imageType!=null && imageType.equals(ImageType.EVENT_PICTURE))){
+        if (event != null && (imageType != null && imageType.equals(ImageType.EVENT_PICTURE))) {
             imageRepository.save(Image.builder()
-                    .url(sanitizedFileName)
+                    .url(imageUrlAbsolutePath)
                     .uploadAt(LocalDateTime.now())
                     .type(imageType)
                     .event(event)
                     .build());
+            log.info("Successfully uploaded picture for user with email:" + event.getOrganisation().getUser().getUsername());
+            return;
+
+        }
+        log.info("Unsuccessful attempt to upload picture!!");
+    }
+
+    public void updateOrganisationLogo(String token, MultipartFile file) {
+        User user = userService.getLoggedUserByToken(token);
+        if (user != null) {
+            Organisation organisation = organisationService.getOrganisationByUserId(user.getId());
+            Image logo = imageRepository.findOrganisationLogoByOrgId(organisation.getId());
+            uploadImageToFileSystem(file, ImageType.LOGO, organisation, null);
+            if (logo != null) {
+                String filePath = logo.getUrl().substring(logo.getUrl().indexOf("src"));
+                deleteImageFile(filePath);
+                imageRepository.deleteById(logo.getId());
+            }
+            log.info("Successfully updated logo picture for user with email:" + user.getUsername());
+            return;
         }
 
+        log.info("Unsuccessful attempt to upload picture!!");
 
+    }
+
+    public void updateOrganisationCoverPicture(String token, MultipartFile file) {
+        User user = userService.getLoggedUserByToken(token);
+        if (user != null) {
+            Organisation organisation = organisationService.getOrganisationByUserId(user.getId());
+            Image cover = imageRepository.findOrganisationCoverPictureByOrgId(organisation.getId());
+            uploadImageToFileSystem(file, ImageType.COVER, organisation, null);
+            if (cover != null) {
+                String filePath = cover.getUrl().substring(cover.getUrl().indexOf("src"));
+
+                deleteImageFile(filePath);
+                imageRepository.deleteById(cover.getId());
+            }
+            log.info("Successfully updated cover picture for user with email:" + user.getUsername());
+            return;
+        }
+        log.info("Unsuccessful attempt to upload picture!!");
+
+    }
+
+    public void updateEventPicture(Long eventId, Long imageId, MultipartFile file) {
+        Optional<Event> event = eventService.findEventById(eventId);
+
+        if (event.isPresent()) {
+            Image eventPicture = imageRepository.findEventPictureByEventIdImage(eventId, imageId);
+            uploadImageToFileSystem(file, ImageType.EVENT_PICTURE, null, event.get());
+            if (eventPicture != null) {
+                String filePath = eventPicture.getUrl().substring(eventPicture.getUrl().indexOf("src"));
+
+                deleteImageFile(filePath);
+                imageRepository.deleteById(eventPicture.getId());
+            }
+            log.info("Successfully uploaded event picture for user!");
+            return;
+        }
+        log.info("Unsuccessful attempt to upload picture!!");
     }
 
     private String sanitizeFileName(String fileName) {
@@ -109,53 +181,10 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private boolean doesFileNameExists(String fileName) {
-        Optional<Image> imageOptional = imageRepository.findImageByName(fileName);
+        Optional<Image> imageOptional = imageRepository.findImageByUrl(fileName);
         return imageOptional.isPresent();
     }
 
-    public String getImageAddressFromFileSystem(String fileName) throws IOException {
-        File file = getFileFromPath(fileName);
-        Resource resource = new UrlResource(file.toURI());
-
-        if (resource.exists()) {
-            String absolutePath = resource.getURI().getPath();
-            return absolutePath.substring(absolutePath.indexOf("src/main/resources"));
-        } else {
-            throw new ImageException("Файл с това име вече съществува в базата данни.");
-        }
-    }
-
-    private File getFileFromPath(String fileName) {
-        File folder = new File(FOLDER_PATH);
-        if (!folder.exists()) {
-            throw new ImageException("Моля, проверете пътят до файла дали е верен!");
-        }
-        File file = new File(folder, fileName);
-        if (!file.exists()) {
-            throw new ImageException("Файл с такова име не съществува");
-        }
-        return file;
-    }
-
-    public ResponseEntity<Resource> downloadImageFromFileSystem(String fileName) throws IOException {
-        File file = new File(FOLDER_PATH, fileName);
-        Resource resource = new UrlResource(file.toURI());
-
-        if (resource.exists()) {
-            String fileExtension = getFileExtension(fileName);
-            MediaType mediaType = determineMediaType(fileExtension);
-
-            if (mediaType != null) {
-                return ResponseEntity.ok()
-                        .contentType(mediaType)
-                        .body(resource);
-            } else {
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
-            }
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
 
     @Nullable
     String getFileExtension(String fileName) {
@@ -165,42 +194,10 @@ public class ImageServiceImpl implements ImageService {
         }
         return null;
     }
-    @Nullable
-    MediaType determineMediaType(String fileExtension) {
-        if (fileExtension != null) {
-            if (fileExtension.equals("png")) {
-                return MediaType.IMAGE_PNG;
-            } else if (fileExtension.equals("jpeg") || fileExtension.equals("jpg")) {
-                return MediaType.IMAGE_JPEG;
-            }
-            throw new ImageException("Грешно разширение на файла: " + fileExtension);
-        }
-        return null;
-    }
 
-    @Override
-    public void deleteImageFromFileSystem(String fileName) {
-        Optional<Image> imageOptional = getImageByName(fileName);
-        if (imageOptional.isPresent()) {
-            Image image = imageOptional.get();
-            deleteImageFile(fileName);
-            imageRepository.delete(image);
-        } else {
-            throw new ImageException("Файлът не може да бъде открит");
-        }
-    }
 
-    protected Optional<Image> getImageByName(String fileName) {
-        return imageRepository.findImageByName(fileName);
-    }
-
-    protected void deleteImageFile(String fileName) {
-        String filePath = FOLDER_PATH + fileName;
+    protected void deleteImageFile(String filePath) {
         Path fileToDelete = Paths.get(filePath);
-        deleteFile(fileToDelete);
-    }
-
-    protected void deleteFile(Path fileToDelete) {
         try {
             Files.deleteIfExists(fileToDelete);
         } catch (IOException e) {

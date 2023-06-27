@@ -23,7 +23,6 @@ public interface EventService {
 
     void updateEvent(Long eventId, EventRequest eventRequest);
 
-    void deleteEvent(Long eventId);
 
     List<?> filterEventsByCriteria(CriteriaFilterRequest filterRequest);
 }

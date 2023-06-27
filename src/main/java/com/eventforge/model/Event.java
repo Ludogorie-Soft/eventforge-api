@@ -26,6 +26,8 @@ public class Event {
     private double price;
     private Integer minAge;
     private Integer maxAge;
+    @OneToOne(mappedBy = "event" , cascade = CascadeType.REMOVE)
+    private Image eventImage;
     @ManyToOne
     @JoinColumn(name = "organisation_id")
     private Organisation organisation;

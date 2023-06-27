@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 @Entity
 @Getter
@@ -23,8 +24,11 @@ public class Organisation {
     @ManyToOne(cascade ={CascadeType.MERGE, CascadeType.REMOVE} )
     @JoinColumn(name = "user_id")
     private User user;
-
+    @OneToMany(mappedBy = "organisation" ,cascade = CascadeType.REMOVE)
+    private List<Image> images;
     private String address;
+    @OneToMany(mappedBy = "organisation" , cascade = CascadeType.REMOVE)
+    private List<Event> events;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(

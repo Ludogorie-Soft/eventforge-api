@@ -3,13 +3,14 @@ package com.eventforge.controller;
 import com.eventforge.dto.request.ChangePasswordRequest;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.UpdateAccountRequest;
-import com.eventforge.dto.response.container.EventResponseContainer;
 import com.eventforge.dto.response.OneTimeEventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.RecurrenceEventResponse;
+import com.eventforge.dto.response.container.EventResponseContainer;
 import com.eventforge.factory.EntityFactory;
 import com.eventforge.factory.RequestFactory;
 import com.eventforge.service.Impl.EventServiceImpl;
+import com.eventforge.service.Impl.ImageServiceImpl;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,6 +35,26 @@ public class OrganisationController {
     private final EntityFactory entityFactory;
 
     private final EventServiceImpl eventService;
+
+    private final ImageServiceImpl imageService;
+
+
+    @PostMapping("/logo-upload")
+    public ResponseEntity<String> updateLogo(@RequestHeader(AUTHORIZATION)String authHeader,@RequestParam("file") @Valid MultipartFile image){
+        imageService.updateOrganisationLogo(authHeader ,image);
+            return new ResponseEntity<>("Успешна актуализация на логото" , HttpStatus.OK);
+    }
+
+    @PostMapping("/cover-upload")
+    public ResponseEntity<String> updateCover(@RequestHeader(AUTHORIZATION)String authHeader ,@RequestParam("file") @Valid MultipartFile image){
+        imageService.updateOrganisationCoverPicture(authHeader , image);
+        return new ResponseEntity<>("Успешна актуализация на корицата" ,HttpStatus.OK);
+    }
+    @PostMapping("/event-picture-upload/{eventId}/{imageId}")
+    public ResponseEntity<String> updateEventPicture(@RequestParam("file") @Valid MultipartFile image ,@PathVariable("eventId")Long eventId ,@PathVariable("imageId")Long imageId){
+        imageService.updateEventPicture(eventId,imageId,image);
+        return new ResponseEntity<>("Успешно променихте снимката на събитието" ,HttpStatus.OK);
+    }
 
     @GetMapping("/account-update")
     public ResponseEntity<UpdateAccountRequest> updateAccountRequestResponseEntity(@RequestHeader(AUTHORIZATION) String authHeader) {
@@ -60,7 +82,7 @@ public class OrganisationController {
     }
 
     @GetMapping("/show-my-events")
-    public ResponseEntity<EventResponseContainer> getAllEventsByOrganisation(@RequestHeader(AUTHORIZATION) String authHeader) {
+    public ResponseEntity<EventResponseContainer> getAllEventsByOrganisation(@RequestHeader(AUTHORIZATION) String authHeader ) {
         List<OneTimeEventResponse> oneTimeEvents = eventService.getAllOneTimeEventsByUserId(authHeader);
         List<RecurrenceEventResponse> recurrenceEvents = eventService.getAllRecurrenceEventsByUserId(authHeader);
         EventResponseContainer eventResponseContainer = new EventResponseContainer(oneTimeEvents, recurrenceEvents);
@@ -97,9 +119,4 @@ public class OrganisationController {
         return new ResponseEntity<>("Всички промени са извършени успешно", HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-event/{id}")
-    public ResponseEntity<String> deleteEventByUserId(@RequestHeader(AUTHORIZATION) String authHeader , @PathVariable("id")Long id){
-        eventService.deleteEventById(id);
-        return new ResponseEntity<>("Успешно изтрихте събитието" , HttpStatus.OK);
-    }
 }
