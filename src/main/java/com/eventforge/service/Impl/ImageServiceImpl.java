@@ -201,7 +201,7 @@ public class ImageServiceImpl {
         try {
             Files.deleteIfExists(fileToDelete);
         } catch (IOException e) {
-            throw new ImageException("Грешка с изтриването на файла.");
+            throw new ImageException("Грешка при опит за изтриването на файла.");
         }
     }
 }

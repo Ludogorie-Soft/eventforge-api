@@ -1,7 +1,6 @@
 package com.eventforge.controller;
 
 import com.eventforge.dto.request.CriteriaFilterRequest;
-import com.eventforge.dto.response.OneTimeEventResponse;
 import com.eventforge.service.Impl.EventServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -14,19 +14,18 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-
-    @RequestMapping("/api/v1/one-time-events")
+@RequestMapping("/api/v1/one-time-events")
 public class OneTimeEventController {
 
     private final EventService eventService;
 
     @GetMapping("/active")
-    public ResponseEntity<List<OneTimeEventResponse>> showAllActiveOneTimeEvents(@RequestParam(value = "order" , required = false) String order) {
+    public ResponseEntity<List<OneTimeEventResponse>> showAllActiveOneTimeEvents(@RequestParam(value = "order", required = false) String order) {
         return new ResponseEntity<>(eventService.getAllActiveOneTimeEvents(order), HttpStatus.OK);
     }
 
     @GetMapping("/expired")
-    public ResponseEntity<List<OneTimeEventResponse>>showAllExpiredOneTimeEvents(@RequestParam(value = "order" , required = false) String order){
+    public ResponseEntity<List<OneTimeEventResponse>> showAllExpiredOneTimeEvents(@RequestParam(value = "order", required = false) String order) {
         return new ResponseEntity<>(eventService.getAllExpiredOneTimeEvents(order), HttpStatus.OK);
     }
 

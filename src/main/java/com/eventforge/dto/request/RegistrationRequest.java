@@ -1,6 +1,7 @@
 package com.eventforge.dto.request;
 
 import com.eventforge.annotation.OrganisationPriorityNotNull;
+import com.eventforge.annotation.PasswordsMustMatch;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -21,6 +22,7 @@ import static com.eventforge.constants.regex.Regex.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @OrganisationPriorityNotNull
+@PasswordsMustMatch
 public class RegistrationRequest {
     @Pattern(regexp = EMAIL_PATTERN,message = "Грешно въведена електронна поща. Трябва да е във формат \"<потребител>@<домейн>.<tld>\"")
     private String username;
