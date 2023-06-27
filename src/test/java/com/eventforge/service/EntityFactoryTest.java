@@ -28,13 +28,10 @@ import static org.mockito.Mockito.when;
 class EntityFactoryTest {
     @Mock
     private OrganisationService organisationService;
-
     @Mock
     private Utils utils;
-
     @Mock
     private UserService userService;
-
     @Mock
     private EventServiceImpl eventService;
     @Mock
@@ -60,6 +57,7 @@ class EntityFactoryTest {
                 .isOnline(true)
                 .startsAt(LocalDateTime.of(2023, 1, 1, 10, 0))
                 .endsAt(LocalDateTime.of(2023, 1, 1, 12, 0))
+                .price(0.0)
                 .build();
 
         User user = User.builder()
