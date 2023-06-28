@@ -74,7 +74,9 @@ public class EntityFactory {
                 .build();
 
         organisationService.saveOrganisationInDb(org);
+        assert request.getLogo() != null;
         imageService.uploadImageToFileSystem(request.getLogo(), ImageType.LOGO, org , null);
+        assert request.getBackgroundCover() != null;
         imageService.uploadImageToFileSystem(request.getBackgroundCover(),ImageType.COVER , org , null);
         return user;
     }

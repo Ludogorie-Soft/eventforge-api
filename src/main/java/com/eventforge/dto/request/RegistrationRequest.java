@@ -3,6 +3,7 @@ package com.eventforge.dto.request;
 import com.eventforge.annotation.OrganisationPriorityNotNull;
 import com.eventforge.annotation.PasswordsMustMatch;
 import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -29,7 +30,7 @@ public class RegistrationRequest {
     @Size(min = 5, max = 30, message = "Името на организацията трябва да е между 5 и 30 символа!")
     private String name;
     @Nullable
-    @Size(max = 5 * 1024 * 1024, message = "Снимката не може да надвишата повече от 5MB.")
+    @Max(value = 5 * 1024 * 1024, message = "Снимката не може да надвишата повече от 5MB.")
     @Pattern(regexp = IMAGE_PATTERN, message = "Файлът трябва да поддържа (JPG, JPEG, PNG, or GIF) формати.")
     private MultipartFile logo;
     private String bullstat;
@@ -40,7 +41,7 @@ public class RegistrationRequest {
     @Size (min = 15 , message = "Обоснованието трябва да е поне 15 символа!")
     private String organisationPurpose;
     @Nullable
-    @Size(max = 5 * 1024 * 1024, message = "Снимката не може да надвишата повече от 5MB.")
+    @Max(value = 5 * 1024 * 1024, message = "Снимката не може да надвишата повече от 5MB.")
     @Pattern(regexp = IMAGE_PATTERN, message = "Файлът трябва да поддържа (JPG, JPEG, PNG, or GIF) формати.")
     private MultipartFile backgroundCover;
     @Nullable
