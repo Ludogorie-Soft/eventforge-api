@@ -15,12 +15,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -203,5 +207,19 @@ public class ImageServiceImpl {
         } catch (IOException e) {
             throw new ImageException("Грешка при опит за изтриването на файла.");
         }
+    }
+    public static String downloadImage(String url) {
+        String base64Image = "";
+        File file = new File(url);
+        try (FileInputStream imageInFile = new FileInputStream(file)) {
+            byte[] imageData = new byte[(int) file.length()];
+            imageInFile.read(imageData);
+            base64Image = Base64.getEncoder().encodeToString(imageData);
+        } catch (FileNotFoundException e) {
+            throw new ImageException("Изображението не е намерено");
+        } catch (IOException ioe) {
+            throw new ImageException("Грешка с прочитането на изображението");
+        }
+        return base64Image;
     }
 }

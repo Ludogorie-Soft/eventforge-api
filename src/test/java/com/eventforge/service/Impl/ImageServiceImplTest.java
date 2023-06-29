@@ -20,11 +20,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Optional;
 
+import static org.aspectj.bridge.MessageUtil.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -154,4 +158,29 @@ class ImageServiceImplTest {
         verify(imageRepository).deleteById(logo.getId());
     }
 
+    @Test
+    void testDownloadImage() {
+        try {
+            String testData = "Test image data";
+            File tempFile = File.createTempFile("test-image", ".jpg");
+            tempFile.deleteOnExit();
+            try (FileWriter writer = new FileWriter(tempFile)) {
+                writer.write(testData);
+            }
+           String imageUrl = tempFile.getAbsolutePath();
+            String result = ImageServiceImpl.downloadImage(imageUrl);
+
+            assertThat(result).isEqualTo("VGVzdCBpbWFnZSBkYXRh");
+        } catch (IOException e) {
+            fail("Failed to create a temporary file: " + e.getMessage());
+        }
+    }
+    @Test
+    void testDownloadImage_FileNotFound() {
+        String imageUrl = "invalid/file/path.jpg";
+
+        assertThatExceptionOfType(ImageException.class)
+                .isThrownBy(() -> ImageServiceImpl.downloadImage(imageUrl))
+                .withMessage("Изображението не е намерено");
+    }
 }

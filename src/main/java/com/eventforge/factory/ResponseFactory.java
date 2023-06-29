@@ -8,6 +8,7 @@ import com.eventforge.model.Event;
 import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
 import com.eventforge.repository.ImageRepository;
+import com.eventforge.service.Impl.ImageServiceImpl;
 import com.eventforge.service.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,15 @@ public class ResponseFactory {
         Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
         Integer countEvents = org.getEvents().size();
 
+        String logoData = "";
         String logoUrl = (logo != null) ? logo.getUrl() : null;
+        if (logo != null) {
+            logoData = ImageServiceImpl.downloadImage(logoUrl);
+        }
 
         return OrganisationResponseForAdmin.builder().
                 userId(org.getUser().getId())
-                .logo(logoUrl)
+                .logo(logoData)
                 .email(org.getUser().getUsername())
                 .isEnabled(org.getUser().getIsEnabled())
                 .isApprovedByAdmin(org.getUser().getIsApprovedByAdmin())
@@ -45,10 +50,17 @@ public class ResponseFactory {
     public OneTimeEventResponse buildOneTimeEventResponse(Event event) {
         Image eventPicture = event.getEventImage();
         Long imageId = eventPicture != null ? eventPicture.getId() : null;
+
+        String eventPictureData ="";
+        String eventPictureUrl = (eventPicture != null) ? eventPicture.getUrl() : null;
+        if (eventPicture != null) {
+            eventPictureData = ImageServiceImpl.downloadImage(eventPictureUrl);
+        }
+
         return OneTimeEventResponse.builder()
                 .id(event.getId())
                 .imageId(imageId)
-                .imageUrl(eventPicture != null ? eventPicture.getUrl() : null)
+                .image(eventPictureData)
                 .name(event.getName())
                 .description(event.getDescription())
                 .address(event.getAddress())
@@ -65,29 +77,46 @@ public class ResponseFactory {
         Image background = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
         Set<String> orgPriorities = utils.convertListOfOrganisationPrioritiesToString(org.getOrganisationPriorities());
 
+        String logoData = "";
         String logoUrl = (logo != null) ? logo.getUrl() : null;
-        String backgroundUrl = (background != null) ? background.getUrl() : null;
+        if (logo != null) {
+            logoData = ImageServiceImpl.downloadImage(logoUrl);
+        }
 
-        return OrganisationResponse.builder().
-                orgId(org.getId())
-                .logo(logoUrl)
-                .background(backgroundUrl)
-                .name(org.getName())
-                .bullstat(org.getBullstat())
-                .username(org.getUser().getUsername())
-                .phone(org.getUser().getPhoneNumber())
-                .address(org.getAddress())
-                .charityOption(org.getCharityOption())
-                .organisationPurpose(org.getOrganisationPurpose())
-                .organisationPriorities(orgPriorities)
-                .registeredAt(org.getRegisteredAt())
-                .updatedAt(org.getUpdatedAt())
-                .build();
-    }
+        String backgroundData="";
+        String backgroundUrl = (background != null) ? background.getUrl() : null;
+        if (background != null) {
+            backgroundData = ImageServiceImpl.downloadImage(backgroundUrl);
+        }
+            return OrganisationResponse.builder().
+                    orgId(org.getId())
+                    .logo(logoData)
+                    .background(backgroundData)
+                    .name(org.getName())
+                    .bullstat(org.getBullstat())
+                    .username(org.getUser().getUsername())
+                    .phone(org.getUser().getPhoneNumber())
+                    .address(org.getAddress())
+                    .charityOption(org.getCharityOption())
+                    .organisationPurpose(org.getOrganisationPurpose())
+                    .organisationPriorities(orgPriorities)
+                    .registeredAt(org.getRegisteredAt())
+                    .updatedAt(org.getUpdatedAt())
+                    .build();
+        }
 
     public RecurrenceEventResponse buildRecurrenceEventResponse(Event event) {
+        Long imageId =  event.getEventImage() != null ?  event.getEventImage().getId() : null;
+        String eventPictureData ="";
+        String eventPictureUrl = ( event.getEventImage() != null) ?  event.getEventImage().getUrl() : null;
+        if ( event.getEventImage() != null) {
+            eventPictureData = ImageServiceImpl.downloadImage(eventPictureUrl);
+        }
+
         return RecurrenceEventResponse.builder()
                 .id(event.getId())
+                .imageId(imageId)
+                .image(eventPictureData)
                 .name(event.getName())
                 .description(event.getDescription())
                 .address(event.getAddress())
