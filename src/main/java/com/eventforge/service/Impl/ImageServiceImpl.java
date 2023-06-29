@@ -15,12 +15,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -37,7 +42,6 @@ public class ImageServiceImpl {
     private final OrganisationService organisationService;
 
     private final EventServiceImpl eventService;
-
 
     public void uploadImageToFileSystem(MultipartFile file, ImageType imageType, Organisation organisation, Event event) {
         String fileName = file.getOriginalFilename();
@@ -185,7 +189,6 @@ public class ImageServiceImpl {
         return imageOptional.isPresent();
     }
 
-
     @Nullable
     String getFileExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf(".");
@@ -195,7 +198,6 @@ public class ImageServiceImpl {
         return null;
     }
 
-
     protected void deleteImageFile(String filePath) {
         Path fileToDelete = Paths.get(filePath);
         try {
@@ -203,5 +205,28 @@ public class ImageServiceImpl {
         } catch (IOException e) {
             throw new ImageException("Грешка при опит за изтриването на файла.");
         }
+    }
+    public static String encodeImage(String url) {
+        String base64Image = "";
+        File file = new File(url);
+        try (FileInputStream imageInFile = new FileInputStream(file)) {
+            byte[] imageData = new byte[(int) file.length()];
+            int bytesRead;
+            int totalBytesRead = 0;
+
+            while ((bytesRead = imageInFile.read(imageData, totalBytesRead, imageData.length - totalBytesRead)) != -1) {
+                totalBytesRead += bytesRead;
+                if (totalBytesRead == imageData.length) {
+                    break;
+                }
+            }
+            base64Image = Base64.getEncoder().encodeToString(Arrays.copyOf(imageData, totalBytesRead));
+            log.info("Total bytes read: " + totalBytesRead);
+        } catch (FileNotFoundException e) {
+            throw new ImageException("Изображението не е намерено");
+        } catch (IOException e) {
+            throw new ImageException("Грешка с прочитането на изображението");
+        }
+        return base64Image;
     }
 }
