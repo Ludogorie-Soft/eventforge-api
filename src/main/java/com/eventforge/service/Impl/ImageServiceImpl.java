@@ -44,6 +44,9 @@ public class ImageServiceImpl {
     private final EventServiceImpl eventService;
 
     public void uploadImageToFileSystem(MultipartFile file, ImageType imageType, Organisation organisation, Event event) {
+       if(file == null){
+           return;
+       }
         String fileName = file.getOriginalFilename();
         if (doesFileNameExists(fileName)) {
             throw new ImageException("Файл с това име вече съществува.");
