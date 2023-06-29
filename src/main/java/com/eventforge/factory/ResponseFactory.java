@@ -60,7 +60,7 @@ public class ResponseFactory {
         return OneTimeEventResponse.builder()
                 .id(event.getId())
                 .imageId(imageId)
-                .image(eventPictureData)
+                .imageUrl(eventPictureData)
                 .name(event.getName())
                 .description(event.getDescription())
                 .address(event.getAddress())

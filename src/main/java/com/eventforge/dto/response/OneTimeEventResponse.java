@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class OneTimeEventResponse {
     private Long id;
     private Long imageId;
-    private String image;
+    private String imageUrl;
     private String name;
     private String description;
     private String address;
