@@ -34,8 +34,8 @@ public class AuthenticationService {
     private final JWTService jwtService;
 
 
-    public User register(RegistrationRequest registrationRequest , MultipartFile logo , MultipartFile backgroundCover){
-        return entityFactory.createOrganisation(registrationRequest, logo , backgroundCover);
+    public User register(RegistrationRequest registrationRequest){
+        return entityFactory.createOrganisation(registrationRequest);
     }
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
