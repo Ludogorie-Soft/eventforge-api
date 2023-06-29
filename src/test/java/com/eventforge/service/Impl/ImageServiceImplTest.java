@@ -168,7 +168,7 @@ class ImageServiceImplTest {
                 writer.write(testData);
             }
            String imageUrl = tempFile.getAbsolutePath();
-            String result = ImageServiceImpl.downloadImage(imageUrl);
+            String result = ImageServiceImpl.encodeImage(imageUrl);
 
             assertThat(result).isEqualTo("VGVzdCBpbWFnZSBkYXRh");
         } catch (IOException e) {
@@ -180,7 +180,7 @@ class ImageServiceImplTest {
         String imageUrl = "invalid/file/path.jpg";
 
         assertThatExceptionOfType(ImageException.class)
-                .isThrownBy(() -> ImageServiceImpl.downloadImage(imageUrl))
+                .isThrownBy(() -> ImageServiceImpl.encodeImage(imageUrl))
                 .withMessage("Изображението не е намерено");
     }
 }

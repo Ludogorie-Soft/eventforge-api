@@ -29,7 +29,7 @@ public class ResponseFactory {
         String logoData = "";
         String logoUrl = (logo != null) ? logo.getUrl() : null;
         if (logo != null) {
-            logoData = ImageServiceImpl.downloadImage(logoUrl);
+            logoData = ImageServiceImpl.encodeImage(logoUrl);
         }
 
         return OrganisationResponseForAdmin.builder().
@@ -54,7 +54,7 @@ public class ResponseFactory {
         String eventPictureData ="";
         String eventPictureUrl = (eventPicture != null) ? eventPicture.getUrl() : null;
         if (eventPicture != null) {
-            eventPictureData = ImageServiceImpl.downloadImage(eventPictureUrl);
+            eventPictureData = ImageServiceImpl.encodeImage(eventPictureUrl);
         }
 
         return OneTimeEventResponse.builder()
@@ -80,13 +80,13 @@ public class ResponseFactory {
         String logoData = "";
         String logoUrl = (logo != null) ? logo.getUrl() : null;
         if (logo != null) {
-            logoData = ImageServiceImpl.downloadImage(logoUrl);
+            logoData = ImageServiceImpl.encodeImage(logoUrl);
         }
 
         String backgroundData="";
         String backgroundUrl = (background != null) ? background.getUrl() : null;
         if (background != null) {
-            backgroundData = ImageServiceImpl.downloadImage(backgroundUrl);
+            backgroundData = ImageServiceImpl.encodeImage(backgroundUrl);
         }
             return OrganisationResponse.builder().
                     orgId(org.getId())
@@ -110,7 +110,7 @@ public class ResponseFactory {
         String eventPictureData ="";
         String eventPictureUrl = ( event.getEventImage() != null) ?  event.getEventImage().getUrl() : null;
         if ( event.getEventImage() != null) {
-            eventPictureData = ImageServiceImpl.downloadImage(eventPictureUrl);
+            eventPictureData = ImageServiceImpl.encodeImage(eventPictureUrl);
         }
 
         return RecurrenceEventResponse.builder()
