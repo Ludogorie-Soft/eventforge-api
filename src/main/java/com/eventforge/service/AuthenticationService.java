@@ -21,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +34,8 @@ public class AuthenticationService {
     private final JWTService jwtService;
 
 
-    public User register(RegistrationRequest registrationRequest){
-        return entityFactory.createOrganisation(registrationRequest);
+    public User register(RegistrationRequest registrationRequest , MultipartFile logo , MultipartFile backgroundCover){
+        return entityFactory.createOrganisation(registrationRequest, logo , backgroundCover);
     }
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
