@@ -1,9 +1,8 @@
 package com.eventforge.dto.request;
 
-import com.eventforge.annotation.OrganisationPriorityNotNull;
+import com.eventforge.annotation.RegistrationOrganisationPriorityNotNull;
 import com.eventforge.annotation.PasswordsMustMatch;
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -22,10 +21,10 @@ import static com.eventforge.constants.regex.Regex.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@OrganisationPriorityNotNull
+@RegistrationOrganisationPriorityNotNull
 @PasswordsMustMatch
-public class RegistrationRequest {
-    @Pattern(regexp = EMAIL_PATTERN,message = "Грешно въведена електронна поща. Трябва да е във формат \"<потребител>@<домейн>.<tld>\"")
+public class RegistrationRequest  {
+    @Pattern(regexp = EMAIL_PATTERN, message = "Грешно въведена електронна поща. Трябва да е във формат \"<потребител>@<домейн>.<tld>\"")
     private String username;
     @Size(min = 5, max = 30, message = "Името на организацията трябва да е между 5 и 30 символа!")
     private String name;
@@ -36,9 +35,12 @@ public class RegistrationRequest {
     private String bullstat;
     @Nullable
     private Set<String> organisationPriorities;
+
     @Nullable
     private String optionalCategory;
-    @Size (min = 15 , message = "Обоснованието трябва да е поне 15 символа!")
+
+
+    @Size(min = 15, message = "Обоснованието трябва да е поне 15 символа!")
     private String organisationPurpose;
     @Nullable
 //    @Max(value = 5 * 1024 * 1024, message = "Снимката не може да надвишата повече от 5MB.")
@@ -50,13 +52,13 @@ public class RegistrationRequest {
     @URL(message = "Моля въведете валиден линк")
     private String website;
     @Nullable
-    @Pattern(regexp = FACEBOOK_PATTERN , message = "Моля въведете валиден фейсбук линк (www.facebook.com/...)")
+    @Pattern(regexp = FACEBOOK_PATTERN, message = "Моля въведете валиден фейсбук линк (www.facebook.com/...)")
     private String facebookLink;
-    @Pattern(regexp = FULL_NAME_PATTERN  , message = "Моля използвайте само тирета,букви на кирилица или латиница")
-    @Size(min = 8 , message = "Името трябва трябва да съдържа поне 8 символа!")
+    @Pattern(regexp = FULL_NAME_PATTERN, message = "Моля използвайте само тирета,букви на кирилица или латиница")
+    @Size(min = 8, message = "Името трябва трябва да съдържа поне 8 символа!")
     private String fullName;
-    @Pattern(regexp = PHONE_NUMBER_PATTERN , message = "Невалиден телефонен номер. Позволени са само цифри и знакът +")
-    @Size(min = 10 , max = 13 , message = "Невалиден телефонен номер.Телефонният номер трябва да съдържа между 10 и 13 цифри")
+    @Pattern(regexp = PHONE_NUMBER_PATTERN, message = "Невалиден телефонен номер. Позволени са само цифри и знакът +")
+    @Size(min = 10, max = 13, message = "Невалиден телефонен номер.Телефонният номер трябва да съдържа между 10 и 13 цифри")
     private String phoneNumber;
     @Nullable
     private String charityOption;
@@ -65,4 +67,5 @@ public class RegistrationRequest {
     private String password;
     @NotNull
     private String confirmPassword;
+
 }

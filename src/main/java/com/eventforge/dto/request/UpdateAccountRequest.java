@@ -1,5 +1,6 @@
 package com.eventforge.dto.request;
 
+import com.eventforge.annotation.UpdateOrganisationPriorityNotNull;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -17,7 +18,8 @@ import static com.eventforge.constants.regex.Regex.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateAccountRequest {
+@UpdateOrganisationPriorityNotNull
+public class UpdateAccountRequest  {
     @Size(min = 5, max = 30, message = "Името на организацията трябва да е между 5 и 30 символа!")
     private String name;
 

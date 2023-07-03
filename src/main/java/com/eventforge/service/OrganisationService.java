@@ -68,6 +68,8 @@ public class OrganisationService {
             userService.saveUserInDb(currentLoggedUser);
             Organisation organisation = getOrganisationByUserUsername(currentLoggedUser.getUsername());
             organisation.setName(request.getName());
+            organisation.setWebsite(request.getWebsite());
+            organisation.setFacebookLink(request.getFacebookLink());
             organisation.setBullstat(request.getBullstat());
             organisation.setUser(currentLoggedUser);
             organisation.setAddress(request.getAddress());
