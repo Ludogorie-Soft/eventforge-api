@@ -65,7 +65,7 @@ public class UserService {
         if (user != null) {
             if (!utils.isPasswordValid(request.getOldPassword(), user.getPassword())) {
                 log.info("Unsuccessful attempt to change the password for user" + user.getUsername());
-                throw new InvalidPasswordException("Въвели сте грешна парола.");
+                throw new InvalidPasswordException("Паролата не съответства на запазената в базата данни.");
             }
             if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
                 log.info("Unsuccessful attempt to change the password for user" + user.getUsername());
