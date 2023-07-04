@@ -43,6 +43,41 @@ public class ImageServiceImpl {
 
     private final EventServiceImpl eventService;
 
+    public void saveImageToDb(String logo , String cover , String eventPicture , Organisation org , Event event){
+        Image image = new Image();
+        Image imageToDelete;
+        if(logo!=null){
+             imageToDelete = imageRepository.findOrganisationLogoByOrgId(org.getId());
+             if(imageToDelete!=null){
+                 imageRepository.delete(imageToDelete);
+             }
+            image.setUrl(logo);
+            image.setType(ImageType.LOGO);
+            image.setOrganisation(org);
+            imageRepository.save(image);
+        }
+        if(cover!=null){
+            imageToDelete = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
+            if(imageToDelete!=null){
+                imageRepository.delete(imageToDelete);
+            }
+            image.setUrl(cover);
+            image.setType(ImageType.COVER);
+            image.setOrganisation(org);
+            imageRepository.save(image);
+        }
+        if(eventPicture!=null){
+            imageToDelete = imageRepository.findEventPicture(event.getId());
+            if(imageToDelete!=null){
+                imageRepository.delete(imageToDelete);
+            }
+            image.setUrl(eventPicture);
+            image.setType(ImageType.EVENT_PICTURE);
+            image.setEvent(event);
+            imageRepository.save(image);
+        }
+    }
+
     public void uploadImageToFileSystem(MultipartFile file, ImageType imageType, Organisation organisation, Event event) {
        if(file == null){
            return;

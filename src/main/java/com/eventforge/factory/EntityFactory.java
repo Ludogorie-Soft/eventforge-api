@@ -47,11 +47,10 @@ public class EntityFactory {
                 .minAge(eventRequest.getMinAge())
                 .maxAge(eventRequest.getMaxAge())
                 .recurrenceDetails(eventRequest.getRecurrenceDetails())
-//                .eventImage((Image) eventRequest.getImage())
                 .isOneTime(eventRequest.getIsOneTime())
                 .build();
         eventService.saveEvent(event);
-        imageService.uploadImageToFileSystem(eventRequest.getImage(),ImageType.EVENT_PICTURE ,null, event);
+        imageService.saveImageToDb(null,null ,eventRequest.getImage(),null ,event);
         return event;
     }
 
@@ -75,9 +74,9 @@ public class EntityFactory {
 
         organisationService.saveOrganisationInDb(org);
         assert request.getLogo() != null;
-        imageService.uploadImageToFileSystem(request.getLogo(), ImageType.LOGO, org , null);
+        imageService.saveImageToDb(request.getLogo(), null,null, org , null);
         assert request.getBackgroundCover() != null;
-        imageService.uploadImageToFileSystem(request.getBackgroundCover(),ImageType.COVER , org , null);
+        imageService.saveImageToDb(null,request.getBackgroundCover(),null, org , null);
         return user;
     }
 

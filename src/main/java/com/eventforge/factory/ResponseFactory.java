@@ -25,12 +25,7 @@ public class ResponseFactory {
     public OrganisationResponseForAdmin buildOrganisationResponseForAdmin(Organisation org) {
         Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
         Integer countEvents = org.getEvents().size();
-
-        String logoData = "";
-        String logoUrl = (logo != null) ? logo.getUrl() : null;
-        if (logo != null) {
-            logoData = ImageServiceImpl.encodeImage(logoUrl);
-        }
+        String logoData = logo.getUrl();
 
         return OrganisationResponseForAdmin.builder().
                 userId(org.getUser().getId())
@@ -51,11 +46,8 @@ public class ResponseFactory {
         Image eventPicture = event.getEventImage();
         Long imageId = eventPicture != null ? eventPicture.getId() : null;
 
-        String eventPictureData ="";
-        String eventPictureUrl = (eventPicture != null) ? eventPicture.getUrl() : null;
-        if (eventPicture != null) {
-            eventPictureData = ImageServiceImpl.encodeImage(eventPictureUrl);
-        }
+        String eventPictureData =eventPicture.getUrl();
+
 
         return OneTimeEventResponse.builder()
                 .id(event.getId())
@@ -77,17 +69,10 @@ public class ResponseFactory {
         Image background = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
         Set<String> orgPriorities = utils.convertListOfOrganisationPrioritiesToString(org.getOrganisationPriorities());
 
-        String logoData = "";
-        String logoUrl = (logo != null) ? logo.getUrl() : null;
-        if (logo != null) {
-            logoData = ImageServiceImpl.encodeImage(logoUrl);
-        }
+        String logoData = logo.getUrl();
 
-        String backgroundData="";
-        String backgroundUrl = (background != null) ? background.getUrl() : null;
-        if (background != null) {
-            backgroundData = ImageServiceImpl.encodeImage(backgroundUrl);
-        }
+        String backgroundData= background.getUrl();
+
             return OrganisationResponse.builder().
                     orgId(org.getId())
                     .logo(logoData)
@@ -107,11 +92,9 @@ public class ResponseFactory {
 
     public RecurrenceEventResponse buildRecurrenceEventResponse(Event event) {
         Long imageId =  event.getEventImage() != null ?  event.getEventImage().getId() : null;
-        String eventPictureData ="";
-        String eventPictureUrl = ( event.getEventImage() != null) ?  event.getEventImage().getUrl() : null;
-        if ( event.getEventImage() != null) {
-            eventPictureData = ImageServiceImpl.encodeImage(eventPictureUrl);
-        }
+        String eventPictureData =event.getEventImage().getUrl();
+
+
 
         return RecurrenceEventResponse.builder()
                 .id(event.getId())
