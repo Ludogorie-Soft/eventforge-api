@@ -69,7 +69,7 @@ public class OrganisationController {
     @PostMapping("/event-picture-upload/{eventId}")
     public ResponseEntity<String> updateEventPicture(@RequestHeader(AUTHORIZATION) String authHeader,@RequestParam("eventPicture") String eventPicture ,@PathVariable("eventId")Long eventId){
         Optional<Event> event = eventService.findEventById(eventId);
-        imageService.saveImageToDb(null,null,eventPicture , null , event.get());
+        event.ifPresent(value -> imageService.saveImageToDb(null, null, eventPicture, null, value));
         return new ResponseEntity<>("Успешно променихте снимката на събитието" ,HttpStatus.OK);
     }
 
