@@ -8,7 +8,6 @@ import com.eventforge.model.Event;
 import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
 import com.eventforge.repository.ImageRepository;
-import com.eventforge.service.Impl.ImageServiceImpl;
 import com.eventforge.service.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,7 +43,7 @@ public class ResponseFactory {
 
     public OneTimeEventResponse buildOneTimeEventResponse(Event event) {
         Image eventPicture = event.getEventImage();
-        Long imageId = eventPicture != null ? eventPicture.getId() : null;
+        Long imageId = eventPicture.getId();
 
         String eventPictureData =eventPicture.getUrl();
 
@@ -99,7 +98,7 @@ public class ResponseFactory {
         return RecurrenceEventResponse.builder()
                 .id(event.getId())
                 .imageId(imageId)
-                .image(eventPictureData)
+                .imageUrl(eventPictureData)
                 .name(event.getName())
                 .description(event.getDescription())
                 .address(event.getAddress())

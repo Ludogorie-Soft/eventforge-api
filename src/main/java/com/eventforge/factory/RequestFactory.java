@@ -3,9 +3,11 @@ package com.eventforge.factory;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.model.Event;
+import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
+import com.eventforge.repository.ImageRepository;
 import com.eventforge.service.Impl.EventServiceImpl;
 import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.OrganisationService;
@@ -24,6 +26,8 @@ import java.util.Set;
 public class RequestFactory {
 
     private final UserService userService;
+
+    private final ImageRepository imageRepository;
 
     private final OrganisationService organisationService;
 

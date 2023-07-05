@@ -9,6 +9,11 @@ import com.eventforge.dto.response.RecurrenceEventResponse;
 import com.eventforge.dto.response.container.EventResponseContainer;
 import com.eventforge.factory.EntityFactory;
 import com.eventforge.factory.RequestFactory;
+import com.eventforge.model.Event;
+import com.eventforge.model.Image;
+import com.eventforge.model.Organisation;
+import com.eventforge.model.User;
+import com.eventforge.repository.ImageRepository;
 import com.eventforge.service.Impl.EventServiceImpl;
 import com.eventforge.service.Impl.ImageServiceImpl;
 import com.eventforge.service.OrganisationService;
@@ -20,7 +25,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,21 +46,30 @@ public class OrganisationController {
 
     private final ImageServiceImpl imageService;
 
+    private final ImageRepository imageRepository;
 
-    @PostMapping("/logo-upload")
-    public ResponseEntity<String> updateLogo(@RequestHeader(AUTHORIZATION)String authHeader,@RequestParam("file") @Valid MultipartFile image){
-        imageService.updateOrganisationLogo(authHeader ,image);
-            return new ResponseEntity<>("Успешна актуализация на логото" , HttpStatus.OK);
+    @GetMapping("/show-pictures")
+    public ResponseEntity<List<String>> getOrganisationLogoAndCover(@RequestHeader(AUTHORIZATION)String authHeader){
+        User user = userService.getLoggedUserByToken(authHeader);
+        Organisation org = organisationService.getOrganisationByUserId(user.getId());
+        Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
+        Image cover = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
+        return new ResponseEntity<>(Arrays.asList(logo.getUrl(),cover.getUrl()),HttpStatus.OK);
     }
 
-    @PostMapping("/cover-upload")
-    public ResponseEntity<String> updateCover(@RequestHeader(AUTHORIZATION)String authHeader ,@RequestParam("file") @Valid MultipartFile image){
-        imageService.updateOrganisationCoverPicture(authHeader , image);
-        return new ResponseEntity<>("Успешна актуализация на корицата" ,HttpStatus.OK);
+    @PostMapping("/change-picture")
+    public ResponseEntity<String> updateLogo(@RequestHeader(AUTHORIZATION)String authHeader,@RequestParam(value = "logo" , required = false) String logo , @RequestParam(value = "cover" , required = false)String cover){
+        User user = userService.getLoggedUserByToken(authHeader);
+        Organisation organisation = organisationService.getOrganisationByUserId(user.getId());
+        imageService.saveImageToDb(logo, null , null, organisation , null);
+        imageService.saveImageToDb(null , cover , null , organisation , null);
+            return new ResponseEntity<>("Успешно променихте логото/корицата!" , HttpStatus.OK);
     }
-    @PostMapping("/event-picture-upload/{eventId}/{imageId}")
-    public ResponseEntity<String> updateEventPicture(@RequestParam("file") @Valid MultipartFile image ,@PathVariable("eventId")Long eventId ,@PathVariable("imageId")Long imageId){
-        imageService.updateEventPicture(eventId,imageId,image);
+    
+    @PostMapping("/event-picture-upload/{eventId}")
+    public ResponseEntity<String> updateEventPicture(@RequestHeader(AUTHORIZATION) String authHeader,@RequestParam("eventPicture") String eventPicture ,@PathVariable("eventId")Long eventId){
+        Optional<Event> event = eventService.findEventById(eventId);
+        imageService.saveImageToDb(null,null,eventPicture , null , event.get());
         return new ResponseEntity<>("Успешно променихте снимката на събитието" ,HttpStatus.OK);
     }
 
