@@ -27,8 +27,6 @@ public class RequestFactory {
 
     private final UserService userService;
 
-    private final ImageRepository imageRepository;
-
     private final OrganisationService organisationService;
 
     private final Utils utils;
