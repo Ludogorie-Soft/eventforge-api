@@ -1,6 +1,5 @@
 package com.eventforge.factory;
 
-import com.eventforge.constants.ImageType;
 import com.eventforge.constants.Role;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.RegistrationRequest;
@@ -50,7 +49,7 @@ public class EntityFactory {
                 .isOneTime(eventRequest.getIsOneTime())
                 .build();
         eventService.saveEvent(event);
-        imageService.saveImageToDb(null,null ,eventRequest.getImage(),null ,event);
+        imageService.saveImageToDb(null,null ,eventRequest.getImageUrl(),null ,event);
         return event;
     }
 
