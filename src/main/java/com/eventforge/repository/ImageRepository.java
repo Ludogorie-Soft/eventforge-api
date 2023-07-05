@@ -20,4 +20,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     @Query("SELECT i FROM Image i WHERE i.event.id = :id AND i.type = 'EVENT_PICTURE' AND i.id = :imageId")
     Image findEventPictureByEventIdImage(Long id , Long imageId);
+
+    @Query("SELECT i FROM Image i WHERE i.event.id = :eventId AND i.type = 'EVENT_PICTURE'")
+    Image findEventPicture(Long eventId);
 }

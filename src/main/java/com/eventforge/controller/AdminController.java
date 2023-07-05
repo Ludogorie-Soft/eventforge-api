@@ -23,15 +23,15 @@ public class AdminController {
     private final EventServiceImpl eventService;
 
 
-    @GetMapping("/organisation-management/approved-accounts")
-    public ResponseEntity<List<OrganisationResponseForAdmin>> getAllApprovedOrganisationsForAdmin(@RequestHeader("Authorization")String authHeader ){
-        return new ResponseEntity<>(organisationService.getAllApprovedOrganisationsForAdmin() ,HttpStatus.OK);
+    @GetMapping("/organisation-management")
+    public ResponseEntity<List<OrganisationResponseForAdmin>> getAllOrganisationsForAdminByApprovedOrNot(@RequestHeader("Authorization")String authHeader , @RequestParam("isApproved") boolean isApproved ){
+        return new ResponseEntity<>(organisationService.getAllOrganisationsForAdminByApprovedOrNot(isApproved) ,HttpStatus.OK);
     }
 
-    @GetMapping("/organisation-management/unapproved-accounts")
-    public ResponseEntity<List<OrganisationResponseForAdmin>> getAllUnapprovedOrganisationsForAdmin(@RequestHeader("Authorization")String authHeader){
-        return new ResponseEntity<>(organisationService.getAllUnapprovedOrganisationForAdmin() , HttpStatus.OK);
-    }
+//    @GetMapping("/organisation-management/unapproved-accounts")
+//    public ResponseEntity<List<OrganisationResponseForAdmin>> getAllUnapprovedOrganisationsForAdmin(@RequestHeader("Authorization")String authHeader){
+//        return new ResponseEntity<>(organisationService.getAllUnapprovedOrganisationForAdmin() , HttpStatus.OK);
+//    }
     @PutMapping("/organisation-management/ban-account/{id}/{email}")
     public ResponseEntity<String> banAccountById(@RequestHeader("Authorization")String authHeader , @PathVariable("id")Long id , @PathVariable("email")String email){
         userService.lockAccountById(id);

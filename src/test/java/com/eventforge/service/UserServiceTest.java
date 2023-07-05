@@ -238,7 +238,7 @@ class UserServiceTest {
         InvalidPasswordException exception = assertThrows(InvalidPasswordException.class,
                 () -> userService.changeAccountPassword(token, request));
 
-        assertEquals("Въвели сте грешна парола.", exception.getMessage());
+        assertEquals("Паролата не съответства на запазената в базата данни.", exception.getMessage());
     }
 
     @Test
