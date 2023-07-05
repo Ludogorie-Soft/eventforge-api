@@ -122,7 +122,7 @@ public class OrganisationController {
     @PostMapping("create-event")
     public ResponseEntity<String> submitCreatedEvent(@RequestBody EventRequest eventRequest, @RequestHeader(AUTHORIZATION) String authHeader) {
         entityFactory.createEvent(eventRequest , authHeader);
-        return new ResponseEntity<>("Успешно създано събитие", HttpStatus.CREATED);
+        return new ResponseEntity<>("Успешно създадохте събитие", HttpStatus.CREATED);
     }
 
     @GetMapping("/update-event/{id}")
