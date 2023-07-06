@@ -23,6 +23,7 @@ public class ExceptionHandler {
                 .body(e.getMessage());
     }
 
+
     @org.springframework.web.bind.annotation.ExceptionHandler(EmailAlreadyTakenException.class)
     public ResponseEntity<String> handleEmailAlreadyTakenException(EmailAlreadyTakenException ex) {
         return ResponseEntity.status(ex.getHttpStatus())
@@ -57,6 +58,10 @@ public class ExceptionHandler {
         return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
                 .contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
+
+
+
+
 
     @org.springframework.web.bind.annotation.ExceptionHandler(UserDisabledException.class)
     public ResponseEntity<String> handleUserDisabledException(UserDisabledException ex) {

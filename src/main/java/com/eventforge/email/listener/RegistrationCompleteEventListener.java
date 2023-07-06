@@ -44,7 +44,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         userService.saveUserVerificationToken(theUser , verificationToken);
 
         //4. Build the verification url to be sent to the user.
-        String url = event.getApplicationUrl()+"/auth/verifyEmail?verificationToken="+verificationToken;
+        String url = "http://localhost:8080/verifyEmail?verificationToken="+verificationToken;
         log.info("Линк за потвърждение на регистрация : {} ",url);
         //5. Send  the email.
         try {
@@ -71,7 +71,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         mailSender.send(message);
     }
     public void resendVerificationTokenEmail(User user, String applicationUrl, VerificationToken verificationToken) throws MessagingException, UnsupportedEncodingException {
-        String url = applicationUrl+"/auth/verifyEmail?verificationToken="+verificationToken.getToken();
+        String url = applicationUrl+verificationToken.getToken();
         sendVerificationEmail(url , user);
     }
 

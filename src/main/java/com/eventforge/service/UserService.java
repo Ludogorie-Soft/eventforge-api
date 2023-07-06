@@ -83,18 +83,17 @@ public class UserService {
     public String validateVerificationToken(String verificationToken, String url) {
         VerificationToken verificationTokenDb = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
         if (verificationTokenDb == null) {
-            throw new InvalidEmailConfirmationLinkException();
+            throw new InvalidEmailConfirmationLinkException("Линкът за активация е навалиден");
         }
 
         User user = verificationTokenDb.getUser();
         Calendar calendar = Calendar.getInstance();
         if (verificationTokenDb.getExpirationTime().getTime() - calendar.getTime().getTime() <= 0) {
-            return "Линкът за активация е изтекъл , моля кликнете на следният линк за да генерирате нов - " +
-                    "<a href=\"" + url + "\"> Генерирай нов линк за активация.</a>";
+            return url;
         }
         updateUserIsEnabledFieldAfterConfirmedEmail(user);
         emailVerificationTokenService.deleteVerificationToken(verificationTokenDb);
-        return "Успешно потвърдихте акаунта си";
+        return "Успешно потвърдихте профилът си , вече можете да се впишете.";
     }
 
     public VerificationToken generateNewVerificationToken(String oldToken) {

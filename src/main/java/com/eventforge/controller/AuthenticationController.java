@@ -50,30 +50,32 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(
-            @Valid @RequestBody RegistrationRequest request, final HttpServletRequest httpServletRequest) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegistrationRequest request,@RequestParam("appUrl") String appUrl) {
         User user = authenticationService.register(request);
-        publisher.publishEvent(new RegistrationCompleteEvent(user, url.applicationUrl(httpServletRequest)));
+        publisher.publishEvent(new RegistrationCompleteEvent(user, appUrl));
         return new ResponseEntity<>("Успешна регистрация. Моля потвърдете имейла си.", HttpStatus.CREATED);
     }
 
     @GetMapping("/verifyEmail")
-    public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken) {
-        String appUrl = url.applicationUrl(servletRequest) + "/auth/resend-verification-token?verificationToken=" + verificationToken;
+    public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken ,@RequestParam("appUrl")String appUrl)  {
         VerificationToken verifyToken = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
-        if (Boolean.TRUE.equals(verifyToken.getUser().getIsEnabled())) {
-            return new ResponseEntity<>("Аканутът е вече потвърден, моля впишете се.", HttpStatus.IM_USED);
+        String redirectUrl = "";
+        if(verifyToken!=null){
+            if (Boolean.TRUE.equals(verifyToken.getUser().getIsEnabled())) {
+                return new ResponseEntity<>("Акантът Ви е вече потвърден. Моля впишете се." , HttpStatus.ALREADY_REPORTED);
+            }
         }
+
         String verificationResult = userService.validateVerificationToken(verificationToken, appUrl);
-        return new ResponseEntity<>(verificationResult, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(verificationResult ,HttpStatus.OK);
     }
 
     @GetMapping("/resend-verification-token")
-    public String resendVerificationToken(@RequestParam("verificationToken") String verificationToken, final HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public String resendVerificationToken(@RequestParam("verificationToken") String verificationToken,@RequestParam("appUrl")String appUrl) throws MessagingException, UnsupportedEncodingException {
         VerificationToken verificationTokenDb = userService.generateNewVerificationToken(verificationToken);
         User user = verificationTokenDb.getUser();
-        eventListener.resendVerificationTokenEmail(user, url.applicationUrl(request), verificationTokenDb);
-        return "test";
+        eventListener.resendVerificationTokenEmail(user, appUrl, verificationTokenDb);
+        return "Пратихме Ви нов линк за потвърждение. Моля посетете електронната си поща.";
     }
 
 
