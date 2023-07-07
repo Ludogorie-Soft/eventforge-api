@@ -22,7 +22,7 @@ import static com.eventforge.constants.regex.Regex.EVENT_CATEGORIES_PATTERN;
 public class EventRequest {
 
     @NotNull(message = "Моля прикачете снимка към събитието")
-    private String image;
+    private String imageUrl;
     @Size(min = 5, max = 30, message = "Името на събитието трява да е между 5 и 30 символа!")
     private String name;
     @Size(min = 5, max = 255, message = "Описанието трява да е между 5 и 255 символа!")
