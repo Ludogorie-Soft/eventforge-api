@@ -67,7 +67,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         MimeMessage message = mailSender.createMimeMessage();
 
         message.setSubject(subject);
-        message.setFrom(new InternetAddress(senderEmail));
+        message.setFrom(new InternetAddress(senderEmail ,"EventForge-Varna"));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getUsername()));
 
         MimeBodyPart messageBodyPart = new MimeBodyPart();
