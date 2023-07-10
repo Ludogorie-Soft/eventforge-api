@@ -8,6 +8,7 @@ import com.eventforge.exception.DateTimeException;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
+import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
@@ -36,17 +37,19 @@ public class EventServiceImpl implements EventService {
     private final ModelMapper mapper;
     private final EntityManager entityManager;
     private final ResponseFactory responseFactory;
+    private final ImageServiceImpl imageService;
 
     private final Utils utils;
 
-    public Optional<Event> findEventById(Long id){
+    public Optional<Event> findEventById(Long id) {
         return eventRepository.findById(id);
     }
-    public List<OneTimeEventResponse> getAllOneTimeEventsByOrganisationId(Long id){
+
+    public List<OneTimeEventResponse> getAllOneTimeEventsByOrganisationId(Long id) {
         return eventRepository.findAllOneTimeEventsByOrganisationId(id).stream().map(responseFactory::buildOneTimeEventResponse).toList();
     }
 
-    public List<RecurrenceEventResponse> getAllRecurrenceEventsByOrganisationId(Long id){
+    public List<RecurrenceEventResponse> getAllRecurrenceEventsByOrganisationId(Long id) {
         return eventRepository.findAllRecurrenceEventsByOrganisationId(id).stream().map(responseFactory::buildRecurrenceEventResponse).toList();
     }
 
@@ -91,10 +94,10 @@ public class EventServiceImpl implements EventService {
     public List<OneTimeEventResponse> getAllOneTimeEventsByUserId(String token) {
         User user = userService.getLoggedUserByToken(token);
 
-            return eventRepository.findAllOneTimeEventsByUserId(user.getId())
-                    .stream()
-                    .map(responseFactory::buildOneTimeEventResponse)
-                    .toList();
+        return eventRepository.findAllOneTimeEventsByUserId(user.getId())
+                .stream()
+                .map(responseFactory::buildOneTimeEventResponse)
+                .toList();
     }
 
     public List<RecurrenceEventResponse> getAllRecurrenceEventsByUserId(String token) {
@@ -118,19 +121,24 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<OneTimeEventResponse> getOneTimeEventsByNameByUserId(String token, String name) {
         User user = userService.getLoggedUserByToken(token);
-
-        return eventRepository.findOneTimeEventsByNameByUserId(user.getId(), name)
-                .stream()
-                .map(responseFactory::buildOneTimeEventResponse)
-                .toList();
+        if(name!=null && !name.isEmpty()){
+            return eventRepository.findOneTimeEventsByNameByUserId(user.getId(), name)
+                    .stream()
+                    .map(responseFactory::buildOneTimeEventResponse)
+                    .toList();
+        }
+       return getAllOneTimeEventsByUserId(token);
     }
 
     public List<RecurrenceEventResponse> getRecurrenceEventByNameByUserId(String token, String name) {
         User user = userService.getLoggedUserByToken(token);
-        return eventRepository.findRecurrenceEventsByNameByUserId(user.getId(), name)
-                .stream()
-                .map(responseFactory::buildRecurrenceEventResponse)
-                .toList();
+        if(name!=null && !name.isEmpty()){
+            return eventRepository.findRecurrenceEventsByNameByUserId(user.getId(), name)
+                    .stream()
+                    .map(responseFactory::buildRecurrenceEventResponse)
+                    .toList();
+        }
+      return getAllRecurrenceEventsByUserId(token);
     }
 
     public void deleteEventById(Long eventId) {
@@ -143,6 +151,10 @@ public class EventServiceImpl implements EventService {
     @Override
     public void updateEvent(Long eventId, EventRequest eventRequest) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventRequestException("Събитие с номер " + eventId + " не е намерено!"));
+            if(eventRequest.getImageUrl()!=null){
+                imageService.saveImageToDb(null, null, eventRequest.getImageUrl(), null, event);
+            }
+
         event.setName(eventRequest.getName());
         event.setDescription(eventRequest.getDescription());
         event.setAddress(eventRequest.getAddress());
@@ -162,7 +174,7 @@ public class EventServiceImpl implements EventService {
         CriteriaQuery<Event> query = cb.createQuery(Event.class);
         Root<Event> root = query.from(Event.class);
         List<Predicate> predicates = new ArrayList<>();
-
+        addCategoryPredicate(request , cb , root ,predicates);
         addNamePredicate(request, cb, root, predicates);
         addDescriptionPredicate(request, cb, root, predicates);
         addAddressPredicate(request, cb, root, predicates);
@@ -186,6 +198,15 @@ public class EventServiceImpl implements EventService {
             return resultList.stream()
                     .map(event -> responseFactory.buildRecurrenceEventResponse((Event) event))
                     .toList();
+        }
+    }
+
+    public void addCategoryPredicate(CriteriaFilterRequest request , CriteriaBuilder cb , Root<Event> root , List<Predicate> predicates){
+        if(request.getEventCategories()!=null){
+            String[] categories = request.getEventCategories().split(",");
+            for(String category : categories){
+                predicates.add(cb.like(root.get("eventCategories"),"%"+category.trim()+"%"));
+            }
         }
     }
 
@@ -248,7 +269,7 @@ public class EventServiceImpl implements EventService {
         if (request.getEndsAt() != null) {
             predicates.add(cb.greaterThanOrEqualTo(root.get("endsAt").as(LocalDateTime.class), request.getEndsAt()));
         }
-        if(request.getStartsAt()!= null && request.getEndsAt()!=null && request.getStartsAt().isAfter(request.getEndsAt())){
+        if (request.getStartsAt() != null && request.getEndsAt() != null && request.getStartsAt().isAfter(request.getEndsAt())) {
             throw new DateTimeException();
         }
     }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
       String LEGAL_USER_CONDITION ="e.organisation.user.isNonLocked = true AND e.organisation.user.isApprovedByAdmin = true";
@@ -44,4 +45,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("select e from Event e where e.organisation.user.id = :userId AND e.isOneTime = false AND e.name LIKE %:name%")
     List<Event> findRecurrenceEventsByNameByUserId(Long userId , String name );
 
+    @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.id = :eventId")
+    Event findEventByIdAndUserId(Long userId , Long eventId);
 }

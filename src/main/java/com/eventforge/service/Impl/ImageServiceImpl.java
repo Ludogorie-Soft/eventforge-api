@@ -15,14 +15,27 @@ import org.springframework.stereotype.Service;
 public class ImageServiceImpl {
     private final ImageRepository imageRepository;
 
+    public Image findEventImageByUrlAndEventId(String url , Long eventId){
+        return imageRepository.findEventImageByUrlAndEventId(url , eventId);
+    }
+
+    public Image findLogoByUrlAndOrgId(String url , Long orgId){
+        return imageRepository.findLogoByUrlAndOrgId(url , orgId);
+    }
+
+    public Image findCoverByUrlAndOrgId(String url , Long orgId){
+        return imageRepository.findCoverByUrlAndOrgId(url , orgId);
+    }
 
     public void saveImageToDb(String logo , String cover , String eventPicture , Organisation org , Event event ){
         Image image = new Image();
-        Image imageToDelete;
+        Image imageToUpdate;
         if(logo!=null){
-             imageToDelete = imageRepository.findOrganisationLogoByOrgId(org.getId());
-             if(imageToDelete!=null){
-                 imageRepository.delete(imageToDelete);
+             imageToUpdate = imageRepository.findOrganisationLogoByOrgId(org.getId());
+             if(imageToUpdate!=null){
+                 imageToUpdate.setUrl(logo);
+                 imageRepository.save(imageToUpdate);
+                 return;
              }
             image.setUrl(logo);
             image.setType(ImageType.LOGO);
@@ -32,9 +45,11 @@ public class ImageServiceImpl {
             return;
         }
         if(cover!=null){
-            imageToDelete = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
-            if(imageToDelete!=null){
-                imageRepository.delete(imageToDelete);
+            imageToUpdate = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
+            if(imageToUpdate!=null){
+                imageToUpdate.setUrl(cover);
+                imageRepository.save(imageToUpdate);
+                return;
             }
             image.setUrl(cover);
             image.setType(ImageType.COVER);
@@ -44,9 +59,11 @@ public class ImageServiceImpl {
             return;
         }
         if(eventPicture!=null){
-            imageToDelete = imageRepository.findEventPicture(event.getId());
-            if(imageToDelete!=null){
-                imageRepository.delete(imageToDelete);
+            imageToUpdate = imageRepository.findEventPicture(event.getId());
+            if(imageToUpdate!=null){
+                imageToUpdate.setUrl(eventPicture);
+                imageRepository.save(imageToUpdate);
+                return;
             }
             image.setUrl(eventPicture);
             image.setType(ImageType.EVENT_PICTURE);

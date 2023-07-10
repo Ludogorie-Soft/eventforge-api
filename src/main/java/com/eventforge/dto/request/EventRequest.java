@@ -1,7 +1,6 @@
 package com.eventforge.dto.request;
 
 import com.eventforge.annotation.AgeBoundary;
-import com.eventforge.annotation.DateTimeOrder;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -18,21 +17,19 @@ import static com.eventforge.constants.regex.Regex.EVENT_CATEGORIES_PATTERN;
 @AllArgsConstructor
 @Builder
 @AgeBoundary
-@DateTimeOrder
 public class EventRequest {
 
-    @NotNull(message = "Моля прикачете снимка към събитието")
     private String imageUrl;
     @Size(min = 5, max = 30, message = "Името на събитието трява да е между 5 и 30 символа!")
     private String name;
-    @Size(min = 5, max = 255, message = "Описанието трява да е между 5 и 255 символа!")
+    @Size(min = 100, max = 500, message = "Описанието трява да е между 100 и 500 символа!")
     private String description;
     @NotNull(message = "Моля маркирайте полето.")
     private Boolean isOnline;
     @Size(min = 5, max = 255, message = "Полето трява да съдържа поне 5 символа!")
     private String address;
     @Nullable
-    @Pattern(regexp = EVENT_CATEGORIES_PATTERN , message = "Моля използвайте само букви (латиница , кирилица) и запетаи")
+    @Pattern(regexp = EVENT_CATEGORIES_PATTERN , message = "Моля използвайте само букви (латиница , кирилица) и запетаи.Не са позволени други символи.")
     private String eventCategories;
 
     @Nullable
@@ -49,7 +46,7 @@ public class EventRequest {
     private Boolean isOneTime;
     @FutureOrPresent(message = "Невалидна дата. Не е възможно създаване на събитие с минала дата спрямо текущата!")
     private LocalDateTime startsAt;
-    @FutureOrPresent(message = "Невалидна дата. Не е възможно създаване на събитие с минала дата спрямо текущата!")
+    @FutureOrPresent(message = "Невалидна дата. Не е възможно създаване на събитие с минала дата спрямо текущата или с минала дата спрямо започване на събитието!")
     private LocalDateTime endsAt;
     @Nullable
     private String recurrenceDetails;

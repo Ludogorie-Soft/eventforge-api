@@ -2,6 +2,7 @@ package com.eventforge.factory;
 
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.UpdateAccountRequest;
+import com.eventforge.exception.EventRequestException;
 import com.eventforge.model.Event;
 import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
@@ -36,9 +37,9 @@ public class RequestFactory {
     private final EventRepository eventRepository;
 
 
-    public UpdateAccountRequest createUpdateAccountRequest(String token){
+    public UpdateAccountRequest createUpdateAccountRequest(String token) {
         User user = userService.getLoggedUserByToken(token);
-        if(user != null){
+        if (user != null) {
             Organisation organisation = organisationService.getOrganisationByUserId(user.getId());
             Set<String> getChosenOrganisationPriorities = utils.convertListOfOrganisationPrioritiesToString(organisation.getOrganisationPriorities());
             Set<String> allOrganisationPriorities = organisationPriorityService.getAllPriorityCategories();
@@ -61,26 +62,28 @@ public class RequestFactory {
     }
 
 
-    public EventRequest createEventRequestForUpdateOperation(Long id){
-        Optional<Event> foundEvent = eventRepository.findById(id);
-        if(foundEvent.isPresent()){
-            Event eventToUpdate = foundEvent.get();
+    public EventRequest createEventRequestForUpdateOperation(Long eventId, String token) {
+        User user = userService.getLoggedUserByToken(token);
+        Event foundEvent = eventRepository.findEventByIdAndUserId(user.getId(), eventId);
+            if(foundEvent==null){
+               throw new EventRequestException("Няма намерено събитие с посоченият от вас идентификационен номер: " + eventId);
+            } else {
+                return EventRequest.builder()
+                        .name(foundEvent.getName())
+                        .description(foundEvent.getDescription())
+                        .isOnline(foundEvent.getIsOnline())
+                        .address(foundEvent.getAddress())
+                        .eventCategories(foundEvent.getEventCategories())
+                        .price(foundEvent.getPrice())
+                        .minAge(foundEvent.getMinAge())
+                        .imageUrl(foundEvent.getEventImage().getUrl())
+                        .maxAge(foundEvent.getMaxAge())
+                        .isOneTime(foundEvent.getIsOneTime())
+                        .startsAt(foundEvent.getStartsAt())
+                        .endsAt(foundEvent.getEndsAt())
+                        .recurrenceDetails(foundEvent.getRecurrenceDetails())
+                        .build();
+            }
 
-            return EventRequest.builder()
-                    .name(eventToUpdate.getName())
-                    .description(eventToUpdate.getDescription())
-                    .isOnline(eventToUpdate.getIsOnline())
-                    .address(eventToUpdate.getAddress())
-                    .eventCategories(eventToUpdate.getEventCategories())
-                    .price(eventToUpdate.getPrice())
-                    .minAge(eventToUpdate.getMinAge())
-                    .maxAge(eventToUpdate.getMaxAge())
-                    .isOneTime(eventToUpdate.getIsOneTime())
-                    .startsAt(eventToUpdate.getStartsAt())
-                    .endsAt(eventToUpdate.getEndsAt())
-                    .recurrenceDetails(eventToUpdate.getRecurrenceDetails())
-                    .build();
-        }
-       return null;
     }
 }

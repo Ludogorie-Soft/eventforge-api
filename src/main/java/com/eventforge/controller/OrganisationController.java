@@ -66,12 +66,12 @@ public class OrganisationController {
             return new ResponseEntity<>("Успешно променихте логото/корицата!" , HttpStatus.OK);
     }
     
-    @PostMapping("/event-picture-upload/{eventId}")
-    public ResponseEntity<String> updateEventPicture(@RequestHeader(AUTHORIZATION) String authHeader,@RequestParam("eventPicture") String eventPicture ,@PathVariable("eventId")Long eventId){
-        Optional<Event> event = eventService.findEventById(eventId);
-        event.ifPresent(value -> imageService.saveImageToDb(null, null, eventPicture, null, value));
-        return new ResponseEntity<>("Успешно променихте снимката на събитието" ,HttpStatus.OK);
-    }
+//    @PostMapping("/event-picture-upload/{eventId}")
+//    public ResponseEntity<String> updateEventPicture(@RequestHeader(AUTHORIZATION) String authHeader,@RequestParam("eventPicture") String eventPicture ,@PathVariable("eventId")Long eventId){
+//        Optional<Event> event = eventService.findEventById(eventId);
+//        event.ifPresent(value -> imageService.saveImageToDb(null, null, eventPicture, null, value));
+//        return new ResponseEntity<>("Успешно променихте снимката на събитието" ,HttpStatus.OK);
+//    }
 
     @GetMapping("/account-update")
     public ResponseEntity<UpdateAccountRequest> updateAccountRequestResponseEntity(@RequestHeader(AUTHORIZATION) String authHeader) {
@@ -99,15 +99,7 @@ public class OrganisationController {
     }
 
     @GetMapping("/show-my-events")
-    public ResponseEntity<EventResponseContainer> getAllEventsByOrganisation(@RequestHeader(AUTHORIZATION) String authHeader ) {
-        List<OneTimeEventResponse> oneTimeEvents = eventService.getAllOneTimeEventsByUserId(authHeader);
-        List<RecurrenceEventResponse> recurrenceEvents = eventService.getAllRecurrenceEventsByUserId(authHeader);
-        EventResponseContainer eventResponseContainer = new EventResponseContainer(oneTimeEvents, recurrenceEvents);
-        return new ResponseEntity<>(eventResponseContainer, HttpStatus.OK);
-    }
-
-    @GetMapping("/get-my-events-by-name")
-    public ResponseEntity<EventResponseContainer> getEventsByNameAndByOrganisation(@RequestHeader(AUTHORIZATION) String authHeader,
+    public ResponseEntity<EventResponseContainer> showAllOrganisationEvents(@RequestHeader(AUTHORIZATION) String authHeader,
                                                                   @RequestParam(value = "oneTimeEventName" ,required = false)String oneTimeEventName,
                                                                   @RequestParam(value = "recurrenceEventName" ,required = false)String recurrenceEventName){
         List<OneTimeEventResponse> oneTimeEventsByName = eventService.getOneTimeEventsByNameByUserId(authHeader , oneTimeEventName);
@@ -120,14 +112,15 @@ public class OrganisationController {
         return new ResponseEntity<>(new EventRequest() ,HttpStatus.OK);
     }
     @PostMapping("create-event")
-    public ResponseEntity<String> submitCreatedEvent(@RequestBody EventRequest eventRequest, @RequestHeader(AUTHORIZATION) String authHeader) {
+    public ResponseEntity<String> submitCreatedEvent(@Valid @RequestBody EventRequest eventRequest, @RequestHeader(AUTHORIZATION) String authHeader) {
         entityFactory.createEvent(eventRequest , authHeader);
         return new ResponseEntity<>("Успешно създадохте събитие", HttpStatus.CREATED);
     }
 
     @GetMapping("/update-event/{id}")
     public ResponseEntity<EventRequest> getEventToUpdateByIdAndByOrganisation(@RequestHeader(AUTHORIZATION) String authHeader , @PathVariable("id") Long id){
-        return new ResponseEntity<>(requestFactory.createEventRequestForUpdateOperation(id) , HttpStatus.CREATED);
+        EventRequest eventRequest = requestFactory.createEventRequestForUpdateOperation(id, authHeader);
+        return new ResponseEntity<>(eventRequest , HttpStatus.CREATED);
     }
     @PutMapping("update/{id}")
     public ResponseEntity<String> updateEventByOrganisation(@RequestHeader(AUTHORIZATION)String authHeader  ,@PathVariable("id") Long id,
