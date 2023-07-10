@@ -1,7 +1,7 @@
 package com.eventforge.dto.request;
 
-import com.eventforge.annotation.RegistrationOrganisationPriorityNotNull;
 import com.eventforge.annotation.PasswordsMustMatch;
+import com.eventforge.annotation.RegistrationOrganisationPriorityNotNull;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -11,9 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
 import java.util.Set;
 
 import static com.eventforge.constants.regex.Regex.*;

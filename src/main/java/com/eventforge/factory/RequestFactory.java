@@ -4,12 +4,9 @@ import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.model.Event;
-import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
-import com.eventforge.repository.ImageRepository;
-import com.eventforge.service.Impl.EventServiceImpl;
 import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
@@ -18,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.Set;
 
 @Service

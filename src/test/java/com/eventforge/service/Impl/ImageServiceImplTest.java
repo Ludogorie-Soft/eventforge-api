@@ -1,116 +1,209 @@
-//package com.eventforge.service.Impl;
-//
-//
-//import com.eventforge.constants.ImageType;
-//import com.eventforge.model.Event;
-//import com.eventforge.model.Image;
-//import com.eventforge.model.Organisation;
-//import com.eventforge.model.User;
-//import com.eventforge.repository.ImageRepository;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//import static org.mockito.Mockito.*;
-//
-//@ExtendWith(MockitoExtension.class)
-//class ImageServiceImplTest {
-//    @Mock
-//    private ImageRepository imageRepository;
-//
-//    @InjectMocks
-//    private ImageServiceImpl imageService;
-//
-//    @BeforeEach
-//    public void setup() {
-//        imageService = new ImageServiceImpl(imageRepository);
-//    }
-//
-//    @Test
-//    void saveImageToDb_WithLogo_ShouldSaveLogoImageAndDeleteExistingLogoImage() {
-//        // Arrange
-//        String logo = "logo_image_url";
-//        Organisation org = new Organisation(); // create a test Organisation object
-//        User user = new User(); // create a test User object
-//        org.setUser(user);
-//        Image existingLogoImage = new Image();
-//        existingLogoImage.setType(ImageType.LOGO);
-//        existingLogoImage.setUrl(logo);
-//        existingLogoImage.setOrganisation(org);
-//
-//        when(imageRepository.findOrganisationLogoByOrgId(org.getId())).thenReturn(existingLogoImage);
-//
-//        // Act
-//        imageService.saveImageToDb(logo, null, null, org, null);
-//
-//        // Assert
-//        verify(imageRepository).delete(existingLogoImage);
-//        verify(imageRepository).save(any(Image.class));
-//        assertThat(existingLogoImage.getUrl()).isEqualTo(logo);
-//        assertThat(existingLogoImage.getType()).isEqualTo(ImageType.LOGO);
-//    }
-//
-//    @Test
-//    void saveImageToDb_WithCover_ShouldSaveCoverImageAndDeleteExistingCoverImage() {
-//        // Arrange
-//        String cover = "cover_image_url";
-//        Organisation org = new Organisation(); // create a test Organisation object
-//        Image existingCoverImage = new Image();
-//        existingCoverImage.setType(ImageType.COVER);
-//        existingCoverImage.setUrl(cover);
-//        existingCoverImage.setOrganisation(org);
-//
-//        when(imageRepository.findOrganisationCoverPictureByOrgId(org.getId())).thenReturn(existingCoverImage);
-//
-//        // Act
-//        imageService.saveImageToDb(null, cover, null, org, null);
-//
-//        // Assert
-//        verify(imageRepository).delete(existingCoverImage);
-//        verify(imageRepository).save(any(Image.class));
-//        assertThat(existingCoverImage.getUrl()).isEqualTo(cover);
-//        assertThat(existingCoverImage.getType()).isEqualTo(ImageType.COVER);
-//    }
-//
-//    @Test
-//    void saveImageToDb_WithEventPicture_ShouldSaveEventPictureAndDeleteExistingEventPicture() {
-//        // Arrange
-//        String eventPicture = "event_picture_url";
-//        Organisation org = new Organisation(); // create a test Organisation object
-//        Event event = new Event(); // create a test Event object
-//        event.setOrganisation(org);
-//        Image existingEventPicture = new Image();
-//        existingEventPicture.setUrl(eventPicture);
-//        existingEventPicture.setType(ImageType.EVENT_PICTURE);
-//        existingEventPicture.setEvent(event);
-//
-//        when(imageRepository.findEventPicture(event.getId())).thenReturn(existingEventPicture);
-//
-//        // Act
-//        imageService.saveImageToDb(null, null, eventPicture, org, event);
-//
-//        // Assert
-//        verify(imageRepository).delete(existingEventPicture);
-//        verify(imageRepository).save(any(Image.class));
-//        assertThat(existingEventPicture.getUrl()).isEqualTo(eventPicture);
-//        assertThat(existingEventPicture.getType()).isEqualTo(ImageType.EVENT_PICTURE);
-//    }
-//
-//    @Test
-//    void saveImageToDb_WithoutLogoCoverOrEventPicture_ShouldNotSaveAnyImage() {
-//        // Arrange
-//        Organisation org = new Organisation(); // create a test Organisation object
-//
-//        // Act
-//        imageService.saveImageToDb(null, null, null, org, null);
-//
-//        // Assert
-//        verify(imageRepository, never()).delete(any(Image.class));
-//        verify(imageRepository, never()).save(any(Image.class));
-//    }
-//
-//}
+package com.eventforge.service.Impl;
+
+import com.eventforge.model.Event;
+import com.eventforge.model.Image;
+import com.eventforge.model.Organisation;
+import com.eventforge.repository.ImageRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+class ImageServiceImplTest {
+
+    @Mock
+    private ImageRepository imageRepository;
+
+    private ImageServiceImpl imageService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        imageService = new ImageServiceImpl(imageRepository);
+    }
+
+    @Test
+    void findEventImageByUrlAndEventId_ShouldInvokeRepositoryMethodAndReturnImage() {
+        // Arrange
+        Long eventId = 1L;
+        String url = "example.com/image.jpg";
+        Image expectedImage = new Image();
+        when(imageRepository.findEventImageByUrlAndEventId(eq(url), eq(eventId))).thenReturn(expectedImage);
+
+        // Act
+        Image result = imageService.findEventImageByUrlAndEventId(url, eventId);
+
+        // Assert
+        assertEquals(expectedImage, result);
+        verify(imageRepository, times(1)).findEventImageByUrlAndEventId(eq(url), eq(eventId));
+    }
+
+    @Test
+    void findLogoByUrlAndOrgId_ShouldInvokeRepositoryMethodAndReturnImage() {
+        // Arrange
+        Long orgId = 1L;
+        String url = "example.com/logo.jpg";
+        Image expectedImage = new Image();
+        when(imageRepository.findLogoByUrlAndOrgId(eq(url), eq(orgId))).thenReturn(expectedImage);
+
+        // Act
+        Image result = imageService.findLogoByUrlAndOrgId(url, orgId);
+
+        // Assert
+        assertEquals(expectedImage, result);
+        verify(imageRepository, times(1)).findLogoByUrlAndOrgId(eq(url), eq(orgId));
+    }
+
+    @Test
+    void findCoverByUrlAndOrgId_ShouldInvokeRepositoryMethodAndReturnImage() {
+        // Arrange
+        Long orgId = 1L;
+        String url = "example.com/cover.jpg";
+        Image expectedImage = new Image();
+        when(imageRepository.findCoverByUrlAndOrgId(eq(url), eq(orgId))).thenReturn(expectedImage);
+
+        // Act
+        Image result = imageService.findCoverByUrlAndOrgId(url, orgId);
+
+        // Assert
+        assertEquals(expectedImage, result);
+        verify(imageRepository, times(1)).findCoverByUrlAndOrgId(eq(url), eq(orgId));
+    }
+
+    @Test
+    void saveImageToDb_ShouldSaveLogoImageWhenLogoIsNotNullAndImageExists() {
+        // Arrange
+        String logo = "example.com/logo.jpg";
+        Organisation org = new Organisation();
+        org.setId(1L);
+        Image existingImage = new Image();
+        existingImage.setOrganisation(org);
+        when(imageRepository.findOrganisationLogoByOrgId(eq(org.getId()))).thenReturn(existingImage);
+
+        // Act
+        imageService.saveImageToDb(logo, null, null, org, null);
+
+        // Assert
+        verify(imageRepository, times(1)).findOrganisationLogoByOrgId(eq(org.getId()));
+        verify(imageRepository, times(1)).save(eq(existingImage));
+    }
+
+    @Test
+    void saveImageToDb_ShouldSaveLogoImageWhenLogoIsNotNullAndImageDoesNotExist() {
+        // Arrange
+        String logo = "example.com/logo.jpg";
+        Organisation org = new Organisation();
+        org.setId(1L);
+
+        // Act
+        imageService.saveImageToDb(logo, null, null, org, null);
+
+        // Assert
+        verify(imageRepository, times(1)).findOrganisationLogoByOrgId(eq(org.getId()));
+        verify(imageRepository, times(1)).save(any(Image.class));
+    }
+
+    @Test
+    void saveImageToDb_ShouldSaveCoverImageWhenCoverIsNotNullAndImageExists() {
+        // Arrange
+        String cover = "example.com/cover.jpg";
+        Organisation org = new Organisation();
+        org.setId(1L);
+        Image existingImage = new Image();
+        existingImage.setOrganisation(org);
+        when(imageRepository.findOrganisationCoverPictureByOrgId(eq(org.getId()))).thenReturn(existingImage);
+
+        // Act
+        imageService.saveImageToDb(null, cover, null, org, null);
+
+        // Assert
+        verify(imageRepository, times(1)).findOrganisationCoverPictureByOrgId(eq(org.getId()));
+        verify(imageRepository, times(1)).save(eq(existingImage));
+    }
+
+    @Test
+    void saveImageToDb_ShouldSaveCoverImageWhenCoverIsNotNullAndImageDoesNotExist() {
+        // Arrange
+        String cover = "example.com/cover.jpg";
+        Organisation org = new Organisation();
+        org.setId(1L);
+
+        // Act
+        imageService.saveImageToDb(null, cover, null, org, null);
+
+        // Assert
+        verify(imageRepository, times(1)).findOrganisationCoverPictureByOrgId(eq(org.getId()));
+        verify(imageRepository, times(1)).save(any(Image.class));
+    }
+
+    @Test
+    void saveImageToDb_ShouldSaveEventPictureWhenEventPictureIsNotNullAndImageExists() {
+        // Arrange
+        String eventPicture = "example.com/event.jpg";
+        Event event = new Event();
+        event.setId(1L);
+        Image existingImage = new Image();
+        existingImage.setEvent(event);
+        when(imageRepository.findEventPicture(eq(event.getId()))).thenReturn(existingImage);
+
+        // Act
+        imageService.saveImageToDb(null, null, eventPicture, null, event);
+
+        // Assert
+        verify(imageRepository, times(1)).findEventPicture(eq(event.getId()));
+        verify(imageRepository, times(1)).save(eq(existingImage));
+    }
+
+    @Test
+    void saveImageToDb_ShouldSaveEventPictureWhenEventPictureIsNotNullAndImageDoesNotExist() {
+        // Arrange
+        String eventPicture = "example.com/event.jpg";
+        Event event = new Event();
+        event.setId(1L);
+
+        // Act
+        imageService.saveImageToDb(null, null, eventPicture, null, event);
+
+        // Assert
+        verify(imageRepository, times(1)).findEventPicture(eq(event.getId()));
+        verify(imageRepository, times(1)).save(any(Image.class));
+    }
+
+    @Test
+    void saveImageToDb_ShouldNotSaveAnyImageWhenAllParametersAreNull() {
+        // Act
+        imageService.saveImageToDb(null, null, null, null, null);
+
+        // Assert
+        verifyNoInteractions(imageRepository);
+    }
+
+    @Test
+    void saveImageToDb_ShouldNotSaveAnyImageWhenAllImageParametersAreNull() {
+        // Arrange
+        Organisation org = new Organisation();
+
+        // Act
+        imageService.saveImageToDb(null, null, null, org, null);
+
+        // Assert
+        verifyNoInteractions(imageRepository);
+    }
+
+    @Test
+    void saveImageToDb_ShouldNotSaveAnyImageWhenAllImageParametersAndEventAreNull() {
+        // Arrange
+        Organisation org = new Organisation();
+
+        // Act
+        imageService.saveImageToDb(null, null, null, org, null);
+
+        // Assert
+        verifyNoInteractions(imageRepository);
+    }
+
+}
