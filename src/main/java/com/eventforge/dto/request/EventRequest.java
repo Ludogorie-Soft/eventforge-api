@@ -3,16 +3,14 @@ package com.eventforge.dto.request;
 import com.eventforge.annotation.AgeBoundary;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 import static com.eventforge.constants.regex.Regex.EVENT_CATEGORIES_PATTERN;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

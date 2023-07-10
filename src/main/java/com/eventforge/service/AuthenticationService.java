@@ -11,6 +11,7 @@ import com.eventforge.model.Token;
 import com.eventforge.model.User;
 import com.eventforge.repository.TokenRepository;
 import com.eventforge.dto.request.JWTAuthenticationRequest;
+import com.eventforge.security.MyUserDetails;
 import com.eventforge.security.jwt.JWTService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.io.IOException;
@@ -101,8 +102,9 @@ public class AuthenticationService {
 
       
          User user = userService.getUserByEmail(userEmail);
+         MyUserDetails userDetails = new MyUserDetails(user);
             
-          if (jwtService.validateToken(refreshToken, (UserDetails) user)) {
+          if (jwtService.validateToken(refreshToken, userDetails)) {
                 String accessToken = jwtService.getGeneratedToken(user.getUsername());
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);

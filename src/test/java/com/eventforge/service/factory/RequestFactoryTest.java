@@ -1,4 +1,4 @@
-package com.eventforge.service;
+package com.eventforge.service.factory;
 
 
 import com.eventforge.dto.request.EventRequest;
@@ -10,6 +10,10 @@ import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
+import com.eventforge.service.OrganisationPriorityService;
+import com.eventforge.service.OrganisationService;
+import com.eventforge.service.UserService;
+import com.eventforge.service.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +28,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -94,7 +99,7 @@ class RequestFactoryTest {
         verify(utils).convertListOfOrganisationPrioritiesToString(organisation.getOrganisationPriorities());
         verify(organisationPriorityService).getAllPriorityCategories();
 
-        assertEquals(expectedRequest, result);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedRequest);
     }
 
     @Test

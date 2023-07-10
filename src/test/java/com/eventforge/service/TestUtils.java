@@ -14,6 +14,7 @@ import org.springframework.validation.ObjectError;
 
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -82,7 +83,10 @@ class TestUtils {
         when(organisationPriorityService.getOrganisationPriorityByCategory(optionalCategory)).thenReturn(null);
         doAnswer(invocation -> {
             OrganisationPriority priority = invocation.getArgument(0);
-            assertEquals(newOrganisationPriority, priority);
+//            assertEquals(newOrganisationPriority, priority);
+            assertThat(newOrganisationPriority).usingRecursiveComparison().isEqualTo(priority);
+            verify(organisationPriorityService).saveOrganisationPriority(priority);
+
             OrganisationPriorityCategory.addNewOrganisationPriorityCategory(optionalCategory);
             return null;
         }).when(organisationPriorityService).saveOrganisationPriority(any(OrganisationPriority.class));
@@ -95,12 +99,13 @@ class TestUtils {
         Set<OrganisationPriority> result = utils.assignOrganisationPrioritiesToOrganisation(priorityCategories, optionalCategory);
 
         verify(organisationPriorityService).getOrganisationPriorityByCategory(optionalCategory);
-        verify(organisationPriorityService).saveOrganisationPriority(newOrganisationPriority);
+
         verify(organisationPriorityService).getOrganisationPriorityByCategory("Category1");
         verify(organisationPriorityService).getOrganisationPriorityByCategory("Category2");
 
         Set<OrganisationPriority> expected = new HashSet<>(Arrays.asList(newOrganisationPriority, category1, category2));
-        assertEquals(expected, result);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+
     }
 
     @Test
@@ -153,9 +158,10 @@ class TestUtils {
 
         OrganisationPriority result = utils.createOrganisationPriority(priority);
 
-        assertEquals(expectedPriority, result);
 
-        verify(organisationPriorityService, times(1)).saveOrganisationPriority(expectedPriority);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedPriority);
+
+        verify(organisationPriorityService, times(1)).saveOrganisationPriority(result);
     }
 
     @Test
