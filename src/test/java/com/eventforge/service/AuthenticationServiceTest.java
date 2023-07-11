@@ -2,27 +2,38 @@ package com.eventforge.service;
 
 import com.eventforge.dto.request.JWTAuthenticationRequest;
 import com.eventforge.dto.request.RegistrationRequest;
+import com.eventforge.dto.response.AuthenticationResponse;
 import com.eventforge.exception.InvalidCredentialsException;
 import com.eventforge.exception.UserDisabledException;
 import com.eventforge.exception.UserLockedException;
 import com.eventforge.factory.EntityFactory;
+import com.eventforge.model.Event;
 import com.eventforge.model.Token;
 import com.eventforge.model.User;
 import com.eventforge.repository.TokenRepository;
+import com.eventforge.security.MyUserDetails;
 import com.eventforge.security.jwt.JWTService;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -38,6 +49,11 @@ class AuthenticationServiceTest {
     private TokenRepository tokenRepository;
     @Mock
     private JWTService jwtService;
+    @Mock
+    private HttpServletResponse response;
+
+    @Mock
+    private HttpServletRequest request;
     private AuthenticationService authenticationService;
 
     @BeforeEach
@@ -101,7 +117,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void testAuthenticate_ValidCredentials() {
+    void testAuthenticate_InvalidCredentials() {
         JWTAuthenticationRequest request = new JWTAuthenticationRequest("username", "password");
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
@@ -142,5 +158,50 @@ class AuthenticationServiceTest {
                 new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword())
         );
     }
+
+    @Test
+    void testAuthenticate_ValidCredentials() {
+        JWTAuthenticationRequest request = new JWTAuthenticationRequest("username", "password");
+        User user = mock(User.class);
+        user.setUsername(request.getUserName());
+        Token token = mock(Token.class);
+        String tokenValue = "token";
+
+        when(userService.getUserByEmail(request.getUserName())).thenReturn(user);
+        when(jwtService.getGeneratedToken(user.getUsername())).thenReturn(tokenValue);
+        when(jwtService.generateRefreshToken(user.getUsername())).thenReturn(tokenValue);
+        when(user.getRole()).thenReturn("test"); // Mocking the getRole() method to return "test"
+
+        AuthenticationResponse authenticationResponse = authenticationService.authenticate(request);
+
+        assertEquals(tokenValue, authenticationResponse.getAccessToken());
+        assertEquals(tokenValue, authenticationResponse.getRefreshToken());
+        assertEquals("test", authenticationResponse.getUserRole());
+    }
+
+
+//    @Test
+//    void testYourMethod() throws Exception {
+//        // Arrange
+//        String userEmail = "test@example.com";
+//        String refreshToken = "refresh_token";
+//        User user = new User(); // Create a user object for testing
+//        user.setUsername("testUser");
+//        user.setRole("ROLE_USER");
+//        when(userService.getUserByEmail(userEmail)).thenReturn(user);
+//        when(jwtService.validateToken(eq(refreshToken), any(MyUserDetails.class))).thenReturn(true);
+//        when(jwtService.getGeneratedToken(user.getUsername())).thenReturn("access_token");
+//
+//        // Act
+//        authenticationService.refreshToken( request, response);
+//
+//        // Assert
+//        verify(jwtService).validateToken(any(String.class), any(MyUserDetails.class));
+//        verify(userService).getUserByEmail(user.getUsername());
+//        verify(jwtService).getGeneratedToken(user.getUsername());
+//        verify(response).getOutputStream(); // Add relevant assertions for the response
+//        // Add additional assertions as needed
+//    }
+
 
 }

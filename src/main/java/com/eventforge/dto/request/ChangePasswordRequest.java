@@ -1,14 +1,12 @@
 package com.eventforge.dto.request;
 
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import static com.eventforge.constants.regex.Regex.CREDENTIAL_CHECK_REGEX;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

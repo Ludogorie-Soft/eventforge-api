@@ -3,12 +3,16 @@ package com.eventforge.service.Impl;
 import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.response.OneTimeEventResponse;
+import com.eventforge.dto.response.CommonEventResponse;
 import com.eventforge.dto.response.RecurrenceEventResponse;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
+import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
+import com.eventforge.service.EventService;
+import com.eventforge.service.ImageService;
 import com.eventforge.service.UserService;
 import com.eventforge.service.Utils;
 import jakarta.persistence.criteria.*;
@@ -25,6 +29,7 @@ import org.modelmapper.ModelMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,13 +38,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class EventServiceImplTest {
+class EventServiceTest {
     @Mock
     private EventRepository eventRepository;
     @Mock
     private UserService userService;
     @Mock
-    private ModelMapper mapper;
+    private ImageService imageService;
+
     @Mock
     private ResponseFactory responseFactory;
     @InjectMocks
@@ -52,7 +58,47 @@ class EventServiceImplTest {
     private Utils utils;
 
     @InjectMocks
-    private EventServiceImpl eventServiceImpl;
+    private EventService eventService;
+
+    @Test
+    void testGetAllOneTimeEventsByOrganisationId() {
+        // Arrange
+        Long id = 1L;
+        List<Event> events = Arrays.asList(new Event(), new Event()); // Create a list of events for testing
+        List<OneTimeEventResponse> expectedResponses = Arrays.asList(new OneTimeEventResponse(), new OneTimeEventResponse());
+
+        when(eventRepository.findAllOneTimeEventsByOrganisationId(id)).thenReturn(events);
+        when(responseFactory.buildOneTimeEventResponse(any(Event.class))).thenReturn(new OneTimeEventResponse());
+
+        // Act
+        List<OneTimeEventResponse> actualResponses = eventService.getAllOneTimeEventsByOrganisationId(id);
+
+        // Assert
+        assertEquals(expectedResponses.size(), actualResponses.size());
+        // Add additional assertions as needed
+        verify(eventRepository).findAllOneTimeEventsByOrganisationId(id);
+        verify(responseFactory, times(events.size())).buildOneTimeEventResponse(any(Event.class));
+    }
+
+    @Test
+    void testGetAllRecurrenceEventsByOrganisationId() {
+        // Arrange
+        Long id = 1L;
+        List<Event> events = Arrays.asList(new Event(), new Event()); // Create a list of events for testing
+        List<RecurrenceEventResponse> expectedResponses = Arrays.asList(new RecurrenceEventResponse(), new RecurrenceEventResponse());
+
+        when(eventRepository.findAllRecurrenceEventsByOrganisationId(id)).thenReturn(events);
+        when(responseFactory.buildRecurrenceEventResponse(any(Event.class))).thenReturn(new RecurrenceEventResponse());
+
+        // Act
+        List<RecurrenceEventResponse> actualResponses = eventService.getAllRecurrenceEventsByOrganisationId(id);
+
+        // Assert
+        assertEquals(expectedResponses.size(), actualResponses.size());
+        // Add additional assertions as needed
+        verify(eventRepository).findAllRecurrenceEventsByOrganisationId(id);
+        verify(responseFactory, times(events.size())).buildRecurrenceEventResponse(any(Event.class));
+    }
 
     @Test
     void getAllActiveOneTimeEvents_shouldReturnListOfOneTimeEventResponses() {
@@ -63,7 +109,7 @@ class EventServiceImplTest {
 
         when(utils.returnOrderByAscendingByDefaultIfParamNotProvided(order)).thenReturn(order);
         when(eventRepository.findAllActiveOneTimeEvents(now, order)).thenReturn(oneTimeEvents);
-        var result = eventServiceImpl.getAllActiveOneTimeEvents(order);
+        var result = eventService.getAllActiveOneTimeEvents(order);
 
         assertThat(result)
                 .isNotNull()
@@ -84,7 +130,7 @@ class EventServiceImplTest {
         when(utils.returnOrderByAscendingByDefaultIfParamNotProvided(order)).thenReturn(order);
         when(eventRepository.findAllActiveRecurrenceEvents(now, order)).thenReturn(recurrenceEvents);
 
-        var result = eventServiceImpl.getAllActiveRecurrenceEvents(order);
+        var result = eventService.getAllActiveRecurrenceEvents(order);
 
 
         assertThat(result)
@@ -107,7 +153,7 @@ class EventServiceImplTest {
         when(utils.returnOrderByAscendingByDefaultIfParamNotProvided(anyString())).thenReturn("asc");
         when(eventRepository.findAllExpiredOneTimeEvents(any(LocalDateTime.class), eq(order))).thenReturn(oneTimeEvents);
 
-        List<OneTimeEventResponse> result = eventServiceImpl.getAllExpiredOneTimeEvents(expectedDateTime.toString());
+        List<OneTimeEventResponse> result = eventService.getAllExpiredOneTimeEvents(expectedDateTime.toString());
 
         assertThat(result)
                 .isNotNull()
@@ -120,59 +166,103 @@ class EventServiceImplTest {
         String order = "asc";
         when(utils.returnOrderByAscendingByDefaultIfParamNotProvided((order))).thenReturn("asc");
 
-        List<RecurrenceEventResponse> actualResponses = eventServiceImpl.getAllExpiredRecurrenceEvents(order);
+        List<RecurrenceEventResponse> actualResponses = eventService.getAllExpiredRecurrenceEvents(order);
         assertThat(actualResponses).isEqualTo(new ArrayList<>());
     }
 
     @Test
-    void getAllOneTimeEventsByUserId_shouldReturnListOfOneTimeEventResponses() {
-        String token = "valid_token";
-        User user = User.builder().id(1L).build();
+    void testGetAllEventsByUserIdAndNameForOrganisation_WithName() {
+        // Arrange
+        String token = "your_token";
+        String name = "Event Name";
 
-        when(userService.getLoggedUserByToken((token))).thenReturn(user);
-        when(eventRepository.findAllOneTimeEventsByUserId((user.getId()))).thenReturn(new ArrayList<>());
+        User user = new User(); // Create a user object for testing
+        user.setId(1L);
 
-        List<OneTimeEventResponse> actualResponses = eventServiceImpl.getAllOneTimeEventsByUserId(token);
-        assertThat(actualResponses).isEqualTo(new ArrayList<>());
+        List<Event> events = Arrays.asList(new Event(), new Event()); // Create a list of events for testing
+        List<CommonEventResponse> expectedResponses = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
+
+        when(userService.getLoggedUserByToken(token)).thenReturn(user);
+        when(eventRepository.findAllEventsForOrganisationByUserIdAndName(user.getId(), name)).thenReturn(events);
+        when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
+
+        // Act
+        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdAndNameForOrganisation(token, name);
+
+        // Assert
+        assertEquals(expectedResponses.size(), actualResponses.size());
+        // Add additional assertions as needed
+        verify(userService).getLoggedUserByToken(token);
+        verify(eventRepository).findAllEventsForOrganisationByUserIdAndName(user.getId(), name);
+        verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
     }
-
     @Test
-    void getAllRecurrenceEventsByUserId_shouldReturnListOfRecurrenceEventResponses() {
-        String token = "exampleToken";
-        User user = User.builder().id(1L).build();
+    void testGetAllEventsByUserIdAndNameForOrganisation_NullOrEmptyName() {
+        // Arrange
+        String token = "your_token";
+        String name = null; // or name = ""
 
-        when(userService.getLoggedUserByToken((token))).thenReturn(user);
-        when(eventRepository.findAllRecurrenceEventsByUserId((user.getId()))).thenReturn(new ArrayList<>());
+        User user = new User(); // Create a user object for testing
+        user.setId(1L);
 
-        List<RecurrenceEventResponse> actualResponses = eventServiceImpl.getAllRecurrenceEventsByUserId(token);
-        assertThat(actualResponses).isEqualTo(new ArrayList<>());
+        List<Event> events = Arrays.asList(new Event(), new Event()); // Create a list of events for testing
+        List<CommonEventResponse> expectedResponses = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
+
+        when(userService.getLoggedUserByToken(token)).thenReturn(user);
+        when(eventRepository.findAllOneTimeEventsByUserId(user.getId())).thenReturn(events);
+        when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
+
+        // Act
+        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdAndNameForOrganisation(token, name);
+
+        // Assert
+        assertEquals(expectedResponses.size(), actualResponses.size());
+        // Add additional assertions as needed
+        verify(userService).getLoggedUserByToken(token);
+        verify(eventRepository).findAllOneTimeEventsByUserId(user.getId());
+        verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
+        verifyNoMoreInteractions(eventRepository);
     }
+
 
     @Test
     void saveEvent_shouldSaveEvent() {
         Event event = new Event();
-        eventServiceImpl.saveEvent(event);
+        eventService.saveEvent(event);
         verify(eventRepository).save((event));
     }
 
     @Test
-    void getEventById_shouldReturnOneTimeEventResponse() {
+    void testGetEventByIdForAdmin() {
+        // Arrange
         Long eventId = 1L;
-        Event event = new Event();
-        OneTimeEventResponse expectedResponse = OneTimeEventResponse.builder().build();
+        Event event = new Event(); // Create an event object for testing
+        CommonEventResponse expectedResponse = new CommonEventResponse();
 
-        when(eventRepository.findById((eventId))).thenReturn(Optional.of(event));
-        when(mapper.map((event), (OneTimeEventResponse.class))).thenReturn(expectedResponse);
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(responseFactory.buildCommonEventResponse(event)).thenReturn(expectedResponse);
 
-        OneTimeEventResponse actualResponse = eventServiceImpl.getEventById(eventId);
-        assertThat(actualResponse).isEqualTo(expectedResponse);
+        // Act
+        CommonEventResponse actualResponse = eventService.getEventByIdForAdmin(eventId);
+
+        // Assert
+        assertSame(expectedResponse, actualResponse);
+        verify(eventRepository).findById(eventId);
+        verify(responseFactory).buildCommonEventResponse(event);
     }
 
+
     @Test
-    void getEventById_eventNotFound_shouldThrowEventRequestException() {
-        Long eventId = 123L;
+    void testGetEventByIdForAdmin_ThrowsException() {
+        // Arrange
+        Long eventId = 1L;
+
         when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
-        assertThrows(EventRequestException.class, () -> eventServiceImpl.getEventById(eventId));
+
+        // Act and Assert
+        assertThrows(EventRequestException.class, () -> eventService.getEventByIdForAdmin(eventId));
+        verify(eventRepository).findById(eventId);
+        verifyNoInteractions(responseFactory);
     }
 
     @Test
@@ -182,37 +272,93 @@ class EventServiceImplTest {
         User user = new User();
 
         when(userService.getLoggedUserByToken((token))).thenReturn(user);
-        when(eventRepository.findOneTimeEventsByNameByUserId((user.getId()), (name))).thenReturn(new ArrayList<>());
+        when(eventRepository.findAllEventsForOrganisationByUserIdAndName((user.getId()), (name))).thenReturn(new ArrayList<>());
 
-        List<OneTimeEventResponse> actualResponses = eventServiceImpl.getOneTimeEventsByNameByUserId(token, name);
+        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdAndNameForOrganisation(token, name);
         assertThat(actualResponses).isEqualTo(new ArrayList<>());
     }
 
-    @Test
-    void getRecurrenceEventByNameByUserId_shouldReturnListOfRecurrenceEventResponses() {
-        String token = "your_token";
-        String name = "your_event_name";
-        User user = new User();
 
-        when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(eventRepository.findRecurrenceEventsByNameByUserId(user.getId(), name)).thenReturn(new ArrayList<>());
-
-        List<RecurrenceEventResponse> actualResponses = eventServiceImpl.getRecurrenceEventByNameByUserId(token, name);
-        assertThat(actualResponses).isEqualTo(new ArrayList<>());
-    }
 
     @Test
     void deleteEventById_shouldDeleteEventAndLogInfo() {
         Long eventId = 1L;
+        Long userId = 1L;
+        String token = "token";
+        User user = mock(User.class);
+        Organisation org = mock(Organisation.class);
+        Event event = mock(Event.class);
 
-        eventServiceImpl.deleteEventById(eventId);
-        verify(eventRepository).deleteById(eventId);
 
-        ArgumentCaptor<Long> argumentCaptor = ArgumentCaptor.forClass(Long.class);
-        verify(eventRepository).deleteById(argumentCaptor.capture());
+        when(userService.getLoggedUserByToken(token)).thenReturn(user);
+        when(eventRepository.findEventByIdAndUserId(user.getId() , eventId)).thenReturn(event);
+        eventService.deleteEventByIdAndUserIdForOrganisation(eventId , token);
+        verify(eventRepository).delete(event);
 
-        assertEquals(eventId, argumentCaptor.getValue());
+        ArgumentCaptor<Event> argumentCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(eventRepository).delete(argumentCaptor.capture());
+
+        assertEquals(event, argumentCaptor.getValue());
     }
+
+    @Test
+    public void testDeleteEventByIdAndUserIdForOrganisation_WhenEventIsNull() {
+        Long eventId = 123L;
+        String token = "your_token_here";
+        User user = new User();
+        user.setId(1L);
+        when(userService.getLoggedUserByToken(token)).thenReturn(user);
+        when(eventRepository.findEventByIdAndUserId(user.getId(), eventId)).thenReturn(null);
+
+        assertThrows(EventRequestException.class, () -> eventService.deleteEventByIdAndUserIdForOrganisation(eventId, token));
+
+        // Verify that the eventRepository.delete() method was not called
+        verify(eventRepository, never()).delete(any(Event.class));
+    }
+
+    @Test
+    public void testDeleteEventByIdForAdmin(){
+        Long eventId = 15L;
+        eventService.deleteEventByIdForAdmin(eventId);
+
+        verify(eventRepository).deleteById(eventId);
+    }
+
+    @Test
+    void updateEvent_shouldUpdateEventWhenEventFound() {
+        User user = mock(User.class);
+        Event event = new Event();
+
+        // Arrange
+        Long eventId = 1L;
+        String token = "token";
+        EventRequest eventRequest = EventRequest.builder().name("Updated Event").description("Updated description").imageUrl("image").build();
+
+        when(userService.getLoggedUserByToken(token)).thenReturn(user);
+        when(eventRepository.findEventByIdAndUserId(user.getId() , eventId)).thenReturn(event);
+
+        eventService.updateEvent(eventId, eventRequest , token);
+        verify(imageService).saveImageToDb(null , null , eventRequest.getImageUrl() , null , event);
+        assertEquals("Updated Event", event.getName());
+        assertEquals("Updated description", event.getDescription());
+    }
+    @Test
+    void updateEvent_shouldUpdateEventWhenEventNotFound() {
+        User user = mock(User.class);
+
+        // Arrange
+        Long eventId = 1L;
+        String token = "token";
+        EventRequest eventRequest = EventRequest.builder().name("Updated Event").description("Updated description").imageUrl("image").build();
+
+        when(userService.getLoggedUserByToken(token)).thenReturn(user);
+        when(eventRepository.findEventByIdAndUserId(user.getId() , eventId)).thenReturn(null);
+
+        assertThrows(EventRequestException.class, () -> eventService.updateEvent(eventId,eventRequest ,token));
+
+
+    }
+
 
     @Test
     void addNamePredicate_shouldAddPredicateWhenNameNotNull() {
@@ -220,7 +366,7 @@ class EventServiceImplTest {
 
         request.setName(name);
         List<Predicate> predicates = new ArrayList<>();
-        eventServiceImpl.addNamePredicate(request, cb, root, predicates);
+        eventService.addNamePredicate(request, cb, root, predicates);
 
         verify(cb).like((root.get("name")), ("%" + name + "%"));
         assertEquals(1, predicates.size());
@@ -230,7 +376,7 @@ class EventServiceImplTest {
     void addNamePredicate_shouldNotAddPredicateWhenNameNull() {
         List<Predicate> predicates = new ArrayList<>();
 
-        eventServiceImpl.addNamePredicate(request, cb, root, predicates);
+        eventService.addNamePredicate(request, cb, root, predicates);
 
         assertEquals(0, predicates.size());
         verifyNoInteractions(cb, root);
@@ -242,7 +388,7 @@ class EventServiceImplTest {
         request.setDescription(description);
         List<Predicate> predicates = new ArrayList<>();
 
-        eventServiceImpl.addDescriptionPredicate(request, cb, root, predicates);
+        eventService.addDescriptionPredicate(request, cb, root, predicates);
 
         verify(cb).like((root.get("description")), ("%" + description + "%"));
         assertEquals(1, predicates.size());
@@ -252,7 +398,7 @@ class EventServiceImplTest {
     void addDescriptionPredicate_shouldNotAddPredicateWhenDescriptionNull() {
         List<Predicate> predicates = new ArrayList<>();
 
-        eventServiceImpl.addDescriptionPredicate(request, cb, root, predicates);
+        eventService.addDescriptionPredicate(request, cb, root, predicates);
 
         assertEquals(0, predicates.size());
         verifyNoInteractions(cb, root);
@@ -264,7 +410,7 @@ class EventServiceImplTest {
         request.setAddress(address);
         List<Predicate> predicates = new ArrayList<>();
 
-        eventServiceImpl.addAddressPredicate(request, cb, root, predicates);
+        eventService.addAddressPredicate(request, cb, root, predicates);
 
         assertEquals(1, predicates.size());
         verify(cb).like((root.get("address")), ("%" + address + "%"));
@@ -274,7 +420,7 @@ class EventServiceImplTest {
     void addAddressPredicate_shouldNotAddPredicateWhenAddressNull() {
         List<Predicate> predicates = new ArrayList<>();
 
-        eventServiceImpl.addAddressPredicate(request, cb, root, predicates);
+        eventService.addAddressPredicate(request, cb, root, predicates);
 
         assertEquals(0, predicates.size());
         verifyNoInteractions(cb, root);
@@ -284,7 +430,7 @@ class EventServiceImplTest {
     void addOnlinePredicate_shouldNotAddPredicateWhenIsOnlineNull() {
         List<Predicate> predicates = new ArrayList<>();
 
-        eventServiceImpl.addOnlinePredicate(request, cb, root, predicates);
+        eventService.addOnlinePredicate(request, cb, root, predicates);
 
         assertTrue(predicates.isEmpty());
         verify(cb, never()).equal(any(), any());
@@ -295,7 +441,7 @@ class EventServiceImplTest {
         Boolean isOnline = true;
         request.setIsOnline(isOnline);
         List<Predicate> predicates = new ArrayList<>();
-        eventServiceImpl.addOnlinePredicate(request, cb, root, predicates);
+        eventService.addOnlinePredicate(request, cb, root, predicates);
 
         assertEquals(1, predicates.size());
         verify(cb).equal((root.get("isOnline")), (isOnline));
@@ -306,7 +452,7 @@ class EventServiceImplTest {
         request.setOrganisationName(null);
         List<Predicate> predicates = new ArrayList<>();
 
-        eventServiceImpl.addOrganisationNamePredicate(request, cb, root, predicates);
+        eventService.addOrganisationNamePredicate(request, cb, root, predicates);
 
         assertTrue(predicates.isEmpty());
         verify(cb, never()).like(any(), (Expression<String>) any());
@@ -320,27 +466,10 @@ class EventServiceImplTest {
         List<Predicate> predicates = new ArrayList<>();
 
         when(root.get("organisation")).thenReturn(organisationJoin);
-        eventServiceImpl.addOrganisationNamePredicate(request, cb, root, predicates);
+        eventService.addOrganisationNamePredicate(request, cb, root, predicates);
 
         assertEquals(1, predicates.size());
         verify(cb).like((organisationJoin.get("name")), ("%" + organisationName + "%"));
-    }
-
-    @Test
-    void updateEvent_shouldUpdateEventInRepository() {
-        // Arrange
-        Long eventId = 1L;
-        EventRequest eventRequest = EventRequest.builder().name("Updated Event").description("Updated description").build();
-
-        Event existingEvent = new Event();
-
-        when(eventRepository.findById(eventId)).thenReturn(Optional.of(existingEvent));
-
-        eventServiceImpl.updateEvent(eventId, eventRequest);
-
-        verify(eventRepository).save(existingEvent);
-        assertEquals("Updated Event", existingEvent.getName());
-        assertEquals("Updated description", existingEvent.getDescription());
     }
 
     @Test
@@ -349,7 +478,7 @@ class EventServiceImplTest {
         request.setEndsAt(null);
 
         List<Predicate> predicates = new ArrayList<>();
-        eventServiceImpl.addDateTimePredicates(request, cb, root, predicates);
+        eventService.addDateTimePredicates(request, cb, root, predicates);
 
         Assertions.assertTrue(predicates.isEmpty());
     }
@@ -359,7 +488,7 @@ class EventServiceImplTest {
         request.setIsOneTime(true);
         List<Predicate> predicates = new ArrayList<>();
 
-        eventServiceImpl.addOneTimePredicate(request, cb, root, predicates);
+        eventService.addOneTimePredicate(request, cb, root, predicates);
         Assertions.assertEquals(1, predicates.size());
     }
 
@@ -367,7 +496,7 @@ class EventServiceImplTest {
     void testAddOneTimePredicate_IsOneTimeFalse() {
         request.setIsOneTime(false);
         List<Predicate> predicates = new ArrayList<>();
-        eventServiceImpl.addOneTimePredicate(request, cb, root, predicates);
+        eventService.addOneTimePredicate(request, cb, root, predicates);
         Assertions.assertEquals(1, predicates.size());
     }
 
@@ -376,7 +505,7 @@ class EventServiceImplTest {
         List<Predicate> predicates = new ArrayList<>();
         request.setSortByExpired(true);
 
-        eventServiceImpl.addExpiredPredicate(request, cb, root, predicates);
+        eventService.addExpiredPredicate(request, cb, root, predicates);
         Assertions.assertEquals(1, predicates.size());
     }
 
@@ -385,7 +514,7 @@ class EventServiceImplTest {
         List<Predicate> predicates = new ArrayList<>();
         request.setSortByExpired(false);
 
-        eventServiceImpl.addExpiredPredicate(request, cb, root, predicates);
+        eventService.addExpiredPredicate(request, cb, root, predicates);
         Assertions.assertEquals(1, predicates.size());
     }
 
@@ -401,7 +530,7 @@ class EventServiceImplTest {
         when(cb.greaterThanOrEqualTo(root.get("minAge"), request.getMinAge())).thenReturn(minAgePredicate);
         when(cb.lessThanOrEqualTo(root.get("maxAge"), request.getMaxAge())).thenReturn(maxAgePredicate);
 
-        eventServiceImpl.addAgePredicate(request, cb, root, predicates);
+        eventService.addAgePredicate(request, cb, root, predicates);
         Assertions.assertEquals(1, predicates.size());
     }
 
@@ -417,7 +546,7 @@ class EventServiceImplTest {
         when(cb.equal(root.get("minAge"), 0)).thenReturn(minAgePredicate);
         when(cb.equal(root.get("maxAge"), 0)).thenReturn(maxAgePredicate);
 
-        eventServiceImpl.addAgePredicate(request, cb, root, predicates);
+        eventService.addAgePredicate(request, cb, root, predicates);
         Assertions.assertEquals(2, predicates.size());
     }
 
@@ -433,7 +562,7 @@ class EventServiceImplTest {
         when(cb.equal(root.get("minAge"), 0)).thenReturn(minAgePredicate);
         when(cb.lessThanOrEqualTo(root.get("maxAge"), request.getMaxAge())).thenReturn(maxAgePredicate);
 
-        eventServiceImpl.addAgePredicate(request, cb, root, predicates);
+        eventService.addAgePredicate(request, cb, root, predicates);
 
         Assertions.assertEquals(2, predicates.size());
     }
@@ -447,7 +576,7 @@ class EventServiceImplTest {
         Predicate minAgePredicate = Mockito.mock(Predicate.class);
         when(cb.greaterThanOrEqualTo(root.get("minAge"), request.getMinAge())).thenReturn(minAgePredicate);
 
-        eventServiceImpl.addAgePredicate(request, cb, root, predicates);
+        eventService.addAgePredicate(request, cb, root, predicates);
         Assertions.assertEquals(1, predicates.size());
     }
 }

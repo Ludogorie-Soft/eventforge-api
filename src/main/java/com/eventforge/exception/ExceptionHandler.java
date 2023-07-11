@@ -16,8 +16,9 @@ import java.time.ZonedDateTime;
 public class ExceptionHandler {
 
     private final Utils utils;
+
     @org.springframework.web.bind.annotation.ExceptionHandler(DateTimeException.class)
-    public ResponseEntity<String> handleDateTimeException(DateTimeException e){
+    public ResponseEntity<String> handleDateTimeException(DateTimeException e) {
         return ResponseEntity.status(e.getHTTP_STATUS_CODE())
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(e.getMessage());
@@ -60,9 +61,6 @@ public class ExceptionHandler {
     }
 
 
-
-
-
     @org.springframework.web.bind.annotation.ExceptionHandler(UserDisabledException.class)
     public ResponseEntity<String> handleUserDisabledException(UserDisabledException ex) {
         return ResponseEntity.status(ex.getHTTP_STATUS_CODE())
@@ -81,20 +79,12 @@ public class ExceptionHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(ImageException.class)
-    public ResponseEntity<String>handleImageException(ImageException ex) {
+    public ResponseEntity<String> handleImageException(ImageException ex) {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(value = EventRequestException.class)
-    private ResponseEntity<Object> handleEventRequestException(EventRequestException exception) {
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-        EventErrorMessage eventErrorMessage = new EventErrorMessage(
-                exception.getMessage(),
-                exception,
-                badRequest,
-                ZonedDateTime.now(ZoneId.of("Z"))
-        );
-        return new ResponseEntity<>(eventErrorMessage, badRequest);
+    @org.springframework.web.bind.annotation.ExceptionHandler(EventRequestException.class)
+    public ResponseEntity<String> handleEventRequestException(EventRequestException exception) {
+        return ResponseEntity.status(exception.getHTTP_STATUS_CODE()).contentType(MediaType.TEXT_PLAIN).body(exception.getMessage());
     }
-
 }

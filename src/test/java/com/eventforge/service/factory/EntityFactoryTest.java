@@ -1,14 +1,15 @@
-package com.eventforge.service;
+package com.eventforge.service.factory;
 
 import com.eventforge.constants.Role;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.factory.EntityFactory;
-import com.eventforge.model.Event;
-import com.eventforge.model.Organisation;
-import com.eventforge.model.User;
-import com.eventforge.service.Impl.EventServiceImpl;
-import com.eventforge.service.Impl.ImageServiceImpl;
+import com.eventforge.model.*;
+import com.eventforge.service.EventService;
+import com.eventforge.service.ImageService;
+import com.eventforge.service.OrganisationService;
+import com.eventforge.service.UserService;
+import com.eventforge.service.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,10 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EntityFactoryTest {
@@ -33,9 +32,9 @@ class EntityFactoryTest {
     @Mock
     private UserService userService;
     @Mock
-    private EventServiceImpl eventService;
+    private EventService eventService;
     @Mock
-    private ImageServiceImpl imageService;
+    private ImageService imageService;
 
     @InjectMocks
     private EntityFactory entityFactory;

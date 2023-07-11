@@ -4,7 +4,7 @@ import com.eventforge.dto.response.OneTimeEventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.RecurrenceEventResponse;
 import com.eventforge.dto.response.container.EventResponseContainer;
-import com.eventforge.service.Impl.EventServiceImpl;
+import com.eventforge.service.EventService;
 import com.eventforge.service.OrganisationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/unauthorized")
 public class UnauthorizedUserController {
 
-    private final EventServiceImpl eventService;
+    private final EventService eventService;
 
     private final OrganisationService organisationService;
     @GetMapping

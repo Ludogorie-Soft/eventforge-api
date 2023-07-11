@@ -25,6 +25,12 @@ public class Utils {
         return order;
     }
 
+    public String convertIsOneTimeToString(Boolean isOneTime){
+        if(isOneTime){
+            return "еднократно";
+        }
+        return "регулярно";
+    }
     public String convertPriceToString(Double price){
         if(price < 1){
             return "безплатно";

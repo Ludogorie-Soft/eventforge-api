@@ -5,8 +5,8 @@ import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.exception.EmailAlreadyTakenException;
 import com.eventforge.model.*;
-import com.eventforge.service.Impl.EventServiceImpl;
-import com.eventforge.service.Impl.ImageServiceImpl;
+import com.eventforge.service.EventService;
+import com.eventforge.service.ImageService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
 import com.eventforge.service.Utils;
@@ -25,9 +25,9 @@ public class EntityFactory {
     private final Utils utils;
     private final UserService userService;
 
-    private final EventServiceImpl eventService;
+    private final EventService eventService;
 
-    private final ImageServiceImpl imageService;
+    private final ImageService imageService;
 
 
     public Event createEvent(EventRequest eventRequest, String authHeader) {

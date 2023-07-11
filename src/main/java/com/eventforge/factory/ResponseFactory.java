@@ -1,9 +1,6 @@
 package com.eventforge.factory;
 
-import com.eventforge.dto.response.OneTimeEventResponse;
-import com.eventforge.dto.response.OrganisationResponse;
-import com.eventforge.dto.response.OrganisationResponseForAdmin;
-import com.eventforge.dto.response.RecurrenceEventResponse;
+import com.eventforge.dto.response.*;
 import com.eventforge.model.Event;
 import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
@@ -40,12 +37,11 @@ public class ResponseFactory {
     }
 
 
-
     public OneTimeEventResponse buildOneTimeEventResponse(Event event) {
         Image eventPicture = event.getEventImage();
         Long imageId = eventPicture.getId();
 
-        String eventPictureData =eventPicture.getUrl();
+        String eventPictureData = eventPicture.getUrl();
 
 
         return OneTimeEventResponse.builder()
@@ -63,6 +59,7 @@ public class ResponseFactory {
                 .endsAt(event.getEndsAt())
                 .build();
     }
+
     public OrganisationResponse buildOrganisationResponse(Organisation org) {
         Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
         Image background = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
@@ -70,29 +67,28 @@ public class ResponseFactory {
 
         String logoData = logo.getUrl();
 
-        String backgroundData= background.getUrl();
+        String backgroundData = background.getUrl();
 
-            return OrganisationResponse.builder().
-                    orgId(org.getId())
-                    .logo(logoData)
-                    .background(backgroundData)
-                    .name(org.getName())
-                    .bullstat(org.getBullstat())
-                    .username(org.getUser().getUsername())
-                    .phone(org.getUser().getPhoneNumber())
-                    .address(org.getAddress())
-                    .charityOption(org.getCharityOption())
-                    .organisationPurpose(org.getOrganisationPurpose())
-                    .organisationPriorities(orgPriorities)
-                    .registeredAt(org.getRegisteredAt())
-                    .updatedAt(org.getUpdatedAt())
-                    .build();
-        }
+        return OrganisationResponse.builder().
+                orgId(org.getId())
+                .logo(logoData)
+                .background(backgroundData)
+                .name(org.getName())
+                .bullstat(org.getBullstat())
+                .username(org.getUser().getUsername())
+                .phone(org.getUser().getPhoneNumber())
+                .address(org.getAddress())
+                .charityOption(org.getCharityOption())
+                .organisationPurpose(org.getOrganisationPurpose())
+                .organisationPriorities(orgPriorities)
+                .registeredAt(org.getRegisteredAt())
+                .updatedAt(org.getUpdatedAt())
+                .build();
+    }
 
     public RecurrenceEventResponse buildRecurrenceEventResponse(Event event) {
-        Long imageId =  event.getEventImage() != null ?  event.getEventImage().getId() : null;
-        String eventPictureData =event.getEventImage().getUrl();
-
+        Long imageId = event.getEventImage() != null ? event.getEventImage().getId() : null;
+        String eventPictureData = event.getEventImage().getUrl();
 
 
         return RecurrenceEventResponse.builder()
@@ -110,5 +106,27 @@ public class ResponseFactory {
                 .endsAt(event.getEndsAt())
                 .recurrenceDetails(event.getRecurrenceDetails())
                 .build();
+    }
+
+    public CommonEventResponse buildCommonEventResponse(Event event) {
+        CommonEventResponse eventResponse = new CommonEventResponse();
+
+        eventResponse.setId(event.getId());
+        eventResponse.setImageId(event.getEventImage().getId());
+        eventResponse.setImageUrl(event.getEventImage().getUrl());
+        eventResponse.setName(event.getName());
+        eventResponse.setOrganisationName(event.getOrganisation().getName());
+        eventResponse.setOnline(event.getIsOnline());
+        eventResponse.setDescription(event.getDescription());
+        eventResponse.setAddress(event.getAddress());
+        eventResponse.setEventCategories(event.getEventCategories());
+        eventResponse.setPrice(utils.convertPriceToString(event.getPrice()));
+        eventResponse.setAgeBoundary(utils.convertAgeToString(event.getMinAge(), event.getMaxAge()));
+        eventResponse.setStartsAt(event.getStartsAt());
+        eventResponse.setEndsAt(event.getEndsAt());
+        eventResponse.setIsOneTime(utils.convertIsOneTimeToString(event.getIsOneTime()));
+        eventResponse.setRecurrenceDetails(event.getRecurrenceDetails());
+
+        return eventResponse;
     }
 }

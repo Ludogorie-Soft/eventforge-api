@@ -1,13 +1,19 @@
-package com.eventforge.service;
+package com.eventforge.service.factory;
 
 
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.UpdateAccountRequest;
+import com.eventforge.exception.EventRequestException;
 import com.eventforge.factory.RequestFactory;
 import com.eventforge.model.Event;
+import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
+import com.eventforge.service.OrganisationPriorityService;
+import com.eventforge.service.OrganisationService;
+import com.eventforge.service.UserService;
+import com.eventforge.service.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,11 +28,10 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RequestFactoryTest {
@@ -94,7 +99,7 @@ class RequestFactoryTest {
         verify(utils).convertListOfOrganisationPrioritiesToString(organisation.getOrganisationPriorities());
         verify(organisationPriorityService).getAllPriorityCategories();
 
-        assertEquals(expectedRequest, result);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedRequest);
     }
 
     @Test
@@ -106,55 +111,71 @@ class RequestFactoryTest {
         UpdateAccountRequest result = requestFactory.createUpdateAccountRequest(token);
 
         assertNull(result);
+        verify(userService, times(1)).getLoggedUserByToken(eq(token));
+        verifyNoMoreInteractions(organisationService, utils, organisationPriorityService);
     }
     @Test
-    void testFiundEventForUpdateOperation() {
+    void createEventRequestForUpdateOperation_ShouldReturnEventRequest() {
+        // Arrange
         Long eventId = 1L;
+        String token = "exampleToken";
+        Image eventImage = new Image();
+        eventImage.setUrl("picture");
+        User user = new User();
+        user.setId(1L);
+        Event foundEvent = new Event();
+        foundEvent.setId(eventId);
+        foundEvent.setName("Example Event");
+        foundEvent.setDescription("Example Description");
+        foundEvent.setIsOnline(true);
+        foundEvent.setAddress("Example Address");
+        foundEvent.setEventCategories("Category1, Category2");
+        foundEvent.setEventImage(eventImage);
+        foundEvent.setPrice(10.0);
+        foundEvent.setMinAge(18);
+        foundEvent.setMaxAge(40);
+        foundEvent.setIsOneTime(true);
+        foundEvent.setStartsAt(LocalDateTime.now());
+        foundEvent.setEndsAt(LocalDateTime.now());
+        foundEvent.setRecurrenceDetails("Example Recurrence Details");
+        when(userService.getLoggedUserByToken(eq(token))).thenReturn(user);
+        when(eventRepository.findEventByIdAndUserId(eq(user.getId()), eq(eventId))).thenReturn(foundEvent);
 
-        when(eventRepository.findById(anyLong())).thenReturn(Optional.empty());
+        // Act
+        EventRequest result = requestFactory.createEventRequestForUpdateOperation(eventId, token);
 
-        EventRequest result = requestFactory.createEventRequestForUpdateOperation(eventId);
-        verify(eventRepository).findById(eventId);
-
-        Assertions.assertNull(result);
+        // Assert
+        assertNotNull(result);
+        assertEquals("Example Event", result.getName());
+        assertEquals("Example Description", result.getDescription());
+        assertEquals(true, result.getIsOnline());
+        assertEquals("Example Address", result.getAddress());
+        assertEquals("Category1, Category2", result.getEventCategories());
+        assertEquals(10.0, result.getPrice());
+        assertEquals(18, result.getMinAge());
+        assertEquals(40, result.getMaxAge());
+        assertEquals(true, result.getIsOneTime());
+        // Add more assertions for the remaining properties
+        verify(userService, times(1)).getLoggedUserByToken(eq(token));
+        verify(eventRepository, times(1)).findEventByIdAndUserId(eq(user.getId()), eq(eventId));
     }
+
     @Test
-    void testCreateEventRequestForUpdateOperation() {
+    void createEventRequestForUpdateOperation_ShouldThrowEventRequestExceptionWhenEventNotFound() {
+        // Arrange
         Long eventId = 1L;
-        Event existingEvent = Event.builder()
-                .id(eventId)
-                .name("Test Event")
-                .description("Event description")
-                .isOnline(true)
-                .address("Event address")
-                .eventCategories("Category1, Category2")
-                .price(10.0)
-                .minAge(18)
-                .maxAge(50)
-                .isOneTime(false)
-                .startsAt(LocalDateTime.of(2023, 1, 1, 10, 0))
-                .endsAt(LocalDateTime.of(2023, 1, 1, 12, 0))
-                .recurrenceDetails("Recurrence details")
-                .build();
+        String token = "exampleToken";
+        User user = new User();
+        user.setId(1L);
+        when(userService.getLoggedUserByToken(eq(token))).thenReturn(user);
+        when(eventRepository.findEventByIdAndUserId(eq(user.getId()), eq(eventId))).thenReturn(null);
 
-        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(existingEvent));
-
-        EventRequest result = requestFactory.createEventRequestForUpdateOperation(eventId);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(existingEvent.getName(), result.getName());
-        Assertions.assertEquals(existingEvent.getDescription(), result.getDescription());
-        Assertions.assertEquals(existingEvent.getIsOnline(), result.getIsOnline());
-        Assertions.assertEquals(existingEvent.getAddress(), result.getAddress());
-        Assertions.assertEquals(existingEvent.getEventCategories(), result.getEventCategories());
-        Assertions.assertEquals(existingEvent.getPrice(), result.getPrice());
-        Assertions.assertEquals(existingEvent.getMinAge(), result.getMinAge());
-        Assertions.assertEquals(existingEvent.getMaxAge(), result.getMaxAge());
-        Assertions.assertEquals(existingEvent.getIsOneTime(), result.getIsOneTime());
-        Assertions.assertEquals(existingEvent.getStartsAt(), result.getStartsAt());
-        Assertions.assertEquals(existingEvent.getEndsAt(), result.getEndsAt());
-        Assertions.assertEquals(existingEvent.getRecurrenceDetails(), result.getRecurrenceDetails());
+        // Act and Assert
+        assertThrows(EventRequestException.class, () -> requestFactory.createEventRequestForUpdateOperation(eventId, token));
+        verify(userService, times(1)).getLoggedUserByToken(eq(token));
+        verify(eventRepository, times(1)).findEventByIdAndUserId(eq(user.getId()), eq(eventId));
     }
 }
+
 
 

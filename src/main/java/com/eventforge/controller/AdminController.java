@@ -1,7 +1,7 @@
 package com.eventforge.controller;
 
 import com.eventforge.dto.response.OrganisationResponseForAdmin;
-import com.eventforge.service.Impl.EventServiceImpl;
+import com.eventforge.service.EventService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class AdminController {
 
     private final OrganisationService organisationService;
 
-    private final EventServiceImpl eventService;
+    private final EventService eventService;
 
 
     @GetMapping("/organisation-management")

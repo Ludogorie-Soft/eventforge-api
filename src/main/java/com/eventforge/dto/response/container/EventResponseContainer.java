@@ -2,11 +2,13 @@ package com.eventforge.dto.response.container;
 
 import com.eventforge.dto.response.OneTimeEventResponse;
 import com.eventforge.dto.response.RecurrenceEventResponse;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-@Data
+@Getter
+@Setter
 public class EventResponseContainer {
     private List<OneTimeEventResponse> oneTimeEvents = new ArrayList<>();
     private List<RecurrenceEventResponse> recurrenceEvents = new ArrayList<>();

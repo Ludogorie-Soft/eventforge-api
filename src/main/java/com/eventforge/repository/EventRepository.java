@@ -32,16 +32,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllExpiredRecurrenceEvents(LocalDateTime passedDate , String order);
 
     // queries accessible for organisations!
-    @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.organisation.user.isNonLocked = true ORDER BY e.createdAt ASC")
+    @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.organisation.user.isNonLocked = true ORDER BY e.startsAt DESC")
     List<Event> findAllOneTimeEventsByUserId(Long userId);
 
-    @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.organisation.user.isNonLocked = true ORDER BY e.createdAt ASC")
-    List<Event> findAllRecurrenceEventsByUserId(Long userId);
 
-    @Query("select e from Event e where e.organisation.user.id = :userId AND e.isOneTime = true AND e.name LIKE %:name%")
-    List<Event> findOneTimeEventsByNameByUserId(Long userId , String name );
+    @Query("select e from Event e where e.organisation.user.id = :userId AND e.name LIKE %:name% ORDER BY e.startsAt DESC")
+    List<Event> findAllEventsForOrganisationByUserIdAndName(Long userId , String name );
 
-    @Query("select e from Event e where e.organisation.user.id = :userId AND e.isOneTime = false AND e.name LIKE %:name%")
-    List<Event> findRecurrenceEventsByNameByUserId(Long userId , String name );
 
+    @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.id = :eventId")
+    Event findEventByIdAndUserId(Long userId , Long eventId);
 }
