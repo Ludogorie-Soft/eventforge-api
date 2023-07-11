@@ -34,7 +34,7 @@ public class RegistrationRequest  {
     private String optionalCategory;
 
 
-    @Size(min = 15, message = "Обоснованието трябва да е поне 15 символа!")
+    @Size(min = 50, message = "Съдържанието на полето трябва да е поне 50 символа!")
     private String organisationPurpose;
     private String logo;
     private String backgroundCover;

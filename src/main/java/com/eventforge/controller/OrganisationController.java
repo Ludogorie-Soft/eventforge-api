@@ -59,13 +59,7 @@ public class OrganisationController {
         imageService.saveImageToDb(null , cover , null , organisation , null);
             return new ResponseEntity<>("Успешно променихте логото/корицата!" , HttpStatus.OK);
     }
-    
-//    @PostMapping("/event-picture-upload/{eventId}")
-//    public ResponseEntity<String> updateEventPicture(@RequestHeader(AUTHORIZATION) String authHeader,@RequestParam("eventPicture") String eventPicture ,@PathVariable("eventId")Long eventId){
-//        Optional<Event> event = eventService.findEventById(eventId);
-//        event.ifPresent(value -> imageService.saveImageToDb(null, null, eventPicture, null, value));
-//        return new ResponseEntity<>("Успешно променихте снимката на събитието" ,HttpStatus.OK);
-//    }
+
 
     @GetMapping("/account-update")
     public ResponseEntity<UpdateAccountRequest> updateAccountRequestResponseEntity(@RequestHeader(AUTHORIZATION) String authHeader) {
@@ -75,7 +69,7 @@ public class OrganisationController {
     @PutMapping("/update")
     public ResponseEntity<String> updateAccount(@RequestHeader(AUTHORIZATION) String authHeader, @Valid @RequestBody UpdateAccountRequest request) {
         organisationService.updateOrganisation(request, authHeader);
-        return new ResponseEntity<>("Успешно обновихте аканта си.", HttpStatus.OK);
+        return new ResponseEntity<>("Успешно обновихте акаунта си.", HttpStatus.OK);
     }
 
     @PutMapping("/update-password")

@@ -63,7 +63,7 @@ public class RequestFactory {
         Event foundEvent = eventRepository.findEventByIdAndUserId(user.getId(), eventId);
             if(foundEvent==null){
                throw new EventRequestException("Няма намерено събитие с посоченият от вас идентификационен номер: " + eventId);
-            } else {
+            }
                 return EventRequest.builder()
                         .name(foundEvent.getName())
                         .description(foundEvent.getDescription())
@@ -79,7 +79,6 @@ public class RequestFactory {
                         .endsAt(foundEvent.getEndsAt())
                         .recurrenceDetails(foundEvent.getRecurrenceDetails())
                         .build();
-            }
 
     }
 }
