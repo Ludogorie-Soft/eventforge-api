@@ -1,9 +1,6 @@
 package com.eventforge.service.factory;
 
-import com.eventforge.dto.response.OneTimeEventResponse;
-import com.eventforge.dto.response.OrganisationResponse;
-import com.eventforge.dto.response.OrganisationResponseForAdmin;
-import com.eventforge.dto.response.RecurrenceEventResponse;
+import com.eventforge.dto.response.*;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.*;
 import com.eventforge.repository.ImageRepository;
@@ -19,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -213,5 +211,39 @@ public class ResponseFactoryTest {
         assertEquals(event.getEndsAt(), response.getEndsAt());
         assertEquals(event.getRecurrenceDetails(), response.getRecurrenceDetails());
         // Assert other properties accordingly
+    }
+
+    @Test
+    void testBuildCommonEventResponse(){
+        Organisation org = mock(Organisation.class);
+        // Create a mock event object
+        Event event = mock(Event.class);
+        Image eventPicture = mock(Image.class);
+        when(event.getEventImage()).thenReturn(eventPicture);
+        when(event.getId()).thenReturn(1L);
+        when(eventPicture.getId()).thenReturn(2L);
+        when(eventPicture.getUrl()).thenReturn("event-picture-url");
+        when(event.getName()).thenReturn("Event Name");
+        when(event.getDescription()).thenReturn("Event Description");
+        when(event.getAddress()).thenReturn("Event Address");
+        when(event.getOrganisation()).thenReturn(org);
+        when(org.getName()).thenReturn("organisation");
+        when(event.getRecurrenceDetails()).thenReturn("details");
+        // Mock other event properties accordingly
+        when(mockUtils.convertIsOneTimeToString(event.getIsOneTime())).thenReturn("one-time");
+        when(mockUtils.convertPriceToString(event.getPrice())).thenReturn("100 USD");
+        when(mockUtils.convertAgeToString(event.getMinAge(), event.getMaxAge())).thenReturn("18+");
+
+        CommonEventResponse eventResponseResult = responseFactory.buildCommonEventResponse(event);
+
+        assertEquals("organisation" ,eventResponseResult.getOrganisationName());
+        assertEquals(event.getId(), eventResponseResult.getId());
+        assertEquals(eventPicture.getId(), eventResponseResult.getImageId());
+        assertEquals(eventPicture.getUrl(), eventResponseResult.getImageUrl());
+        assertEquals(event.getName(), eventResponseResult.getName());
+        assertEquals(event.getDescription(), eventResponseResult.getDescription());
+        assertEquals(event.getAddress(), eventResponseResult.getAddress());
+
+
     }
 }

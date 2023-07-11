@@ -1,7 +1,7 @@
 package com.eventforge.controller;
 
 import com.eventforge.dto.request.CriteriaFilterRequest;
-import com.eventforge.service.Impl.EventServiceImpl;
+import com.eventforge.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 public class EventController {
-    private final EventServiceImpl eventService;
+    private final EventService eventService;
 
 
     @PostMapping("/filter-by-criteria")
@@ -22,7 +22,7 @@ public class EventController {
 
     @DeleteMapping("/delete-event/{id}")
     public ResponseEntity<String> deleteEventById(@RequestHeader("Authorization") String authHeader , @PathVariable("id")Long id){
-        eventService.deleteEventById(id);
+        eventService.deleteEventByIdAndUserIdForOrganisation(id , authHeader);
         return new ResponseEntity<>("Успешно изтрихте събитието" , HttpStatus.OK);
     }
 

@@ -49,6 +49,11 @@ class AuthenticationServiceTest {
     private TokenRepository tokenRepository;
     @Mock
     private JWTService jwtService;
+    @Mock
+    private HttpServletResponse response;
+
+    @Mock
+    private HttpServletRequest request;
     private AuthenticationService authenticationService;
 
     @BeforeEach
@@ -176,53 +181,27 @@ class AuthenticationServiceTest {
 
 
 //    @Test
-//    void testRefreshToken_ValidToken() throws IOException {
-//        // Mock the HttpServletRequest and HttpServletResponse
-//        HttpServletRequest request = mock(HttpServletRequest.class);
-//        HttpServletResponse response = mock(HttpServletResponse.class);
-//
-//        // Mock the necessary method calls and return values
-//        String token = "valid-refresh-token";
+//    void testYourMethod() throws Exception {
+//        // Arrange
 //        String userEmail = "test@example.com";
-//        String userRole = "ROLE_USER";
-//        User user = mock(User.class);
-//        when(user.getRole()).thenReturn(userRole); // Mocking the getRole() method
-//        MyUserDetails userDetails = new MyUserDetails(user);
-//        String accessToken = "new-access-token";
-//        AuthenticationResponse authResponse = AuthenticationResponse.builder()
-//                .accessToken(accessToken)
-//                .refreshToken(accessToken)
-//                .userRole(userRole)
-//                .build();
-//
-//        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(accessToken);
-//        when(jwtService.extractUsernameFromToken(accessToken)).thenReturn(userEmail);
+//        String refreshToken = "refresh_token";
+//        User user = new User(); // Create a user object for testing
+//        user.setUsername("testUser");
+//        user.setRole("ROLE_USER");
 //        when(userService.getUserByEmail(userEmail)).thenReturn(user);
-//        when(jwtService.validateToken(accessToken, userDetails)).thenReturn(true);
-//        when(jwtService.getGeneratedToken(user.getUsername())).thenReturn(accessToken);
+//        when(jwtService.validateToken(eq(refreshToken), any(MyUserDetails.class))).thenReturn(true);
+//        when(jwtService.getGeneratedToken(user.getUsername())).thenReturn("access_token");
 //
-//        // Capture the response.getOutputStream() call
-//        ServletOutputStream outputStream = mock(ServletOutputStream.class);
-//        when(response.getOutputStream()).thenReturn(outputStream);
+//        // Act
+//        authenticationService.refreshToken( request, response);
 //
-//        // Call the method to be tested
-//        authenticationService.refreshToken(request, response);
-//
-//        // Verify the expected method calls and response
-//        verify(request).getHeader(HttpHeaders.AUTHORIZATION);
-////        verify(jwtService).validateToken(accessToken, userDetails);
-//        verify(jwtService, times(1)).validateToken(any(String.class) , userDetails);
-//
-//
-//
+//        // Assert
+//        verify(jwtService).validateToken(any(String.class), any(MyUserDetails.class));
+//        verify(userService).getUserByEmail(user.getUsername());
 //        verify(jwtService).getGeneratedToken(user.getUsername());
-//
-//        verify(response).getOutputStream();
-//
-//
-//        verify(outputStream).close();
+//        verify(response).getOutputStream(); // Add relevant assertions for the response
+//        // Add additional assertions as needed
 //    }
-
 
 
 }

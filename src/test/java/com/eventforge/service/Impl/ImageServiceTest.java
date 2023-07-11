@@ -4,6 +4,7 @@ import com.eventforge.model.Event;
 import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
 import com.eventforge.repository.ImageRepository;
+import com.eventforge.service.ImageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -13,17 +14,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-class ImageServiceImplTest {
+class ImageServiceTest {
 
     @Mock
     private ImageRepository imageRepository;
 
-    private ImageServiceImpl imageService;
+    private ImageService imageService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        imageService = new ImageServiceImpl(imageRepository);
+        imageService = new ImageService(imageRepository);
     }
 
     @Test

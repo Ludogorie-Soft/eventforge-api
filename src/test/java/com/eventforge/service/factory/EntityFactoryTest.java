@@ -5,8 +5,8 @@ import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.factory.EntityFactory;
 import com.eventforge.model.*;
-import com.eventforge.service.Impl.EventServiceImpl;
-import com.eventforge.service.Impl.ImageServiceImpl;
+import com.eventforge.service.EventService;
+import com.eventforge.service.ImageService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
 import com.eventforge.service.Utils;
@@ -19,8 +19,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,9 +32,9 @@ class EntityFactoryTest {
     @Mock
     private UserService userService;
     @Mock
-    private EventServiceImpl eventService;
+    private EventService eventService;
     @Mock
-    private ImageServiceImpl imageService;
+    private ImageService imageService;
 
     @InjectMocks
     private EntityFactory entityFactory;
