@@ -1,9 +1,7 @@
 package com.eventforge.controller;
 
-import com.eventforge.dto.response.OneTimeEventResponse;
+import com.eventforge.dto.response.CommonEventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
-import com.eventforge.dto.response.RecurrenceEventResponse;
-import com.eventforge.dto.response.container.EventResponseContainer;
 import com.eventforge.service.EventService;
 import com.eventforge.service.OrganisationService;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +24,9 @@ public class UnauthorizedUserController {
         return new ResponseEntity<>(organisationService.getAllOrganisationsForUnauthorizedUser(search) , HttpStatus.OK);
     }
 
-    @GetMapping("/{orgName}/get-events")
-    public ResponseEntity<EventResponseContainer> showOrgEvents(@PathVariable("orgName")String organisationName){
-        Long id = organisationService.getOrgByName(organisationName).getOrgId();
-        List<OneTimeEventResponse> oneTimeEvents = eventService.getAllOneTimeEventsByOrganisationId(id);
-        List< RecurrenceEventResponse> recurrenceEvents = eventService.getAllRecurrenceEventsByOrganisationId(id);
-        EventResponseContainer eventResponseContainer = new EventResponseContainer(oneTimeEvents , recurrenceEvents);
-        return new ResponseEntity<>(eventResponseContainer , HttpStatus.OK);
+    @GetMapping("/{orgId}/{orgName}/get-events")
+    public ResponseEntity<List<CommonEventResponse>> showOrgEvents(@PathVariable("orgId")Long orgId,@PathVariable("orgName")String organisationName ){
+        List<CommonEventResponse> events = eventService.getAllEventsOfOrganisationByOrganisationNameAndId(orgId , organisationName);
+        return new ResponseEntity<>(events , HttpStatus.OK);
     }
 }

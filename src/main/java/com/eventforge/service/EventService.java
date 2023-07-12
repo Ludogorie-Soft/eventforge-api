@@ -16,7 +16,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -93,7 +92,14 @@ public class EventService {
         }
 
         //if the name is null or empty/not provided , we will invoke different query , where the param name is not required
-        return eventRepository.findAllOneTimeEventsByUserId(user.getId())
+        return eventRepository.findAllEventsForOrganisationByUserId(user.getId())
+                .stream()
+                .map(responseFactory::buildCommonEventResponse)
+                .toList();
+    }
+
+    public List<CommonEventResponse> getAllEventsOfOrganisationByOrganisationNameAndId(Long orgId , String orgName){
+        return eventRepository.findAllEventsOfOrganisationByOrganisationNameAndId(orgId , orgName)
                 .stream()
                 .map(responseFactory::buildCommonEventResponse)
                 .toList();
