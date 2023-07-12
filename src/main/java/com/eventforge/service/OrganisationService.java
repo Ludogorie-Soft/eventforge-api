@@ -42,15 +42,12 @@ public class OrganisationService {
     }
 
 
-    public List<OrganisationResponseForAdmin> getAllOrganisationsForAdminByApprovedOrNot(boolean isApproved){
-        if(isApproved){
-            return organisationRepository.findAllApprovedOrganisationsForAdmin().stream().map(responseFactory::buildOrganisationResponseForAdmin).toList();
-        }
-        return organisationRepository.findAllUnapprovedOrganisationsForAdmin().stream().map(responseFactory::buildOrganisationResponseForAdmin).toList();
+    public List<OrganisationResponseForAdmin> getAllOrganisationsForAdminByApprovedOrNot(){
+
+            return organisationRepository.findAllOrganisationsForAdmin().stream().map(responseFactory::buildOrganisationResponseForAdmin).toList();
+
     }
 
-//    public List<OrganisationResponseForAdmin> getAllUnapprovedOrganisationForAdmin(){
-//    }
 
     public Organisation getOrganisationByUserId(Long userId){
         return organisationRepository.findOrganisationByUserId(userId);

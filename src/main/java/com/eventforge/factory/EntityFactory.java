@@ -90,6 +90,7 @@ public class EntityFactory {
                     .fullName(request.getFullName())
                     .isEnabled(false)
                     .isNonLocked(true)
+                    .isApprovedByAdmin(false)
                     .build();
             userService.saveUserInDb(user);
             return user;
