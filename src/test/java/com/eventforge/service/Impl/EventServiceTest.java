@@ -24,7 +24,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -209,7 +208,7 @@ class EventServiceTest {
         List<CommonEventResponse> expectedResponses = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
 
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(eventRepository.findAllOneTimeEventsByUserId(user.getId())).thenReturn(events);
+        when(eventRepository.findAllEventsForOrganisationByUserId(user.getId())).thenReturn(events);
         when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
 
         // Act
@@ -219,7 +218,7 @@ class EventServiceTest {
         assertEquals(expectedResponses.size(), actualResponses.size());
         // Add additional assertions as needed
         verify(userService).getLoggedUserByToken(token);
-        verify(eventRepository).findAllOneTimeEventsByUserId(user.getId());
+        verify(eventRepository).findAllEventsForOrganisationByUserId(user.getId());
         verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
         verifyNoMoreInteractions(eventRepository);
     }
