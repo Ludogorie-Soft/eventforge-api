@@ -75,56 +75,39 @@ class TestUtils {
     }
 
     @Test
-    void testAssignOrganisationPrioritiesToOrganisation_withOptionalCategory() {
-        Set<String> priorityCategories = new HashSet<>(Arrays.asList("Category1", "Category2"));
-        String optionalCategory = "OptionalCategory";
+    public void testAssignOrganisationPrioritiesToOrganisation_OptionalCategoryAndPriorityCategories_Null() {
 
-        OrganisationPriority newOrganisationPriority = new OrganisationPriority(optionalCategory);
-        when(organisationPriorityService.getOrganisationPriorityByCategory(optionalCategory)).thenReturn(null);
-        doAnswer(invocation -> {
-            OrganisationPriority priority = invocation.getArgument(0);
-//            assertEquals(newOrganisationPriority, priority);
-            assertThat(newOrganisationPriority).usingRecursiveComparison().isEqualTo(priority);
-            verify(organisationPriorityService).saveOrganisationPriority(priority);
+        // Invoke the method
+        Set<OrganisationPriority> result = utils.assignOrganisationPrioritiesToOrganisation(null, null);
 
-            OrganisationPriorityCategory.addNewOrganisationPriorityCategory(optionalCategory);
-            return null;
-        }).when(organisationPriorityService).saveOrganisationPriority(any(OrganisationPriority.class));
+        // Verify the interactions
+        verify(organisationPriorityService, never()).getOrganisationPriorityByCategory(anyString());
 
-        OrganisationPriority category1 = new OrganisationPriority("Category1");
-        OrganisationPriority category2 = new OrganisationPriority("Category2");
-        when(organisationPriorityService.getOrganisationPriorityByCategory("Category1")).thenReturn(category1);
-        when(organisationPriorityService.getOrganisationPriorityByCategory("Category2")).thenReturn(category2);
-
-        Set<OrganisationPriority> result = utils.assignOrganisationPrioritiesToOrganisation(priorityCategories, optionalCategory);
-
-        verify(organisationPriorityService).getOrganisationPriorityByCategory(optionalCategory);
-
-        verify(organisationPriorityService).getOrganisationPriorityByCategory("Category1");
-        verify(organisationPriorityService).getOrganisationPriorityByCategory("Category2");
-
-        Set<OrganisationPriority> expected = new HashSet<>(Arrays.asList(newOrganisationPriority, category1, category2));
-        assertThat(result).usingRecursiveComparison().isEqualTo(expected);
-
+        // Assert the result
+        assertEquals(Collections.emptySet(), result);
     }
 
     @Test
-    void testAssignOrganisationPrioritiesToOrganisation_withoutOptionalCategory() {
-        Set<String> priorityCategories = new HashSet<>(Arrays.asList("Category1", "Category2"));
+    public void testAssignOrganisationPrioritiesToOrganisation_OptionalCategory_Null() {
+        // Mock the required dependencies
+        Set<String> priorityCategories = new HashSet<>(Arrays.asList("category1", "category2"));
+        OrganisationPriority existingPriority1 = new OrganisationPriority("category1");
+        OrganisationPriority existingPriority2 = new OrganisationPriority("category2");
+        when(organisationPriorityService.getOrganisationPriorityByCategory("category1")).thenReturn(existingPriority1);
+        when(organisationPriorityService.getOrganisationPriorityByCategory("category2")).thenReturn(existingPriority2);
 
-        OrganisationPriority category1 = new OrganisationPriority("Category1");
-        OrganisationPriority category2 = new OrganisationPriority("Category2");
-        when(organisationPriorityService.getOrganisationPriorityByCategory("Category1")).thenReturn(category1);
-        when(organisationPriorityService.getOrganisationPriorityByCategory("Category2")).thenReturn(category2);
 
+        // Invoke the method
         Set<OrganisationPriority> result = utils.assignOrganisationPrioritiesToOrganisation(priorityCategories, null);
 
-        verify(organisationPriorityService).getOrganisationPriorityByCategory("Category1");
-        verify(organisationPriorityService).getOrganisationPriorityByCategory("Category2");
-        verify(organisationPriorityService, never()).saveOrganisationPriority(any(OrganisationPriority.class));
+        // Verify the interactions
+        verify(organisationPriorityService, times(1)).getOrganisationPriorityByCategory("category1");
+        verify(organisationPriorityService, times(1)).getOrganisationPriorityByCategory("category2");
 
-        Set<OrganisationPriority> expected = new HashSet<>(Arrays.asList(category1, category2));
-        assertEquals(expected, result);
+        // Assert the result
+        assertEquals(2, result.size());
+        assertTrue(result.contains(existingPriority1));
+        assertTrue(result.contains(existingPriority2));
     }
 
     @Test
@@ -150,30 +133,69 @@ class TestUtils {
     }
 
     @Test
-    void testCreateOrganisationPriority() {
-        String priority = "somePriority";
-        OrganisationPriority expectedPriority = new OrganisationPriority(priority);
-
-        when(organisationPriorityService.getOrganisationPriorityByCategory(priority)).thenReturn(null);
-
-        OrganisationPriority result = utils.createOrganisationPriority(priority);
+    public void testCreateOrganisationPriority_NewCategory() {
+        // Mock the required dependencies
+        when(organisationPriorityService.getOrganisationPriorityByCategory(anyString())).thenReturn(null);
 
 
-        assertThat(result).usingRecursiveComparison().isEqualTo(expectedPriority);
+        // Prepare the input data
+        String priority = "category1";
 
-        verify(organisationPriorityService, times(1)).saveOrganisationPriority(result);
+        // Invoke the method
+        List<OrganisationPriority> result = utils.createOrganisationPriority(priority);
+
+        // Verify the interactions
+        verify(organisationPriorityService, times(1)).getOrganisationPriorityByCategory("category1");
+        verify(organisationPriorityService, times(1)).saveOrganisationPriority(any(OrganisationPriority.class));
+
+        // Assert the result
+        assertEquals(1, result.size());
+        assertEquals("category1", result.get(0).getCategory());
     }
 
     @Test
-    void testCreateOrganisationPriority_ExistingPriority() {
-        String priority = "existingPriority";
+    public void testCreateOrganisationPriority_ExistingCategory() {
+        // Mock the required dependencies
+        OrganisationPriority existingPriority = new OrganisationPriority("category1");
+        when(organisationPriorityService.getOrganisationPriorityByCategory("category1")).thenReturn(existingPriority);
 
-        when(organisationPriorityService.getOrganisationPriorityByCategory(priority)).thenReturn(new OrganisationPriority(priority));
-        OrganisationPriority result = utils.createOrganisationPriority(priority);
+        // Prepare the input data
+        String priority = "category1";
 
-        assertNull(result);
+        // Invoke the method
+        List<OrganisationPriority> result = utils.createOrganisationPriority(priority);
 
-        verify(organisationPriorityService, never()).saveOrganisationPriority(any());
+        // Verify the interactions
+        verify(organisationPriorityService, times(1)).getOrganisationPriorityByCategory("category1");
+        verify(organisationPriorityService, never()).saveOrganisationPriority(any(OrganisationPriority.class));
+
+        // Assert the result
+        assertEquals(1, result.size());
+        assertEquals(existingPriority, result.get(0));
+    }
+
+    @Test
+    public void testCreateOrganisationPriority_MultipleCategories() {
+        // Mock the required dependencies
+        OrganisationPriority existingPriority = new OrganisationPriority("category1");
+        when(organisationPriorityService.getOrganisationPriorityByCategory("category1")).thenReturn(existingPriority);
+        when(organisationPriorityService.getOrganisationPriorityByCategory("category2")).thenReturn(null);
+
+        // Prepare the input data
+        String priority = "category1,category2";
+
+        // Invoke the method
+        List<OrganisationPriority> result = utils.createOrganisationPriority(priority);
+
+        // Verify the interactions
+        verify(organisationPriorityService, times(1)).getOrganisationPriorityByCategory("category1");
+        verify(organisationPriorityService, times(1)).getOrganisationPriorityByCategory("category2");
+        verify(organisationPriorityService, times(1)).saveOrganisationPriority(any(OrganisationPriority.class));
+
+        // Assert the result
+        assertEquals(2, result.size());
+        assertEquals(existingPriority.getCategory() ,result.get(1).getCategory());
+        assertEquals("category1", result.get(1).getCategory());
     }
 
     @Test

@@ -31,6 +31,7 @@ public class RegistrationRequest  {
     private Set<String> organisationPriorities;
 
     @Nullable
+    @Pattern(regexp = EVENT_CATEGORIES_PATTERN , message = "Моля използвайте само букви (латиница , кирилица) и запетаи.Не са позволени други символи.")
     private String optionalCategory;
 
 

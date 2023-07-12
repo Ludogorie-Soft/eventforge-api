@@ -17,29 +17,30 @@ public class Utils {
     private final OrganisationPriorityService organisationPriorityService;
     private final PasswordEncoder passwordEncoder;
 
-    public String returnOrderByAscendingByDefaultIfParamNotProvided(String order){
-        if(order == null || order.isEmpty()){
+    public String returnOrderByAscendingByDefaultIfParamNotProvided(String order) {
+        if (order == null || order.isEmpty()) {
             order = "ASC"; //by default we order them by ASC
             return order;
         }
         return order;
     }
 
-    public String convertIsOneTimeToString(Boolean isOneTime){
-        if(isOneTime){
+    public String convertIsOneTimeToString(Boolean isOneTime) {
+        if (isOneTime) {
             return "еднократно";
         }
         return "регулярно";
     }
-    public String convertPriceToString(Double price){
-        if(price < 1){
+
+    public String convertPriceToString(Double price) {
+        if (price < 1) {
             return "безплатно";
         }
         return price + " лева";
     }
 
-    public String convertAgeToString(Integer minAge , Integer maxAge){
-        if(minAge == 0 && maxAge == 0){
+    public String convertAgeToString(Integer minAge, Integer maxAge) {
+        if (minAge == 0 && maxAge == 0) {
             return "Няма ограничение за възрастта";
         }
         if (minAge > 0 && maxAge == 0) {
@@ -48,14 +49,18 @@ public class Utils {
         if (minAge == 0 && maxAge > 0) {
             return "Максимална възраст: " + maxAge + " години";
         }
-            return "Възрастов диапазон: " + minAge + " - " + maxAge + " години";
+        return "Възрастов диапазон: " + minAge + " - " + maxAge + " години";
     }
-    public  Set<OrganisationPriority> assignOrganisationPrioritiesToOrganisation(Set<String> priorityCategories, String optionalCategory) {
+
+    public Set<OrganisationPriority> assignOrganisationPrioritiesToOrganisation(Set<String> priorityCategories, String optionalCategory) {
         Set<OrganisationPriority> organisationPriorities = new HashSet<>();
-        OrganisationPriority newOrganisationPriority;
+        List<OrganisationPriority> newOrganisationPriorities;
         if (optionalCategory != null && !optionalCategory.isEmpty()) {
-            newOrganisationPriority = createOrganisationPriority(optionalCategory);
-            organisationPriorities.add(newOrganisationPriority);
+            newOrganisationPriorities = createOrganisationPriority(optionalCategory);
+            if (!newOrganisationPriorities.isEmpty()) {
+                organisationPriorities.addAll(newOrganisationPriorities);
+
+            }
         }
 
         if (priorityCategories != null) {
@@ -69,10 +74,10 @@ public class Utils {
         return organisationPriorities;
     }
 
-    public Set<String>convertListOfOrganisationPrioritiesToString(Set<OrganisationPriority> organisationPriorityCategories){
+    public Set<String> convertListOfOrganisationPrioritiesToString(Set<OrganisationPriority> organisationPriorityCategories) {
         Set<String> setOfOrgPriorities = new HashSet<>();
-        if(organisationPriorityCategories!= null && organisationPriorityCategories.size()>0){
-            for(OrganisationPriority priority : organisationPriorityCategories){
+        if (organisationPriorityCategories != null && organisationPriorityCategories.size() > 0) {
+            for (OrganisationPriority priority : organisationPriorityCategories) {
                 setOfOrgPriorities.add(priority.getCategory());
             }
         }
@@ -80,23 +85,28 @@ public class Utils {
     }
 
 
-        public String convertStringListToString(List<String> stringList) {
-            List<String> lowercaseList = stringList.stream()
-                    .map(String::toLowerCase)
-                    .collect(Collectors.toList());
+    public String convertStringListToString(List<String> stringList) {
+        List<String> lowercaseList = stringList.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
 
-            return String.join(",", lowercaseList);
+        return String.join(",", lowercaseList);
+    }
+
+    public List<OrganisationPriority> createOrganisationPriority(String priority) {
+        List<String> categories = splitStringByComma(priority);
+        OrganisationPriority organisationPriority;
+        List<OrganisationPriority> prioritiesToReturn = new ArrayList<>();
+        for (String category : categories) {
+            organisationPriority = organisationPriorityService.getOrganisationPriorityByCategory(category);
+            if (organisationPriority == null) {
+                organisationPriority = new OrganisationPriority(category);
+                organisationPriorityService.saveOrganisationPriority(organisationPriority);
+                OrganisationPriorityCategory.addNewOrganisationPriorityCategory(category);
+            }
+            prioritiesToReturn.add(organisationPriority);
         }
-
-    public OrganisationPriority createOrganisationPriority(String priority) {
-        OrganisationPriority organisationPriority = null;
-        if (organisationPriorityService.getOrganisationPriorityByCategory(priority) == null) {
-            organisationPriority = new OrganisationPriority(priority);
-            organisationPriorityService.saveOrganisationPriority(organisationPriority);
-            OrganisationPriorityCategory.addNewOrganisationPriorityCategory(priority);
-
-        }
-        return organisationPriority;
+        return prioritiesToReturn;
     }
 
     public List<String> splitStringByComma(String input) {
@@ -133,10 +143,11 @@ public class Utils {
         return joiner.toString();
     }
 
-    public boolean isPasswordValid(String password , String hashedPassword){
+    public boolean isPasswordValid(String password, String hashedPassword) {
         return passwordEncoder.matches(password, hashedPassword);
     }
-    public String encodePassword(String password){
+
+    public String encodePassword(String password) {
         return passwordEncoder.encode(password);
     }
 }

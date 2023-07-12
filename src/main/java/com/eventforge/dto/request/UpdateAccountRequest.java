@@ -25,6 +25,7 @@ public class UpdateAccountRequest  {
     @Nullable
     private Set<String> chosenPriorities;
     @Nullable
+    @Pattern(regexp = EVENT_CATEGORIES_PATTERN , message = "Моля използвайте само букви (латиница , кирилица) и запетаи.Не са позволени други символи.")
     private String optionalCategory;
     @Size (min = 15 , message = "Обоснованието трябва да е поне 15 символа!")
     private String organisationPurpose;
