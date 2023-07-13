@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -18,12 +19,11 @@ public class OrganisationResponse {
     private String background;
     private String name;
     private String bullstat;
-    private String username;
-    private String phone;
     private String address;
     private String charityOption;
     private String organisationPurpose;
     private Set<String> organisationPriorities;
+    private List<CommonEventResponse> organisationEvents;
     private LocalDateTime registeredAt;
     private LocalDateTime updatedAt;
 }

@@ -242,7 +242,7 @@ class EventServiceTest {
         when(responseFactory.buildCommonEventResponse(event)).thenReturn(expectedResponse);
 
         // Act
-        CommonEventResponse actualResponse = eventService.getEventByIdForAdmin(eventId);
+        CommonEventResponse actualResponse = eventService.getEventDetailsByIdForAllUsers(eventId);
 
         // Assert
         assertSame(expectedResponse, actualResponse);
@@ -259,7 +259,7 @@ class EventServiceTest {
         when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
 
         // Act and Assert
-        assertThrows(EventRequestException.class, () -> eventService.getEventByIdForAdmin(eventId));
+        assertThrows(EventRequestException.class, () -> eventService.getEventDetailsByIdForAllUsers(eventId));
         verify(eventRepository).findById(eventId);
         verifyNoInteractions(responseFactory);
     }

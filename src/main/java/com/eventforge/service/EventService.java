@@ -98,20 +98,12 @@ public class EventService {
                 .toList();
     }
 
-    public List<CommonEventResponse> getAllEventsOfOrganisationByOrganisationNameAndId(Long orgId , String orgName){
-        return eventRepository.findAllEventsOfOrganisationByOrganisationNameAndId(orgId , orgName)
-                .stream()
-                .map(responseFactory::buildCommonEventResponse)
-                .toList();
-    }
-
-
     public void saveEvent(Event event) {
         eventRepository.save(event);
     }
 
 
-    public CommonEventResponse getEventByIdForAdmin(Long eventId) {
+    public CommonEventResponse getEventDetailsByIdForAllUsers(Long eventId) {
 
         return responseFactory.buildCommonEventResponse(eventRepository.findById(eventId).orElseThrow(() -> new EventRequestException("Събитие с номер:"+eventId+" не е намерено!")));
     }
