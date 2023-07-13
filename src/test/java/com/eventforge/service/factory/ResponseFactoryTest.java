@@ -36,40 +36,35 @@ public class ResponseFactoryTest {
     void testBuildOrganisationResponseForAdmin() {
         // Arrange
 
-
         Organisation org = new Organisation();
         org.setId(1L);
+        org.setName("Organisation");
         User user = new User();
         user.setId(2L);
+        user.setFullName("Test Test");
+        user.setPhoneNumber("12345");
         user.setUsername("test@example.com");
         user.setIsEnabled(true);
         user.setIsApprovedByAdmin(true);
         user.setIsNonLocked(true);
         user.setRegisteredAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
         org.setUser(user);
         List<Event> events = new ArrayList<>();
         events.add(new Event());
         org.setEvents(events);
-
-        Image logo = new Image();
-        logo.setUrl("logo-url");
-
-        when(imageRepository.findOrganisationLogoByOrgId(org.getId())).thenReturn(logo);
-
         // Act
         OrganisationResponseForAdmin response = responseFactory.buildOrganisationResponseForAdmin(org);
 
         // Assert
+        assertEquals(org.getName(), response.getOrgName());
+        assertEquals(org.getUser().getFullName(), response.getFullName());
+        assertEquals(org.getUser().getPhoneNumber(), response.getPhoneNumber());
         assertEquals(org.getUser().getId(), response.getUserId());
-        assertEquals(logo.getUrl(), response.getLogo());
         assertEquals(org.getUser().getUsername(), response.getEmail());
         assertEquals(org.getUser().getIsEnabled(), response.isEnabled());
         assertEquals(org.getUser().getIsApprovedByAdmin(), response.isApprovedByAdmin());
         assertEquals(org.getUser().getIsNonLocked(), response.isNonLocked());
-        assertEquals(org.getEvents().size(), response.getCountEvents());
         assertEquals(org.getUser().getRegisteredAt(), response.getRegisteredAt());
-        assertEquals(org.getUser().getUpdatedAt(), response.getUpdatedAt());
     }
 
     @Test
