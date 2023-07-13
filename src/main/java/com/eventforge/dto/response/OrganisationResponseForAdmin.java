@@ -13,7 +13,11 @@ package com.eventforge.dto.response;
 
         private Long userId;
 
-        private String logo;
+        private String orgName;
+
+        private String fullName;
+
+        private String phoneNumber;
 
         private String email;
 
@@ -23,10 +27,6 @@ package com.eventforge.dto.response;
 
         private boolean isNonLocked;
 
-        private Integer countEvents;
-
         private LocalDateTime registeredAt;
-
-        private LocalDateTime updatedAt;
 
     }

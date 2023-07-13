@@ -19,20 +19,17 @@ public class ResponseFactory {
     private final ImageRepository imageRepository;
 
     public OrganisationResponseForAdmin buildOrganisationResponseForAdmin(Organisation org) {
-        Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
-        Integer countEvents = org.getEvents().size();
-        String logoData = logo.getUrl();
 
         return OrganisationResponseForAdmin.builder().
                 userId(org.getUser().getId())
-                .logo(logoData)
+                .orgName(org.getName())
+                .fullName(org.getUser().getFullName())
+                .phoneNumber(org.getUser().getPhoneNumber())
                 .email(org.getUser().getUsername())
                 .isEnabled(org.getUser().getIsEnabled())
                 .isApprovedByAdmin(org.getUser().getIsApprovedByAdmin())
                 .isNonLocked(org.getUser().getIsNonLocked())
-                .countEvents(countEvents)
                 .registeredAt(org.getUser().getRegisteredAt())
-                .updatedAt(org.getUser().getUpdatedAt())
                 .build();
     }
 

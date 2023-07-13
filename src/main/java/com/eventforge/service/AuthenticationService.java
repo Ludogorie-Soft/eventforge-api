@@ -1,8 +1,9 @@
 package com.eventforge.service;
 
-import com.eventforge.dto.response.AuthenticationResponse;
-import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.constants.TokenType;
+import com.eventforge.dto.request.JWTAuthenticationRequest;
+import com.eventforge.dto.request.RegistrationRequest;
+import com.eventforge.dto.response.AuthenticationResponse;
 import com.eventforge.exception.InvalidCredentialsException;
 import com.eventforge.exception.UserDisabledException;
 import com.eventforge.exception.UserLockedException;
@@ -10,7 +11,6 @@ import com.eventforge.factory.EntityFactory;
 import com.eventforge.model.Token;
 import com.eventforge.model.User;
 import com.eventforge.repository.TokenRepository;
-import com.eventforge.dto.request.JWTAuthenticationRequest;
 import com.eventforge.security.MyUserDetails;
 import com.eventforge.security.jwt.JWTService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,9 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.*;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor

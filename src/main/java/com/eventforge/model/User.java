@@ -30,8 +30,10 @@ public class User {
     @OneToMany(mappedBy = "user" , cascade = CascadeType.REMOVE)
     private List<Token> tokens;
     @CreationTimestamp
+    @Column(name ="registered_at")
     private LocalDateTime registeredAt;
     @UpdateTimestamp
+    @Column(name="updated_at")
     private LocalDateTime updatedAt;
     private Boolean isEnabled = false;
     private Boolean isNonLocked = true;

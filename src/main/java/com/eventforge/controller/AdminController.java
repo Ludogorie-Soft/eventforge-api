@@ -24,8 +24,8 @@ public class AdminController {
 
 
     @GetMapping("/organisation-management")
-    public ResponseEntity<List<OrganisationResponseForAdmin>> getAllOrganisationsForAdminByApprovedOrNot(@RequestHeader("Authorization")String authHeader , @RequestParam("isApproved") boolean isApproved ){
-        return new ResponseEntity<>(organisationService.getAllOrganisationsForAdminByApprovedOrNot(isApproved) ,HttpStatus.OK);
+    public ResponseEntity<List<OrganisationResponseForAdmin>> getAllOrganisationsForAdminByApprovedOrNot(@RequestHeader("Authorization")String authHeader ){
+        return new ResponseEntity<>(organisationService.getAllOrganisationsForAdminByApprovedOrNot() ,HttpStatus.OK);
     }
 
 //    @GetMapping("/organisation-management/unapproved-accounts")
