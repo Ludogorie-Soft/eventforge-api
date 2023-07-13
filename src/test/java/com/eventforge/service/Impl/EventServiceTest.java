@@ -232,38 +232,60 @@ class EventServiceTest {
     }
 
     @Test
-    void testGetEventByIdForAdmin() {
-        // Arrange
+    public void testGetEventDetailWithConditionsById_EventFound() {
         Long eventId = 1L;
-        Event event = new Event(); // Create an event object for testing
-        CommonEventResponse expectedResponse = new CommonEventResponse();
+        Event event = new Event(); // Create a test Event object
 
-        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        // Mock the behavior of the eventRepository
+        when(eventRepository.findEventByIdWithCondition(eventId)).thenReturn(event);
+
+        // Mock the behavior of the responseFactory
+        CommonEventResponse expectedResponse = new CommonEventResponse(); // Create a test response object
         when(responseFactory.buildCommonEventResponse(event)).thenReturn(expectedResponse);
 
-        // Act
-        CommonEventResponse actualResponse = eventService.getEventDetailsByIdForAllUsers(eventId);
+        // Call the method being tested
+        CommonEventResponse actualResponse = eventService.getEventDetailWithConditionsById(eventId);
 
-        // Assert
-        assertSame(expectedResponse, actualResponse);
-        verify(eventRepository).findById(eventId);
-        verify(responseFactory).buildCommonEventResponse(event);
+        // Verify the expected interactions and outcomes
+        Assertions.assertEquals(expectedResponse, actualResponse);
     }
-
 
     @Test
-    void testGetEventByIdForAdmin_ThrowsException() {
-        // Arrange
+    public void testGetEventDetailWithConditionsById_EventNotFound() {
         Long eventId = 1L;
 
-        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
+        // Mock the behavior of the eventRepository to return null
+        when(eventRepository.findEventByIdWithCondition(eventId)).thenReturn(null);
 
-        // Act and Assert
-        assertThrows(EventRequestException.class, () -> eventService.getEventDetailsByIdForAllUsers(eventId));
-        verify(eventRepository).findById(eventId);
-        verifyNoInteractions(responseFactory);
+        // Call the method being tested and verify the exception is thrown
+        Assertions.assertThrows(EventRequestException.class,
+                () -> eventService.getEventDetailWithConditionsById(eventId),
+                "Търсеното от вас събитие не е намерено.");
     }
 
+    @Test
+    void getEventDetailsWithoutConditionsById_whenFound(){
+        Long eventId = 10L;
+        Event event = new Event();
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        CommonEventResponse expectedResponse = new CommonEventResponse(); // Create a test response object
+        when(responseFactory.buildCommonEventResponse(event)).thenReturn(expectedResponse);
+
+        // Call the method being tested
+        CommonEventResponse actualResponse = eventService.getEventDetailsWithoutConditionsById(eventId);
+
+        // Verify the expected interactions and outcomes
+        Assertions.assertEquals(expectedResponse, actualResponse);
+    }
+    @Test
+    void getEventDetailsWithoutConditionsById_whenNotFound(){
+        Long eventId = 10L;
+
+        Assertions.assertThrows(EventRequestException.class,
+                () -> eventService.getEventDetailsWithoutConditionsById(eventId),
+                "Търсеното от вас събитие не е намерено.");
+    }
     @Test
     void getOneTimeEventsByNameByUserId_shouldReturnListOfOneTimeEventResponses() {
         String token = "your_token";

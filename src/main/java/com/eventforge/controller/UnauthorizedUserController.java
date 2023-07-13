@@ -28,7 +28,7 @@ public class UnauthorizedUserController {
         return ResponseEntity.ok(organisationService.getOrganisationDetailsByIdWithCondition(id));
     }
     @GetMapping("/event/details/{id}")
-    public ResponseEntity<CommonEventResponse> showEventDetails(@PathVariable("id")Long id){
-        return new ResponseEntity<>(eventService.getEventDetailsByIdForAllUsers(id) ,HttpStatus.OK);
+    public ResponseEntity<CommonEventResponse> showEventDetailsWithCondition(@PathVariable("id")Long id ){
+        return new ResponseEntity<>(eventService.getEventDetailWithConditionsById(id) ,HttpStatus.OK);
     }
 }

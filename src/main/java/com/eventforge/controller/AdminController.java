@@ -1,5 +1,6 @@
 package com.eventforge.controller;
 
+import com.eventforge.dto.response.CommonEventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.OrganisationResponseForAdmin;
 import com.eventforge.service.EventService;
@@ -31,6 +32,11 @@ public class AdminController {
     @GetMapping("/organisation/details/{id}")
     public ResponseEntity<OrganisationResponse> showOrganisationDetailsForAdmin(@RequestHeader("Authorization")String authHeader ,@PathVariable("id")Long orgId){
         return new ResponseEntity<>(organisationService.getOrganisationDetailsByIdWithoutCondition(orgId) , HttpStatus.OK);
+    }
+
+    @GetMapping("/event/details/{id}")
+    public ResponseEntity<CommonEventResponse>showEventDetailsForAdmin(@RequestHeader("Authorization")String authHeader ,@PathVariable("id")Long eventId){
+        return new ResponseEntity<>(eventService.getEventDetailsWithoutConditionsById(eventId) , HttpStatus.OK);
     }
     @PutMapping("/organisation-management/ban-account/{id}/{email}")
     public ResponseEntity<String> banAccountById(@RequestHeader("Authorization")String authHeader , @PathVariable("id")Long id , @PathVariable("email")String email){

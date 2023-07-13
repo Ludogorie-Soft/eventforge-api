@@ -16,6 +16,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
 
     // queries accessible for everyone!
+    @Query("SELECT e FROM Event e WHERE e.id = :eventId AND "+LEGAL_USER_CONDITION)
+    Event findEventByIdWithCondition(Long eventId);
     @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+LEGAL_USER_CONDITION + " AND e.organisation.id = :orgId ORDER BY e.createdAt ASC")
     List<Event> findAllOneTimeEventsByOrganisationId(Long orgId);
     @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+LEGAL_USER_CONDITION +" AND e.organisation.id = :orgId ORDER BY e.createdAt ASC")
