@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class EventServiceTest {
+public class EventServiceTest {
     @Mock
     private EventRepository eventRepository;
     @Mock
@@ -195,6 +195,7 @@ class EventServiceTest {
         verify(eventRepository).findAllEventsForOrganisationByUserIdAndName(user.getId(), name);
         verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
     }
+
     @Test
     void testGetAllEventsByUserIdAndNameForOrganisation_NullOrEmptyName() {
         // Arrange
@@ -232,7 +233,7 @@ class EventServiceTest {
     }
 
     @Test
-    public void testGetEventDetailWithConditionsById_EventFound() {
+    void testGetEventDetailWithConditionsById_EventFound() {
         Long eventId = 1L;
         Event event = new Event(); // Create a test Event object
 
@@ -251,7 +252,7 @@ class EventServiceTest {
     }
 
     @Test
-    public void testGetEventDetailWithConditionsById_EventNotFound() {
+    void testGetEventDetailWithConditionsById_EventNotFound() {
         Long eventId = 1L;
 
         // Mock the behavior of the eventRepository to return null
@@ -264,7 +265,7 @@ class EventServiceTest {
     }
 
     @Test
-    void getEventDetailsWithoutConditionsById_whenFound(){
+    void getEventDetailsWithoutConditionsById_whenFound() {
         Long eventId = 10L;
         Event event = new Event();
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
@@ -278,14 +279,16 @@ class EventServiceTest {
         // Verify the expected interactions and outcomes
         Assertions.assertEquals(expectedResponse, actualResponse);
     }
+
     @Test
-    void getEventDetailsWithoutConditionsById_whenNotFound(){
+    void getEventDetailsWithoutConditionsById_whenNotFound() {
         Long eventId = 10L;
 
         Assertions.assertThrows(EventRequestException.class,
                 () -> eventService.getEventDetailsWithoutConditionsById(eventId),
                 "Търсеното от вас събитие не е намерено.");
     }
+
     @Test
     void getOneTimeEventsByNameByUserId_shouldReturnListOfOneTimeEventResponses() {
         String token = "your_token";
@@ -300,7 +303,6 @@ class EventServiceTest {
     }
 
 
-
     @Test
     void deleteEventById_shouldDeleteEventAndLogInfo() {
         Long eventId = 1L;
@@ -312,8 +314,8 @@ class EventServiceTest {
 
 
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(eventRepository.findEventByIdAndUserId(user.getId() , eventId)).thenReturn(event);
-        eventService.deleteEventByIdAndUserIdForOrganisation(eventId , token);
+        when(eventRepository.findEventByIdAndUserId(user.getId(), eventId)).thenReturn(event);
+        eventService.deleteEventByIdAndUserIdForOrganisation(eventId, token);
         verify(eventRepository).delete(event);
 
         ArgumentCaptor<Event> argumentCaptor = ArgumentCaptor.forClass(Event.class);
@@ -323,7 +325,7 @@ class EventServiceTest {
     }
 
     @Test
-    public void testDeleteEventByIdAndUserIdForOrganisation_WhenEventIsNull() {
+    void testDeleteEventByIdAndUserIdForOrganisation_WhenEventIsNull() {
         Long eventId = 123L;
         String token = "your_token_here";
         User user = new User();
@@ -338,7 +340,7 @@ class EventServiceTest {
     }
 
     @Test
-    public void testDeleteEventByIdForAdmin(){
+    void testDeleteEventByIdForAdmin() {
         Long eventId = 15L;
         eventService.deleteEventByIdForAdmin(eventId);
 
@@ -356,13 +358,14 @@ class EventServiceTest {
         EventRequest eventRequest = EventRequest.builder().name("Updated Event").description("Updated description").imageUrl("image").build();
 
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(eventRepository.findEventByIdAndUserId(user.getId() , eventId)).thenReturn(event);
+        when(eventRepository.findEventByIdAndUserId(user.getId(), eventId)).thenReturn(event);
 
-        eventService.updateEvent(eventId, eventRequest , token);
-        verify(imageService).saveImageToDb(null , null , eventRequest.getImageUrl() , null , event);
+        eventService.updateEvent(eventId, eventRequest, token);
+        verify(imageService).saveImageToDb(null, null, eventRequest.getImageUrl(), null, event);
         assertEquals("Updated Event", event.getName());
         assertEquals("Updated description", event.getDescription());
     }
+
     @Test
     void updateEvent_shouldUpdateEventWhenEventNotFound() {
         User user = mock(User.class);
@@ -373,9 +376,9 @@ class EventServiceTest {
         EventRequest eventRequest = EventRequest.builder().name("Updated Event").description("Updated description").imageUrl("image").build();
 
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(eventRepository.findEventByIdAndUserId(user.getId() , eventId)).thenReturn(null);
+        when(eventRepository.findEventByIdAndUserId(user.getId(), eventId)).thenReturn(null);
 
-        assertThrows(EventRequestException.class, () -> eventService.updateEvent(eventId,eventRequest ,token));
+        assertThrows(EventRequestException.class, () -> eventService.updateEvent(eventId, eventRequest, token));
 
 
     }

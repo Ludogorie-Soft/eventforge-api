@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -71,8 +72,7 @@ public class ResponseFactory {
 
         List<CommonEventResponse> eventsToDisplay = org.getEvents().stream()
                 .map(this::buildCommonEventResponse)
-                .collect(Collectors.toList());
-
+                .toList();
 
         return OrganisationResponse.builder().
                 orgId(org.getId())

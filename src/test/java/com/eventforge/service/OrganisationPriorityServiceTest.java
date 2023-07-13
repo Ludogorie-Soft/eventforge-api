@@ -22,7 +22,7 @@ public class OrganisationPriorityServiceTest {
     private OrganisationPriorityService organisationPriorityService;
 
     @Test
-    public void testGetAllPriorityCategories() {
+    void testGetAllPriorityCategories() {
         // Arrange
         Set<String> expectedCategories = new HashSet<>();
         expectedCategories.add("Category1");
@@ -40,7 +40,7 @@ public class OrganisationPriorityServiceTest {
     }
 
     @Test
-    public void testGetOrganisationPriorityByCategory() {
+    void testGetOrganisationPriorityByCategory() {
         // Arrange
         String category = "Category1";
         OrganisationPriority expectedPriority = new OrganisationPriority();
@@ -58,7 +58,7 @@ public class OrganisationPriorityServiceTest {
     }
 
     @Test
-    public void testSaveOrganisationPriority() {
+    void testSaveOrganisationPriority() {
         // Arrange
         OrganisationPriority organisationPriority = new OrganisationPriority();
 

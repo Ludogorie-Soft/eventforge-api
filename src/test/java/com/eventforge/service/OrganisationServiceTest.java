@@ -40,7 +40,7 @@ class OrganisationServiceTest {
     private OrganisationService organisationService;
 
     @BeforeEach
-    public void init() {
+    void init() {
         organisationService = new OrganisationService(organizationRepository, mapper, userService,responseFactory,utils);
     }
 
@@ -128,7 +128,7 @@ class OrganisationServiceTest {
     }
 
     @Test
-    public void testGetOrganisationDetailsByIdWithCondition_ValidId() {
+    void testGetOrganisationDetailsByIdWithCondition_ValidId() {
         // Arrange
         Long organisationId = 1L;
         Organisation organisation = new Organisation(); // Create a test organisation object
@@ -146,20 +146,18 @@ class OrganisationServiceTest {
     }
 
     @Test
-    public void testGetOrganisationDetailsByIdWithCondition_InvalidId() {
+    void testGetOrganisationDetailsByIdWithCondition_InvalidId() {
         // Arrange
         Long organisationId = 2L;
         Mockito.when(organizationRepository.findOrganisationById(organisationId)).thenReturn(null);
 
         // Act and Assert
-        Assertions.assertThrows(OrganisationRequestException.class, () -> {
-            organisationService.getOrganisationDetailsByIdWithCondition(organisationId);
-        });
+        Assertions.assertThrows(OrganisationRequestException.class, () -> organisationService.getOrganisationDetailsByIdWithCondition(organisationId));
         Mockito.verify(organizationRepository, Mockito.times(1)).findOrganisationById(organisationId);
     }
 
     @Test
-    public void testGetOrganisationDetailsByIdWithoutCondition_ValidId() {
+    void testGetOrganisationDetailsByIdWithoutCondition_ValidId() {
         // Arrange
         Long organisationId = 1L;
         Organisation organisation = new Organisation(); // Create a test organisation object
@@ -179,16 +177,14 @@ class OrganisationServiceTest {
 
 
     @Test
-    public void testGetOrganisationDetailsByIdWithoutCondition_InvalidId() {
+    void testGetOrganisationDetailsByIdWithoutCondition_InvalidId() {
         // Arrange
         Long organisationId = 2L;
         Optional<Organisation> organisationOptional = Optional.empty();
         Mockito.when(organizationRepository.findById(organisationId)).thenReturn(organisationOptional);
 
         // Act and Assert
-        Assertions.assertThrows(OrganisationRequestException.class, () -> {
-            organisationService.getOrganisationDetailsByIdWithoutCondition(organisationId);
-        });
+        Assertions.assertThrows(OrganisationRequestException.class, () -> organisationService.getOrganisationDetailsByIdWithoutCondition(organisationId));
         Mockito.verify(organizationRepository, Mockito.times(1)).findById(organisationId);
     }
 }
