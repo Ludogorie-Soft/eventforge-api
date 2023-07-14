@@ -87,4 +87,9 @@ public class ExceptionHandler {
     public ResponseEntity<String> handleEventRequestException(EventRequestException exception) {
         return ResponseEntity.status(exception.getHTTP_STATUS_CODE()).contentType(MediaType.TEXT_PLAIN).body(exception.getMessage());
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(OrganisationRequestException.class)
+    public ResponseEntity<String> handleOrganisationRequestException(OrganisationRequestException ex){
+        return ResponseEntity.status(ex.getHTTP_STATUS_CODE()).contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
+    }
 }

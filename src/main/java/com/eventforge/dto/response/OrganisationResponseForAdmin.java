@@ -13,6 +13,7 @@ package com.eventforge.dto.response;
 
         private Long userId;
 
+        private Long orgId;
         private String orgName;
 
         private String fullName;

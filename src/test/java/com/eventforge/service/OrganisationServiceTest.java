@@ -2,17 +2,19 @@ package com.eventforge.service;
 
 import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.dto.response.OrganisationResponse;
+import com.eventforge.exception.OrganisationRequestException;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.OrganisationRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +40,7 @@ class OrganisationServiceTest {
     private OrganisationService organisationService;
 
     @BeforeEach
-    public void init() {
+    void init() {
         organisationService = new OrganisationService(organizationRepository, mapper, userService,responseFactory,utils);
     }
 
@@ -126,23 +128,63 @@ class OrganisationServiceTest {
     }
 
     @Test
-    void testGetOrganisationById_OrganisationExists() {
+    void testGetOrganisationDetailsByIdWithCondition_ValidId() {
+        // Arrange
         Long organisationId = 1L;
+        Organisation organisation = new Organisation(); // Create a test organisation object
+        when(organizationRepository.findOrganisationById(organisationId)).thenReturn(organisation);
+        OrganisationResponse expectedResponse = new OrganisationResponse(); // Create an expected response object
+        when(responseFactory.buildOrganisationResponse(organisation)).thenReturn(expectedResponse);
 
-        when(organizationRepository.findById(organisationId)).thenReturn(Optional.of(new Organisation()));
-        organisationService.getOrganisationById(organisationId);
+        // Act
+        OrganisationResponse actualResponse = organisationService.getOrganisationDetailsByIdWithCondition(organisationId);
 
-        verify(organizationRepository).findById(organisationId);
+        // Assert
+        Assertions.assertEquals(expectedResponse, actualResponse);
+        Mockito.verify(organizationRepository, Mockito.times(1)).findOrganisationById(organisationId);
+        Mockito.verify(responseFactory, Mockito.times(1)).buildOrganisationResponse(organisation);
     }
 
     @Test
-    void testGetOrganisationById_OrganisationDoesNotExist() {
+    void testGetOrganisationDetailsByIdWithCondition_InvalidId() {
+        // Arrange
+        Long organisationId = 2L;
+        Mockito.when(organizationRepository.findOrganisationById(organisationId)).thenReturn(null);
+
+        // Act and Assert
+        Assertions.assertThrows(OrganisationRequestException.class, () -> organisationService.getOrganisationDetailsByIdWithCondition(organisationId));
+        Mockito.verify(organizationRepository, Mockito.times(1)).findOrganisationById(organisationId);
+    }
+
+    @Test
+    void testGetOrganisationDetailsByIdWithoutCondition_ValidId() {
+        // Arrange
         Long organisationId = 1L;
-        when(organizationRepository.findById(organisationId)).thenReturn(Optional.empty());
+        Organisation organisation = new Organisation(); // Create a test organisation object
+        Optional<Organisation> organisationOptional = Optional.of(organisation);
+        Mockito.when(organizationRepository.findById(organisationId)).thenReturn(organisationOptional);
+        OrganisationResponse expectedResponse = new OrganisationResponse(); // Create an expected response object
+        Mockito.when(responseFactory.buildOrganisationResponse(organisation)).thenReturn(expectedResponse);
 
-        OrganisationResponse response = organisationService.getOrganisationById(organisationId);
+        // Act
+        OrganisationResponse actualResponse = organisationService.getOrganisationDetailsByIdWithoutCondition(organisationId);
 
-        verify(organizationRepository).findById(organisationId);
-        assertThat(response).isNull();
+        // Assert
+        Assertions.assertEquals(expectedResponse, actualResponse);
+        Mockito.verify(organizationRepository, Mockito.times(1)).findById(organisationId);
+        Mockito.verify(responseFactory, Mockito.times(1)).buildOrganisationResponse(organisation);
+    }
+
+
+    @Test
+    void testGetOrganisationDetailsByIdWithoutCondition_InvalidId() {
+        // Arrange
+        Long organisationId = 2L;
+        Optional<Organisation> organisationOptional = Optional.empty();
+        Mockito.when(organizationRepository.findById(organisationId)).thenReturn(organisationOptional);
+
+        // Act and Assert
+        Assertions.assertThrows(OrganisationRequestException.class, () -> organisationService.getOrganisationDetailsByIdWithoutCondition(organisationId));
+        Mockito.verify(organizationRepository, Mockito.times(1)).findById(organisationId);
     }
 }

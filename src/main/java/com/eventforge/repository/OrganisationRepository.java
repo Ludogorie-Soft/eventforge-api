@@ -15,7 +15,8 @@ public interface OrganisationRepository extends JpaRepository<Organisation, Long
     @Query("SELECT o FROM Organisation o ORDER BY o.registeredAt ASC")
     List<Organisation> findAllOrganisationsForAdmin();
 
-
+    @Query("SELECT o FROM Organisation o WHERE o.id = :id AND o.user.isNonLocked = true AND o.user.isApprovedByAdmin = true AND o.user.isEnabled = true")
+    Organisation findOrganisationById(Long id);
     @Query("SELECT o FROM Organisation o WHERE o.user.username = :email")
     Organisation findOrganisationByEmail(@Param("email") String email);
 

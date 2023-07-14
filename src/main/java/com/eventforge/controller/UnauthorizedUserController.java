@@ -23,10 +23,12 @@ public class UnauthorizedUserController {
     public ResponseEntity<List<OrganisationResponse>> showAllOrganisationsForUnauthorizedUser(@RequestParam(name = "search" ,required = false)String search){
         return new ResponseEntity<>(organisationService.getAllOrganisationsForUnauthorizedUser(search) , HttpStatus.OK);
     }
-
-    @GetMapping("/{orgId}/{orgName}/get-events")
-    public ResponseEntity<List<CommonEventResponse>> showOrgEvents(@PathVariable("orgId")Long orgId,@PathVariable("orgName")String organisationName ){
-        List<CommonEventResponse> events = eventService.getAllEventsOfOrganisationByOrganisationNameAndId(orgId , organisationName);
-        return new ResponseEntity<>(events , HttpStatus.OK);
+    @GetMapping("/organisation/details/{organisationId}")
+    public ResponseEntity<OrganisationResponse> getOrganisationDetails(@PathVariable("organisationId") Long id) {
+        return ResponseEntity.ok(organisationService.getOrganisationDetailsByIdWithCondition(id));
+    }
+    @GetMapping("/event/details/{id}")
+    public ResponseEntity<CommonEventResponse> showEventDetailsWithCondition(@PathVariable("id")Long id ){
+        return new ResponseEntity<>(eventService.getEventDetailWithConditionsById(id) ,HttpStatus.OK);
     }
 }

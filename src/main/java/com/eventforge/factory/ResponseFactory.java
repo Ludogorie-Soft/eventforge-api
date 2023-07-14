@@ -9,7 +9,10 @@ import com.eventforge.service.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class ResponseFactory {
 
         return OrganisationResponseForAdmin.builder().
                 userId(org.getUser().getId())
+                .orgId(org.getId())
                 .orgName(org.getName())
                 .fullName(org.getUser().getFullName())
                 .phoneNumber(org.getUser().getPhoneNumber())
@@ -66,18 +70,21 @@ public class ResponseFactory {
 
         String backgroundData = background.getUrl();
 
+        List<CommonEventResponse> eventsToDisplay = org.getEvents().stream()
+                .map(this::buildCommonEventResponse)
+                .toList();
+
         return OrganisationResponse.builder().
                 orgId(org.getId())
                 .logo(logoData)
                 .background(backgroundData)
                 .name(org.getName())
                 .bullstat(org.getBullstat())
-                .username(org.getUser().getUsername())
-                .phone(org.getUser().getPhoneNumber())
                 .address(org.getAddress())
                 .charityOption(org.getCharityOption())
                 .organisationPurpose(org.getOrganisationPurpose())
                 .organisationPriorities(orgPriorities)
+                .organisationEvents(eventsToDisplay)
                 .registeredAt(org.getRegisteredAt())
                 .updatedAt(org.getUpdatedAt())
                 .build();

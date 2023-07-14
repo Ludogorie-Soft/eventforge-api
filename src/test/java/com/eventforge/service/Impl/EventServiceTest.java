@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class EventServiceTest {
+public class EventServiceTest {
     @Mock
     private EventRepository eventRepository;
     @Mock
@@ -195,6 +195,7 @@ class EventServiceTest {
         verify(eventRepository).findAllEventsForOrganisationByUserIdAndName(user.getId(), name);
         verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
     }
+
     @Test
     void testGetAllEventsByUserIdAndNameForOrganisation_NullOrEmptyName() {
         // Arrange
@@ -232,36 +233,60 @@ class EventServiceTest {
     }
 
     @Test
-    void testGetEventByIdForAdmin() {
-        // Arrange
+    void testGetEventDetailWithConditionsById_EventFound() {
         Long eventId = 1L;
-        Event event = new Event(); // Create an event object for testing
-        CommonEventResponse expectedResponse = new CommonEventResponse();
+        Event event = new Event(); // Create a test Event object
 
-        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        // Mock the behavior of the eventRepository
+        when(eventRepository.findEventByIdWithCondition(eventId)).thenReturn(event);
+
+        // Mock the behavior of the responseFactory
+        CommonEventResponse expectedResponse = new CommonEventResponse(); // Create a test response object
         when(responseFactory.buildCommonEventResponse(event)).thenReturn(expectedResponse);
 
-        // Act
-        CommonEventResponse actualResponse = eventService.getEventByIdForAdmin(eventId);
+        // Call the method being tested
+        CommonEventResponse actualResponse = eventService.getEventDetailWithConditionsById(eventId);
 
-        // Assert
-        assertSame(expectedResponse, actualResponse);
-        verify(eventRepository).findById(eventId);
-        verify(responseFactory).buildCommonEventResponse(event);
+        // Verify the expected interactions and outcomes
+        Assertions.assertEquals(expectedResponse, actualResponse);
     }
 
-
     @Test
-    void testGetEventByIdForAdmin_ThrowsException() {
-        // Arrange
+    void testGetEventDetailWithConditionsById_EventNotFound() {
         Long eventId = 1L;
 
-        when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
+        // Mock the behavior of the eventRepository to return null
+        when(eventRepository.findEventByIdWithCondition(eventId)).thenReturn(null);
 
-        // Act and Assert
-        assertThrows(EventRequestException.class, () -> eventService.getEventByIdForAdmin(eventId));
-        verify(eventRepository).findById(eventId);
-        verifyNoInteractions(responseFactory);
+        // Call the method being tested and verify the exception is thrown
+        Assertions.assertThrows(EventRequestException.class,
+                () -> eventService.getEventDetailWithConditionsById(eventId),
+                "Търсеното от вас събитие не е намерено.");
+    }
+
+    @Test
+    void getEventDetailsWithoutConditionsById_whenFound() {
+        Long eventId = 10L;
+        Event event = new Event();
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        CommonEventResponse expectedResponse = new CommonEventResponse(); // Create a test response object
+        when(responseFactory.buildCommonEventResponse(event)).thenReturn(expectedResponse);
+
+        // Call the method being tested
+        CommonEventResponse actualResponse = eventService.getEventDetailsWithoutConditionsById(eventId);
+
+        // Verify the expected interactions and outcomes
+        Assertions.assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    void getEventDetailsWithoutConditionsById_whenNotFound() {
+        Long eventId = 10L;
+
+        Assertions.assertThrows(EventRequestException.class,
+                () -> eventService.getEventDetailsWithoutConditionsById(eventId),
+                "Търсеното от вас събитие не е намерено.");
     }
 
     @Test
@@ -278,7 +303,6 @@ class EventServiceTest {
     }
 
 
-
     @Test
     void deleteEventById_shouldDeleteEventAndLogInfo() {
         Long eventId = 1L;
@@ -290,8 +314,8 @@ class EventServiceTest {
 
 
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(eventRepository.findEventByIdAndUserId(user.getId() , eventId)).thenReturn(event);
-        eventService.deleteEventByIdAndUserIdForOrganisation(eventId , token);
+        when(eventRepository.findEventByIdAndUserId(user.getId(), eventId)).thenReturn(event);
+        eventService.deleteEventByIdAndUserIdForOrganisation(eventId, token);
         verify(eventRepository).delete(event);
 
         ArgumentCaptor<Event> argumentCaptor = ArgumentCaptor.forClass(Event.class);
@@ -301,7 +325,7 @@ class EventServiceTest {
     }
 
     @Test
-    public void testDeleteEventByIdAndUserIdForOrganisation_WhenEventIsNull() {
+    void testDeleteEventByIdAndUserIdForOrganisation_WhenEventIsNull() {
         Long eventId = 123L;
         String token = "your_token_here";
         User user = new User();
@@ -316,7 +340,7 @@ class EventServiceTest {
     }
 
     @Test
-    public void testDeleteEventByIdForAdmin(){
+    void testDeleteEventByIdForAdmin() {
         Long eventId = 15L;
         eventService.deleteEventByIdForAdmin(eventId);
 
@@ -334,13 +358,14 @@ class EventServiceTest {
         EventRequest eventRequest = EventRequest.builder().name("Updated Event").description("Updated description").imageUrl("image").build();
 
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(eventRepository.findEventByIdAndUserId(user.getId() , eventId)).thenReturn(event);
+        when(eventRepository.findEventByIdAndUserId(user.getId(), eventId)).thenReturn(event);
 
-        eventService.updateEvent(eventId, eventRequest , token);
-        verify(imageService).saveImageToDb(null , null , eventRequest.getImageUrl() , null , event);
+        eventService.updateEvent(eventId, eventRequest, token);
+        verify(imageService).saveImageToDb(null, null, eventRequest.getImageUrl(), null, event);
         assertEquals("Updated Event", event.getName());
         assertEquals("Updated description", event.getDescription());
     }
+
     @Test
     void updateEvent_shouldUpdateEventWhenEventNotFound() {
         User user = mock(User.class);
@@ -351,9 +376,9 @@ class EventServiceTest {
         EventRequest eventRequest = EventRequest.builder().name("Updated Event").description("Updated description").imageUrl("image").build();
 
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(eventRepository.findEventByIdAndUserId(user.getId() , eventId)).thenReturn(null);
+        when(eventRepository.findEventByIdAndUserId(user.getId(), eventId)).thenReturn(null);
 
-        assertThrows(EventRequestException.class, () -> eventService.updateEvent(eventId,eventRequest ,token));
+        assertThrows(EventRequestException.class, () -> eventService.updateEvent(eventId, eventRequest, token));
 
 
     }

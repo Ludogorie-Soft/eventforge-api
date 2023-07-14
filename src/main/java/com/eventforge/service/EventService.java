@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -98,22 +99,26 @@ public class EventService {
                 .toList();
     }
 
-    public List<CommonEventResponse> getAllEventsOfOrganisationByOrganisationNameAndId(Long orgId , String orgName){
-        return eventRepository.findAllEventsOfOrganisationByOrganisationNameAndId(orgId , orgName)
-                .stream()
-                .map(responseFactory::buildCommonEventResponse)
-                .toList();
-    }
-
-
     public void saveEvent(Event event) {
         eventRepository.save(event);
     }
 
 
-    public CommonEventResponse getEventByIdForAdmin(Long eventId) {
+    public CommonEventResponse getEventDetailWithConditionsById(Long eventId ) {
+        Event event = eventRepository.findEventByIdWithCondition(eventId);
+        if (event != null) {
+            return responseFactory.buildCommonEventResponse(event);
+        } else {
+            throw new EventRequestException("Търсеното от вас събитие не е намерено.");
+        }
+    }
 
-        return responseFactory.buildCommonEventResponse(eventRepository.findById(eventId).orElseThrow(() -> new EventRequestException("Събитие с номер:"+eventId+" не е намерено!")));
+    public CommonEventResponse getEventDetailsWithoutConditionsById(Long eventId){
+        Optional<Event> event = eventRepository.findById(eventId);
+        if(event.isEmpty()){
+            throw new EventRequestException("Търсеното от вас събитие не е наремено");
+        }
+        return responseFactory.buildCommonEventResponse(event.get());
     }
 
     public void deleteEventByIdAndUserIdForOrganisation(Long eventId, String token) {

@@ -16,6 +16,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
 
     // queries accessible for everyone!
+    @Query("SELECT e FROM Event e WHERE e.id = :eventId AND "+LEGAL_USER_CONDITION)
+    Event findEventByIdWithCondition(Long eventId);
     @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+LEGAL_USER_CONDITION + " AND e.organisation.id = :orgId ORDER BY e.createdAt ASC")
     List<Event> findAllOneTimeEventsByOrganisationId(Long orgId);
     @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+LEGAL_USER_CONDITION +" AND e.organisation.id = :orgId ORDER BY e.createdAt ASC")
@@ -30,9 +32,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllExpiredOneTimeEvents(LocalDateTime passedDate , String order);
     @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+LEGAL_USER_CONDITION+" AND "+EXPIRED_CONDITION + "ORDER BY e.endsAt ASC")
     List<Event> findAllExpiredRecurrenceEvents(LocalDateTime passedDate , String order);
-
-    @Query("SELECT e FROM Event e WHERE "+LEGAL_USER_CONDITION + " AND e.organisation.name = :orgName AND e.organisation.id = :orgId ORDER BY e.startsAt ASC")
-    List<Event> findAllEventsOfOrganisationByOrganisationNameAndId(Long orgId ,String orgName);
 
     // queries accessible for organisations!
     @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.organisation.user.isNonLocked = true ORDER BY e.startsAt DESC")

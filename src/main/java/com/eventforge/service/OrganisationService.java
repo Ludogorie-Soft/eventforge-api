@@ -3,6 +3,7 @@ package com.eventforge.service;
 import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.OrganisationResponseForAdmin;
+import com.eventforge.exception.OrganisationRequestException;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.OrganisationPriority;
@@ -79,9 +80,20 @@ public class OrganisationService {
             log.info("User with email {} successfully updated his account settings" , currentLoggedUser.getUsername() );
         }
     }
-    public OrganisationResponse getOrganisationById(Long organisationId) {
-        Optional<Organisation> organisationResponse = organisationRepository.findById(organisationId);
-        return mapper.map(organisationResponse , OrganisationResponse.class);
+    public OrganisationResponse getOrganisationDetailsByIdWithCondition(Long organisationId) {
+        Organisation organisationResponse = organisationRepository.findOrganisationById(organisationId);
+        if(organisationResponse==null){
+            throw new OrganisationRequestException("Няма намерена организация с идентификационен номер: "+organisationId);
+        }
+        return responseFactory.buildOrganisationResponse(organisationResponse);
+    }
+
+    public OrganisationResponse getOrganisationDetailsByIdWithoutCondition(Long organisationId){
+        Optional<Organisation> organisation = organisationRepository.findById(organisationId);
+        if(organisation.isEmpty()){
+            throw new OrganisationRequestException("Няма намерена организация с идентификационен номер: "+organisationId);
+        }
+        return responseFactory.buildOrganisationResponse(organisation.get());
     }
 
     public OrganisationResponse getOrgByName(String orgName){

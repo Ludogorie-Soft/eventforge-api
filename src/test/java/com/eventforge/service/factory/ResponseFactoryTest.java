@@ -108,16 +108,12 @@ public class ResponseFactoryTest {
 
         // Create a mock organisation object
         Organisation org = mock(Organisation.class);
-        User user = mock(User.class);
         Image logo = mock(Image.class);
         Image background = mock(Image.class);
 
         when(org.getId()).thenReturn(1L);
         when(org.getName()).thenReturn("Organisation Name");
         when(org.getBullstat()).thenReturn("Bullstat");
-        when(org.getUser()).thenReturn(user);
-        when(user.getUsername()).thenReturn("username");
-        when(user.getPhoneNumber()).thenReturn("123456789");
         when(org.getAddress()).thenReturn("Organisation Address");
         when(org.getCharityOption()).thenReturn("Charity Option");
         when(org.getOrganisationPurpose()).thenReturn("Organisation Purpose");
@@ -154,8 +150,6 @@ public class ResponseFactoryTest {
         assertEquals("background-url", response.getBackground());
         assertEquals(org.getName(), response.getName());
         assertEquals(org.getBullstat(), response.getBullstat());
-        assertEquals(user.getUsername(), response.getUsername());
-        assertEquals(user.getPhoneNumber(), response.getPhone());
         assertEquals(org.getAddress(), response.getAddress());
         assertEquals(org.getCharityOption(), response.getCharityOption());
         assertEquals(org.getOrganisationPurpose(), response.getOrganisationPurpose());

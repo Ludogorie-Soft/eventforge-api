@@ -1,5 +1,7 @@
 package com.eventforge.controller;
 
+import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.OrganisationResponseForAdmin;
 import com.eventforge.service.EventService;
 import com.eventforge.service.OrganisationService;
@@ -27,11 +29,15 @@ public class AdminController {
     public ResponseEntity<List<OrganisationResponseForAdmin>> getAllOrganisationsForAdminByApprovedOrNot(@RequestHeader("Authorization")String authHeader ){
         return new ResponseEntity<>(organisationService.getAllOrganisationsForAdminByApprovedOrNot() ,HttpStatus.OK);
     }
+    @GetMapping("/organisation/details/{id}")
+    public ResponseEntity<OrganisationResponse> showOrganisationDetailsForAdmin(@RequestHeader("Authorization")String authHeader ,@PathVariable("id")Long orgId){
+        return new ResponseEntity<>(organisationService.getOrganisationDetailsByIdWithoutCondition(orgId) , HttpStatus.OK);
+    }
 
-//    @GetMapping("/organisation-management/unapproved-accounts")
-//    public ResponseEntity<List<OrganisationResponseForAdmin>> getAllUnapprovedOrganisationsForAdmin(@RequestHeader("Authorization")String authHeader){
-//        return new ResponseEntity<>(organisationService.getAllUnapprovedOrganisationForAdmin() , HttpStatus.OK);
-//    }
+    @GetMapping("/event/details/{id}")
+    public ResponseEntity<CommonEventResponse>showEventDetailsForAdmin(@RequestHeader("Authorization")String authHeader ,@PathVariable("id")Long eventId){
+        return new ResponseEntity<>(eventService.getEventDetailsWithoutConditionsById(eventId) , HttpStatus.OK);
+    }
     @PutMapping("/organisation-management/ban-account/{id}/{email}")
     public ResponseEntity<String> banAccountById(@RequestHeader("Authorization")String authHeader , @PathVariable("id")Long id , @PathVariable("email")String email){
         userService.lockAccountById(id);

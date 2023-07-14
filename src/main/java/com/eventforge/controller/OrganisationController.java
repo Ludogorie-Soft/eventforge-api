@@ -76,10 +76,6 @@ public class OrganisationController {
     public ResponseEntity<String> changePassword(@RequestHeader(AUTHORIZATION) String token, @Valid @RequestBody ChangePasswordRequest request) {
         return new ResponseEntity<>(userService.changeAccountPassword(token, request), HttpStatus.OK);
     }
-    @GetMapping("/{organisationId}")
-    public ResponseEntity<OrganisationResponse> getOrganisation(@PathVariable("organisationId") Long uuid) {
-        return ResponseEntity.ok(organisationService.getOrganisationById(uuid));
-    }
 
     @GetMapping("/getOrgByName/{name}")
     public ResponseEntity<OrganisationResponse> getOrganisationByName(@PathVariable("name") String name) {
