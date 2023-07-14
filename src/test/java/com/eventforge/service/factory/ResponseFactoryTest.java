@@ -3,6 +3,7 @@ package com.eventforge.service.factory;
 import com.eventforge.dto.response.*;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.*;
+import com.eventforge.repository.EventRepository;
 import com.eventforge.repository.ImageRepository;
 import com.eventforge.service.Utils;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,9 @@ public class ResponseFactoryTest {
 
     @Mock
     private ImageRepository imageRepository;
+
+    @Mock
+    private EventRepository eventRepository;
     @InjectMocks
     private ResponseFactory responseFactory;
 

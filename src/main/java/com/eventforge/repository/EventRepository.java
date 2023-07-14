@@ -12,8 +12,16 @@ public interface EventRepository extends JpaRepository<Event, Long> {
       String UNEXPIRED_CONDITION = "e.endsAt >= ?1";
       String EXPIRED_CONDITION = "e.endsAt < ?1";
 
+      //queries that find organisation events by active , expired and upcoming
 
+    @Query("SELECT e FROM Event e WHERE e.organisation.id = :orgId AND e.endsAt < :now  ORDER BY e.startsAt ASC")
+    List<Event> findAllExpiredEvents(Long orgId , LocalDateTime now);
 
+    @Query("SELECT e FROM Event e WHERE e.organisation.id = :orgId AND e.startsAt < :now AND e.endsAt >= :now ORDER BY e.startsAt ASC")
+    List<Event> findAllActiveEvents (Long orgId , LocalDateTime now);
+
+    @Query("SELECT e FROM Event e WHERE e.organisation.id = :orgId AND e.startsAt > :now ORDER BY e.startsAt ASC")
+    List<Event> findAllUpcomingEvents(Long orgId , LocalDateTime now);
 
     // queries accessible for everyone!
     @Query("SELECT e FROM Event e WHERE e.id = :eventId AND "+LEGAL_USER_CONDITION)

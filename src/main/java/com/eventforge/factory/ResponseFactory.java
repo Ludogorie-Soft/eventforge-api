@@ -4,15 +4,15 @@ import com.eventforge.dto.response.*;
 import com.eventforge.model.Event;
 import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
+import com.eventforge.repository.EventRepository;
 import com.eventforge.repository.ImageRepository;
 import com.eventforge.service.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +20,7 @@ public class ResponseFactory {
 
     private final Utils utils;
     private final ImageRepository imageRepository;
+    private final EventRepository eventRepository;
 
     public OrganisationResponseForAdmin buildOrganisationResponseForAdmin(Organisation org) {
 
@@ -67,12 +68,7 @@ public class ResponseFactory {
         Set<String> orgPriorities = utils.convertListOfOrganisationPrioritiesToString(org.getOrganisationPriorities());
 
         String logoData = logo.getUrl();
-
         String backgroundData = background.getUrl();
-
-        List<CommonEventResponse> eventsToDisplay = org.getEvents().stream()
-                .map(this::buildCommonEventResponse)
-                .toList();
 
         return OrganisationResponse.builder().
                 orgId(org.getId())
@@ -84,10 +80,31 @@ public class ResponseFactory {
                 .charityOption(org.getCharityOption())
                 .organisationPurpose(org.getOrganisationPurpose())
                 .organisationPriorities(orgPriorities)
-                .organisationEvents(eventsToDisplay)
+                .expiredEvents(fetchExpiredEvents(org.getId()))
+                .activeEvents(fetchActiveEvents(org.getId()))
+                .upcomingEvents(fetchUpcomingEvents(org.getId()))
                 .registeredAt(org.getRegisteredAt())
                 .updatedAt(org.getUpdatedAt())
                 .build();
+    }
+
+    private List<CommonEventResponse> fetchExpiredEvents(Long orgId){
+
+        return eventRepository.findAllExpiredEvents(orgId, LocalDateTime.now()).stream()
+                .map(this::buildCommonEventResponse)
+                .toList();
+    }
+
+    private List<CommonEventResponse> fetchActiveEvents(Long orgId){
+        return eventRepository.findAllActiveEvents(orgId, LocalDateTime.now()).stream()
+                .map(this::buildCommonEventResponse)
+                .toList();
+    }
+
+    private List<CommonEventResponse> fetchUpcomingEvents(Long orgId){
+        return eventRepository.findAllUpcomingEvents(orgId, LocalDateTime.now()).stream()
+                .map(this::buildCommonEventResponse)
+                .toList();
     }
 
     public RecurrenceEventResponse buildRecurrenceEventResponse(Event event) {
