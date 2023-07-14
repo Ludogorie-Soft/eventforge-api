@@ -1,6 +1,7 @@
 package com.eventforge.service;
 
 import com.eventforge.dto.request.ChangePasswordRequest;
+import com.eventforge.dto.request.ResetForgottenPasswordRequest;
 import com.eventforge.exception.InvalidEmailConfirmationLinkException;
 import com.eventforge.exception.InvalidPasswordException;
 import com.eventforge.model.User;
@@ -46,13 +47,18 @@ public class UserService {
     }
 
 
-    public void updateUserIsEnabledFieldAfterConfirmedEmail(User user) {
-        if (user != null) {
+    public String updateUserIsEnabledFieldAfterConfirmedEmail(String token , String appUrl) {
+        String isValid =emailVerificationTokenService.validateVerificationToken(token , appUrl);
+        if(isValid == null){
+            VerificationToken verificationTokenDb = emailVerificationTokenService.getVerificationTokenByToken(token);
+            User user = verificationTokenDb.getUser();
             user.setIsEnabled(true);
             saveUserInDb(user);
+            emailVerificationTokenService.deleteVerificationToken(verificationTokenDb);
             log.info("Успешно потвърдена електронна поща - " + user.getUsername());
+            return "Успешно потвърдихте профилът си , вече можете да се впишете.";
         }
-
+        return isValid;
     }
 
     public void saveUserVerificationToken(User theUser, String token) {
@@ -80,30 +86,22 @@ public class UserService {
         return null;
     }
 
-    public String validateVerificationToken(String verificationToken, String url) {
-        VerificationToken verificationTokenDb = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
-        if (verificationTokenDb == null) {
-            throw new InvalidEmailConfirmationLinkException("Линкът за активация е навалиден");
+    public String generateNewRandomPasswordForUserViaVerificationToken(String appUrl , String verificationToken){
+        String result = emailVerificationTokenService.validateVerificationToken(verificationToken , appUrl);
+        if(result == null){
+            VerificationToken token = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
+            User user = token.getUser();
+            String newGeneratedPassword = UUID.randomUUID().toString();
+            user.setPassword(utils.encodePassword(newGeneratedPassword));
+            saveUserInDb(user);
+            return newGeneratedPassword;
         }
-
-        User user = verificationTokenDb.getUser();
-        Calendar calendar = Calendar.getInstance();
-        if (verificationTokenDb.getExpirationTime().getTime() - calendar.getTime().getTime() <= 0) {
-            return url;
-        }
-        updateUserIsEnabledFieldAfterConfirmedEmail(user);
-        emailVerificationTokenService.deleteVerificationToken(verificationTokenDb);
-        return "Успешно потвърдихте профилът си , вече можете да се впишете.";
+        return result;
     }
 
-    public VerificationToken generateNewVerificationToken(String oldToken) {
-        VerificationToken verificationToken = emailVerificationTokenService.getVerificationTokenByToken(oldToken);
-        var verificationTokenTime = new VerificationToken();
-        verificationToken.setToken(UUID.randomUUID().toString());
-        verificationToken.setExpirationTime(verificationTokenTime.getTokenExpirationTime());
-        emailVerificationTokenService.saveVerificationToken(verificationToken);
-        return verificationToken;
-    }
+
+
+
 
     public void setApproveByAdminToTrue(Long userId){
         Optional<User> user =userRepository.findById(userId);

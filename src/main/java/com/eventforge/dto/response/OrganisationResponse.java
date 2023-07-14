@@ -13,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrganisationResponse {
-    @JsonIgnore
+
     private Long orgId;
     private String logo;
     private String background;

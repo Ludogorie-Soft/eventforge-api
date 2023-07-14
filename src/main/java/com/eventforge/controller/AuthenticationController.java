@@ -1,14 +1,13 @@
 package com.eventforge.controller;
 
-import com.eventforge.dto.response.AuthenticationResponse;
+import com.eventforge.dto.request.JWTAuthenticationRequest;
 import com.eventforge.dto.request.RegistrationRequest;
-import com.eventforge.email.CreateApplicationUrl;
+import com.eventforge.dto.response.AuthenticationResponse;
+import com.eventforge.email.ForgottenPasswordEvent;
 import com.eventforge.email.RegistrationCompleteEvent;
 import com.eventforge.email.listener.RegistrationCompleteEventListener;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
-import com.eventforge.dto.request.JWTAuthenticationRequest;
-import com.eventforge.security.jwt.JWTService;
 import com.eventforge.service.AuthenticationService;
 import com.eventforge.service.EmailVerificationTokenService;
 import com.eventforge.service.OrganisationPriorityService;
@@ -31,17 +30,12 @@ import java.util.Set;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthenticationController {
-    private final JWTService jwtService;
+
     private final AuthenticationService authenticationService;
     private final ApplicationEventPublisher publisher;
-    private final CreateApplicationUrl url;
     private final EmailVerificationTokenService emailVerificationTokenService;
     private final UserService userService;
-
-    private final HttpServletRequest servletRequest;
-
     private final RegistrationCompleteEventListener eventListener;
-
     private final OrganisationPriorityService organisationPriorityService;
 
     @GetMapping("/getAllPriorityCategories")
@@ -59,20 +53,19 @@ public class AuthenticationController {
     @GetMapping("/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken ,@RequestParam("appUrl")String appUrl)  {
         VerificationToken verifyToken = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
-        String redirectUrl = "";
         if(verifyToken!=null){
             if (Boolean.TRUE.equals(verifyToken.getUser().getIsEnabled())) {
-                return new ResponseEntity<>("Акантът Ви е вече потвърден. Моля впишете се." , HttpStatus.ALREADY_REPORTED);
+                return new ResponseEntity<>("Акаунтът Ви е вече потвърден. Моля впишете се." , HttpStatus.ALREADY_REPORTED);
             }
         }
 
-        String verificationResult = userService.validateVerificationToken(verificationToken, appUrl);
+        String verificationResult = userService.updateUserIsEnabledFieldAfterConfirmedEmail(verificationToken, appUrl);
         return new ResponseEntity<>(verificationResult ,HttpStatus.OK);
     }
 
     @GetMapping("/resend-verification-token")
     public String resendVerificationToken(@RequestParam("verificationToken") String verificationToken,@RequestParam("appUrl")String appUrl) throws MessagingException, UnsupportedEncodingException {
-        VerificationToken verificationTokenDb = userService.generateNewVerificationToken(verificationToken);
+        VerificationToken verificationTokenDb = emailVerificationTokenService.generateNewVerificationToken(verificationToken);
         User user = verificationTokenDb.getUser();
         eventListener.resendVerificationTokenEmail(user, appUrl, verificationTokenDb);
         return "Пратихме Ви нов линк за потвърждение. Моля посетете електронната си поща.";
@@ -83,6 +76,26 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> getTokenForAuthenticatedUser(@RequestBody JWTAuthenticationRequest authRequest) {
         AuthenticationResponse authenticationResponse = authenticationService.authenticate(authRequest);
         return ResponseEntity.ok().body(authenticationResponse);
+    }
+
+    @PostMapping("/forgotten/password")
+    public ResponseEntity<String> forgottenPassword(@RequestParam("email")String email ,@RequestParam("appUrl")String appUrl){
+        publisher.publishEvent(new ForgottenPasswordEvent(email ,appUrl , null));
+        return new ResponseEntity<>("Изпратихме Ви имейл за смяна на парола.Моля посете електронната си поща" , HttpStatus.OK);
+    }
+
+//    @GetMapping("/forgotten/password/")
+//    public ResponseEntity<ResetForgottenPasswordRequest> resetPasswordLink(@RequestParam("verificationToken")String verificationToken, @RequestParam("appUrl")String appUrl){
+//        ResetForgottenPasswordRequest resetPassword = new ResetForgottenPasswordRequest();
+//        resetPassword.setToken(verificationToken);
+//        resetPassword.setAppUrl(appUrl);
+//       return new ResponseEntity<>(resetPassword,HttpStatus.OK);
+//    }
+
+    @PutMapping("/reset/password")
+    public ResponseEntity<String> resetPassword(@RequestParam("verificationToken")String verificationToken , @RequestParam("appUrl")String appUrl){
+       String newGeneratedPassword = userService.generateNewRandomPasswordForUserViaVerificationToken(verificationToken , appUrl);
+        return new ResponseEntity<>("Успешно сменихте паролата си.Вече можете да се впишете с новата Ви парола." , HttpStatus.OK);
     }
 
 
