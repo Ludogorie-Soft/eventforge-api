@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS verification_token (
                                     id BIGINT PRIMARY KEY AUTO_INCREMENT,
                                     token VARCHAR(255) NOT NULL,
                                     user_id BIGINT,
-                                    expiration_time TIMESTAMP,
+                                    type VARCHAR(255) NOT NULL,
+                                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                     FOREIGN KEY (user_id) REFERENCES user(id)
 );

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -16,6 +17,11 @@ import java.time.ZonedDateTime;
 public class ExceptionHandler {
 
     private final Utils utils;
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UsernameNotFoundException ex){
+        return ResponseEntity.status(321).contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
+    }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(DateTimeException.class)
     public ResponseEntity<String> handleDateTimeException(DateTimeException e) {

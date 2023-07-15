@@ -46,29 +46,22 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegistrationRequest request,@RequestParam("appUrl") String appUrl) {
         User user = authenticationService.register(request);
-        publisher.publishEvent(new RegistrationCompleteEvent(user, appUrl));
+        publisher.publishEvent(new RegistrationCompleteEvent(user,null ,appUrl));
         return new ResponseEntity<>("Успешна регистрация. Моля потвърдете имейла си.", HttpStatus.CREATED);
     }
 
     @GetMapping("/verifyEmail")
-    public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken ,@RequestParam("appUrl")String appUrl)  {
-        VerificationToken verifyToken = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
-        if(verifyToken!=null){
-            if (Boolean.TRUE.equals(verifyToken.getUser().getIsEnabled())) {
-                return new ResponseEntity<>("Акаунтът Ви е вече потвърден. Моля впишете се." , HttpStatus.ALREADY_REPORTED);
-            }
-        }
-
-        String verificationResult = userService.updateUserIsEnabledFieldAfterConfirmedEmail(verificationToken, appUrl);
+    public ResponseEntity<String> verifyEmail(@RequestParam("verificationToken") String verificationToken)  {
+        String verificationResult = userService.updateUserIsEnabledFieldAfterConfirmedEmail(verificationToken);
         return new ResponseEntity<>(verificationResult ,HttpStatus.OK);
     }
 
-    @GetMapping("/resend-verification-token")
-    public String resendVerificationToken(@RequestParam("verificationToken") String verificationToken,@RequestParam("appUrl")String appUrl) throws MessagingException, UnsupportedEncodingException {
-        VerificationToken verificationTokenDb = emailVerificationTokenService.generateNewVerificationToken(verificationToken);
-        User user = verificationTokenDb.getUser();
-        eventListener.resendVerificationTokenEmail(user, appUrl, verificationTokenDb);
-        return "Пратихме Ви нов линк за потвърждение. Моля посетете електронната си поща.";
+    @PostMapping("/resend-verification-token")
+    public String resendVerificationToken(@RequestParam(value = "email" ,required = false) String email,@RequestParam("appUrl")String appUrl)  {
+
+        publisher.publishEvent(new RegistrationCompleteEvent(null , email , appUrl));
+
+        return "Изпратихме Ви нов линк за потвърждение на профил. Моля посетете електронната си поща";
     }
 
 
@@ -84,18 +77,13 @@ public class AuthenticationController {
         return new ResponseEntity<>("Изпратихме Ви имейл за смяна на парола.Моля посете електронната си поща" , HttpStatus.OK);
     }
 
-//    @GetMapping("/forgotten/password/")
-//    public ResponseEntity<ResetForgottenPasswordRequest> resetPasswordLink(@RequestParam("verificationToken")String verificationToken, @RequestParam("appUrl")String appUrl){
-//        ResetForgottenPasswordRequest resetPassword = new ResetForgottenPasswordRequest();
-//        resetPassword.setToken(verificationToken);
-//        resetPassword.setAppUrl(appUrl);
-//       return new ResponseEntity<>(resetPassword,HttpStatus.OK);
-//    }
+    @GetMapping("/reset/password")
+    public void resetPassword(@RequestParam("verificationToken")String verificationToken){
+        VerificationToken token = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
+        User user = token.getUser();
+        String newGeneratedPassword = userService.generateNewRandomPasswordForUserViaVerificationToken(token ,user);
+        publisher.publishEvent(new ForgottenPasswordEvent(user.getUsername() ,null ,newGeneratedPassword));
 
-    @PutMapping("/reset/password")
-    public ResponseEntity<String> resetPassword(@RequestParam("verificationToken")String verificationToken , @RequestParam("appUrl")String appUrl){
-       String newGeneratedPassword = userService.generateNewRandomPasswordForUserViaVerificationToken(verificationToken , appUrl);
-        return new ResponseEntity<>("Успешно сменихте паролата си.Вече можете да се впишете с новата Ви парола." , HttpStatus.OK);
     }
 
 

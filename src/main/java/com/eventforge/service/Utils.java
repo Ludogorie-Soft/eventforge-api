@@ -143,6 +143,24 @@ public class Utils {
         return joiner.toString();
     }
 
+    public String generateRandomPassword() {
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#*";
+        List<Character> charList =new ArrayList<>();
+        for(char c :  chars.toCharArray()){
+            charList.add(c);
+        }
+
+        Collections.shuffle(charList);
+        StringBuilder password = new StringBuilder();
+
+        Random random = new Random();
+        for (int i = 0; i < 15; i++) {
+            password.append(charList.get(random.nextInt(charList.size())));
+        }
+
+        return password.toString();
+    }
+
     public boolean isPasswordValid(String password, String hashedPassword) {
         return passwordEncoder.matches(password, hashedPassword);
     }

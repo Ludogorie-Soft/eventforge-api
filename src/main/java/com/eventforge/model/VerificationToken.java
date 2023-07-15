@@ -1,12 +1,16 @@
 package com.eventforge.model;
 
+import com.eventforge.constants.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.Calendar;
-import java.util.Date;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,28 +22,26 @@ public class VerificationToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String token;
-    private Date expirationTime;
+
+    private String type;
+
+    @CreationTimestamp
+    @Column(name ="created_at")
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    @Column(name="updated_at")
+    private LocalDateTime updatedAt;
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-    private static final int EXPIRATION_TIME = 2880; //2 days
 
-    public VerificationToken(String token, User user) {
+
+    public VerificationToken(String token, User user , String type) {
         super();
         this.token = token;
         this.user = user;
-        this.expirationTime = this.getTokenExpirationTime(); 
-    }
-    public VerificationToken(String token) {
-        super();
-        this.token = token;
-        this.expirationTime = this.getTokenExpirationTime();
+        this.type = type;
+
     }
 
-    public Date getTokenExpirationTime() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(new Date().getTime());
-        calendar.add(Calendar.MINUTE,EXPIRATION_TIME);
-        return new Date(calendar.getTime().getTime());
-    }
 }

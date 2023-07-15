@@ -10,6 +10,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -32,6 +33,23 @@ class ExceptionHandlerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         exceptionHandler = new ExceptionHandler(mockUtils);
+    }
+
+    @Test
+    public void testHandleUserNotFoundException() {
+        // Create an instance of YourController
+
+        // Create a UsernameNotFoundException instance
+        UsernameNotFoundException exception = new UsernameNotFoundException("User not found");
+
+        // Call the method under test
+        ResponseEntity<String> response = exceptionHandler.handleUserNotFoundException(exception);
+
+        // Assert the response
+        assertEquals(321, response.getStatusCode().value(),
+                "Expected HTTP status code 321");
+        assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType(), "Expected response content type TEXT_PLAIN");
+        assertEquals("User not found", response.getBody(), "Expected response body to be 'User not found'");
     }
 
     @Test
@@ -95,7 +113,7 @@ class ExceptionHandlerTest {
         // Assert
         assertEquals(HttpStatus.SERVICE_UNAVAILABLE, response.getStatusCode());
         assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType());
-        assertEquals("Моля потвърдете имейла си за да влезете в профилът си", response.getBody());
+        assertEquals("Моля потвърдете първо електронната си поща.", response.getBody());
     }
 
     @Test
@@ -202,9 +220,28 @@ class ExceptionHandlerTest {
         // Assert
         assertEquals(expectedStatus, response.getStatusCode().value());
         assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType());
-        assertEquals("Забранен е достъпът до този акаунт. За повече информация , свържете се с администратора на сайта.", response.getBody());
+        assertEquals("Забранен е всякакъв достъп до този акаунт. За повече информация , свържете се с администратора на сайта.", response.getBody());
     }
 
+    @Test
+    public void testHandleOrganisationRequestException() {
+        // Create an instance of YourController
+
+
+        // Create an OrganisationRequestException instance with custom status code and message
+        OrganisationRequestException exception = new OrganisationRequestException("Request expired");
+
+        // Call the method under test
+        ResponseEntity<String> response = exceptionHandler.handleOrganisationRequestException(exception);
+
+        // Assert the response
+        assertEquals(HttpStatus.GONE, response.getStatusCode(),
+                "Expected HTTP status code GONE (410)");
+        assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType(),
+                "Expected response content type TEXT_PLAIN");
+        assertEquals("Request expired", response.getBody(),
+                "Expected response body to be 'Request expired'");
+    }
 
 
 }

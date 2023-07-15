@@ -1,45 +1,41 @@
 package com.eventforge.service;
 
+import com.eventforge.constants.TokenType;
 import com.eventforge.exception.InvalidEmailConfirmationLinkException;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
 public class EmailVerificationTokenService {
 
+    private static final int EXPIRATION_TIME = 3; //days
+
     private final VerificationTokenRepository verificationTokenRepository;
 
     public VerificationToken getVerificationTokenByToken(String token){
-        return verificationTokenRepository.findByToken(token).orElseThrow(() -> new InvalidEmailConfirmationLinkException("Линкът за активация е навалиден"));
+        return verificationTokenRepository.findByToken(token).orElseThrow(() -> new InvalidEmailConfirmationLinkException("Линкът е вече невалиден!"));
     }
 
-    public boolean isVerificationTokenExpired(String verificationToken){
-        Calendar calendar = Calendar.getInstance();
-        return getVerificationTokenByToken(verificationToken).getExpirationTime().getTime() - calendar.getTime().getTime() <= 0;
-    }
+    public void validateTokenExpirationTime(VerificationToken token){
+        LocalDateTime updatedAt = token.getUpdatedAt();
+        LocalDateTime now = LocalDateTime.now();
 
-    public String validateVerificationToken(String verificationToken, String url) {
-        boolean isExpired = isVerificationTokenExpired(verificationToken);
-        if(isExpired){
-            return url;
+        LocalDateTime expirationTime = updatedAt.plus(EXPIRATION_TIME, ChronoUnit.DAYS);
+        if(now.isAfter(expirationTime)){
+            String errorMessage = (token.getType().equals(TokenType.CONFIRM_EMAIL.toString()))
+                    ? "Линкът за потвърждение на акаунт е изтекъл. Моля, генерирайте нов."
+                    : "Линкът за забравена парола е изтекъл. Моля, генерирайте нов.";
+
+            throw new InvalidEmailConfirmationLinkException(errorMessage);
         }
-        return null;
     }
 
-    public VerificationToken generateNewVerificationToken(String oldToken) {
-        VerificationToken verificationToken = getVerificationTokenByToken(oldToken);
-        var verificationTokenTime = new VerificationToken();
-        verificationToken.setToken(UUID.randomUUID().toString());
-        verificationToken.setExpirationTime(verificationTokenTime.getTokenExpirationTime());
-        saveVerificationToken(verificationToken);
-        return verificationToken;
-    }
     public void deleteVerificationToken (VerificationToken token){
         verificationTokenRepository.delete(token);
     }

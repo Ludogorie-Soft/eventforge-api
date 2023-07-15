@@ -7,14 +7,20 @@ import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
 import com.eventforge.security.jwt.JWTService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -33,6 +39,16 @@ class UserServiceTest {
     private JWTService jwtService;
     @Mock
     private Utils utils;
+
+    @Test
+    void saveUserInDb() {
+        User user = new User();
+        userService.saveUserInDb(user);
+        verify(userRepository, times(1)).save(user);
+    }
+
+
+
 
     @Test
     void testGetUserByEmail_ExistingEmail() {
@@ -79,67 +95,60 @@ class UserServiceTest {
         verifyNoMoreInteractions(jwtService, userRepository);
     }
 
-    @Test
-    void testSaveUserInDb() {
-        User user = User.builder().username("ivan").build();
-        userService.saveUserInDb(user);
 
-        verify(userRepository).save(user);
+    @Test
+    void updateUserIsEnabledFieldAfterConfirmedEmail() {
+        String token = "sampleToken";
+        User user = new User();
+        VerificationToken verificationToken = new VerificationToken();
+        verificationToken.setUser(user);
+        when(emailVerificationTokenService.getVerificationTokenByToken(token)).thenReturn(verificationToken);
+
+        String result = userService.updateUserIsEnabledFieldAfterConfirmedEmail(token);
+
+        assertTrue(user.getIsEnabled());
+        verify(userRepository, times(1)).save(user);
+        verify(emailVerificationTokenService, times(1)).deleteVerificationToken(verificationToken);
+        assertNotNull(result);
+        assertEquals("Успешно потвърдихте профилът си , вече можете да се впишете.", result);
+    }
+
+
+    @Test
+    void saveUserVerificationToken_withoutExistingToken() {
+        String token = "sampleToken";
+        String type = "email";
+        User user = new User();
+
+        doAnswer((Answer<Void>) invocation -> {
+            VerificationToken savedToken = invocation.getArgument(0);
+            user.setVerificationToken(savedToken);
+            return null;
+        }).when(emailVerificationTokenService).saveVerificationToken(any());
+
+        userService.saveUserVerificationToken(user, token, type);
+
+        assertNotNull(user.getVerificationToken());
+        assertEquals(token, user.getVerificationToken().getToken());
+        assertEquals(type, user.getVerificationToken().getType());
+        verify(emailVerificationTokenService, times(1)).saveVerificationToken(any());
     }
 
     @Test
-    void testUpdateUserIsEnabledFieldAfterConfirmedEmail() {
-        User user = User.builder().username("ivan").isEnabled(false).build();
+    void saveUserVerificationToken_withExistingToken() {
+        String token = "sampleToken";
+        String type = "email";
+        User user = new User();
+        VerificationToken existingToken = new VerificationToken(token, user, type);
+        user.setVerificationToken(existingToken);
 
-        userService.updateUserIsEnabledFieldAfterConfirmedEmail(user);
+        userService.saveUserVerificationToken(user, token, type);
 
-        assertThat(user.getIsEnabled()).isTrue();
-
-        verify(userRepository).save(user);
+        assertNotNull(user.getVerificationToken());
+        assertEquals(token, user.getVerificationToken().getToken());
+        assertEquals(type, user.getVerificationToken().getType());
     }
 
-    @Test
-    void testUpdateUserIsEnabledFieldAfterConfirmedEmail_UserNull() {
-        userService.updateUserIsEnabledFieldAfterConfirmedEmail(null);
-
-        verifyNoInteractions(userRepository);
-    }
-
-    @Test
-    void testSaveUserVerificationToken() {
-        User user = User.builder().username("ivan").isEnabled(false).build();
-        String token = "abc123";
-
-        userService.saveUserVerificationToken(user, token);
-
-        verify(emailVerificationTokenService).saveVerificationToken(argThat(verificationToken -> verificationToken.getToken().equals(token) && verificationToken.getUser().equals(user)));
-    }
-
-    @Test
-    void testValidateVerificationToken_ValidToken() {
-        String verificationToken = "validToken";
-        VerificationToken verificationTokenDb = new VerificationToken();
-
-        Date expirationTime = new Date();
-        verificationTokenDb.setExpirationTime(expirationTime);
-
-        when(emailVerificationTokenService.getVerificationTokenByToken(verificationToken))
-                .thenReturn(verificationTokenDb);
-        userService.validateVerificationToken(verificationToken, "url");
-
-        verify(emailVerificationTokenService).getVerificationTokenByToken(verificationToken);
-    }
-
-    @Test
-    void testValidateVerificationToken_InvalidToken() {
-        String verificationToken = "invalidToken";
-        when(emailVerificationTokenService.getVerificationTokenByToken(verificationToken))
-                .thenReturn(null);
-
-        assertThatThrownBy(() -> userService.validateVerificationToken(verificationToken, "url"))
-                .isInstanceOf(InvalidEmailConfirmationLinkException.class);
-        verify(emailVerificationTokenService).getVerificationTokenByToken(verificationToken);
-    }
 
     @Test
     void testChangeAccountPassword_ShouldBeSuccessfullyChanged() {
@@ -172,19 +181,27 @@ class UserServiceTest {
         assertThat(result).isNull();
     }
 
+
     @Test
-    void testGenerateNewVerificationToken() {
-        String oldToken = "oldToken";
-        VerificationToken oldVerificationToken = new VerificationToken();
+    public void generateNewRandomPasswordForUserViaVerificationToken() {
+        // Arrange
+        VerificationToken token = new VerificationToken();
+        User user = new User();
+        String newGeneratedPassword = utils.generateRandomPassword();
 
-        when(emailVerificationTokenService.getVerificationTokenByToken(oldToken)).thenReturn(oldVerificationToken);
+        when(utils.encodePassword(newGeneratedPassword)).thenReturn(newGeneratedPassword); // Stub the encodePassword method
 
-        userService.generateNewVerificationToken(oldToken);
+        // Act
+        String result = userService.generateNewRandomPasswordForUserViaVerificationToken(token , user);
 
-        verify(emailVerificationTokenService).getVerificationTokenByToken(oldToken);
-        verify(emailVerificationTokenService).saveVerificationToken(any(VerificationToken.class));
+        // Assert
+
+
+        verify(utils).encodePassword(newGeneratedPassword); // Verify that encodePassword was called with any string argument
+        verify(userRepository).save(user);
+        verify(emailVerificationTokenService).deleteVerificationToken(token);
+
     }
-
     @Test
     void testSetApproveByAdminToTrue_UserPresent() {
         Long userId = 1L;

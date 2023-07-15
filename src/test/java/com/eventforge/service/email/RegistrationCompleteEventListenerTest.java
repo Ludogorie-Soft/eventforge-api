@@ -43,7 +43,7 @@ public class RegistrationCompleteEventListenerTest {
         String url = "https://example.com/verification";
         User user = new User();
         user.setUsername("example@example.com");
-        registrationCompleteEventListener.sendVerificationEmail(url, user);
+        registrationCompleteEventListener.sendEmail(url, user);
 
         // Verify that the JavaMailSender's createMimeMessage method was called once
         verify(mailSender, times(1)).createMimeMessage();

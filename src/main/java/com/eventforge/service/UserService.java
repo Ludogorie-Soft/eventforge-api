@@ -1,8 +1,6 @@
 package com.eventforge.service;
 
 import com.eventforge.dto.request.ChangePasswordRequest;
-import com.eventforge.dto.request.ResetForgottenPasswordRequest;
-import com.eventforge.exception.InvalidEmailConfirmationLinkException;
 import com.eventforge.exception.InvalidPasswordException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
@@ -14,7 +12,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,22 +44,27 @@ public class UserService {
     }
 
 
-    public String updateUserIsEnabledFieldAfterConfirmedEmail(String token , String appUrl) {
-        String isValid =emailVerificationTokenService.validateVerificationToken(token , appUrl);
-        if(isValid == null){
+    public String updateUserIsEnabledFieldAfterConfirmedEmail(String token) {
+
             VerificationToken verificationTokenDb = emailVerificationTokenService.getVerificationTokenByToken(token);
+            emailVerificationTokenService.validateTokenExpirationTime(verificationTokenDb);
             User user = verificationTokenDb.getUser();
             user.setIsEnabled(true);
             saveUserInDb(user);
             emailVerificationTokenService.deleteVerificationToken(verificationTokenDb);
             log.info("Успешно потвърдена електронна поща - " + user.getUsername());
             return "Успешно потвърдихте профилът си , вече можете да се впишете.";
-        }
-        return isValid;
+
     }
 
-    public void saveUserVerificationToken(User theUser, String token) {
-        VerificationToken verificationToken = new VerificationToken(token, theUser);
+    public void saveUserVerificationToken(User theUser, String token , String type ) {
+        VerificationToken verificationToken;
+        if(theUser.getVerificationToken()==null){
+           verificationToken= new VerificationToken(token, theUser , type);
+        } else {
+            verificationToken = theUser.getVerificationToken();
+            verificationToken.setToken(token);
+        }
         emailVerificationTokenService.saveVerificationToken(verificationToken);
     }
 
@@ -86,17 +88,14 @@ public class UserService {
         return null;
     }
 
-    public String generateNewRandomPasswordForUserViaVerificationToken(String appUrl , String verificationToken){
-        String result = emailVerificationTokenService.validateVerificationToken(verificationToken , appUrl);
-        if(result == null){
-            VerificationToken token = emailVerificationTokenService.getVerificationTokenByToken(verificationToken);
-            User user = token.getUser();
-            String newGeneratedPassword = UUID.randomUUID().toString();
+    public String generateNewRandomPasswordForUserViaVerificationToken(VerificationToken token , User user){
+            emailVerificationTokenService.validateTokenExpirationTime(token);
+
+            String newGeneratedPassword = utils.generateRandomPassword();
             user.setPassword(utils.encodePassword(newGeneratedPassword));
             saveUserInDb(user);
-            return newGeneratedPassword;
-        }
-        return result;
+            emailVerificationTokenService.deleteVerificationToken(token);
+        return newGeneratedPassword;
     }
 
 

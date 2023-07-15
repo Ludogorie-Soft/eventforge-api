@@ -1,5 +1,7 @@
 package com.eventforge.constants;
 
 public enum TokenType {
-    BEARER
+    BEARER ,
+    FORGOTTEN_PASSWORD,
+    CONFIRM_EMAIL
 }

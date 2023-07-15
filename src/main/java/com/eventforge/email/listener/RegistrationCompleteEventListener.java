@@ -1,7 +1,9 @@
 package com.eventforge.email.listener;
 
+import com.eventforge.constants.TokenType;
 import com.eventforge.email.RegistrationCompleteEvent;
 import com.eventforge.exception.EmailConfirmationNotSentException;
+import com.eventforge.exception.InvalidEmailConfirmationLinkException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.service.UserService;
@@ -19,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
@@ -39,14 +42,27 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
 
     @Override
     public void onApplicationEvent(RegistrationCompleteEvent event) {
+
         //1. Get the newly registered user
-        User theUser = event.getUser();
+        User theUser = null;
+        if(event.getUser()!=null){
+            theUser = event.getUser();
+        }
+        if(event.getEmail()!=null){
+            theUser = userService.getUserByEmail(event.getEmail());
+            if(theUser==null){
+                throw new UsernameNotFoundException("Нямаме регистриран потребител в базата с предоставената от вас електронна поща");
+            }
+        }
+        if(theUser.getIsEnabled()){
+            throw new InvalidEmailConfirmationLinkException("Профилът Ви е вече потвърден , моля впишете се.");
+        }
 
         //2. Create a verification token for the user
         String verificationToken = UUID.randomUUID().toString();
 
         //3. Save the verification token for the user
-        userService.saveUserVerificationToken(theUser, verificationToken);
+        userService.saveUserVerificationToken(theUser, verificationToken , TokenType.CONFIRM_EMAIL.toString());
 
         //4. Build the verification url to be sent to the user.
 
@@ -55,13 +71,13 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
       
         //5. Send  the email.
         try {
-            sendVerificationEmail(url, theUser);
+            sendEmail(url, theUser);
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new EmailConfirmationNotSentException(theUser.getUsername());
         }
     }
 
-    public void sendVerificationEmail(String url, User user) throws MessagingException, UnsupportedEncodingException {
+    public void sendEmail(String url, User user) throws MessagingException, UnsupportedEncodingException {
         String subject = "Потвърждение на акаунт";
 
         MimeMessage message = mailSender.createMimeMessage();
@@ -119,10 +135,5 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         mailSender.send(message);
     }
 
-
-    public void resendVerificationTokenEmail(User user, String applicationUrl, VerificationToken verificationToken) throws MessagingException, UnsupportedEncodingException {
-        String url = applicationUrl+verificationToken.getToken();
-        sendVerificationEmail(url , user);
-    }
 
 }
