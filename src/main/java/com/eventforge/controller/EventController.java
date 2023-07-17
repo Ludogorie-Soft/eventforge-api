@@ -23,7 +23,7 @@ public class EventController {
     @DeleteMapping("/delete-event/{id}")
     public ResponseEntity<String> deleteEventById(@RequestHeader("Authorization") String authHeader , @PathVariable("id")Long id){
         eventService.deleteEventByIdAndUserIdForOrganisation(id , authHeader);
-        return new ResponseEntity<>("Успешно изтрихте събитието" , HttpStatus.OK);
+        return new ResponseEntity<>("Успешно изтрихте събитие" , HttpStatus.OK);
     }
 
 }

@@ -107,7 +107,7 @@ public class OrganisationController {
     public ResponseEntity<String> updateEventByOrganisation(@RequestHeader(AUTHORIZATION)String authHeader  ,@PathVariable("id") Long id,
                                               @Valid @RequestBody EventRequest eventRequest) {
         eventService.updateEvent(id, eventRequest , authHeader);
-        return new ResponseEntity<>("Всички промени са извършени успешно", HttpStatus.OK);
+        return new ResponseEntity<>("Успешно редактирахте събитието си", HttpStatus.OK);
     }
 
 }
