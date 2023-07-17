@@ -4,6 +4,7 @@ import com.eventforge.annotation.AgeBoundary;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
 
@@ -26,17 +27,17 @@ public class EventRequest {
     private Boolean isOnline;
     @Size(min = 5, max = 255, message = "Полето трява да съдържа поне 5 символа!")
     private String address;
-    @Nullable
+    @Length(min = 3 , message = "Моля въветете поне една ключова дума с поне 3 букви")
     @Pattern(regexp = EVENT_CATEGORIES_PATTERN , message = "Моля използвайте само букви (латиница , кирилица) и запетаи.Не са позволени други символи.")
     private String eventCategories;
 
-    @Nullable
-    @PositiveOrZero(message = "Не може да въвеждате отрицателна сума")
+    @NotNull (message = "Моля попълнете полето. Ако събитието е безпалтно , въведете 0")
+    @PositiveOrZero(message = "Не може да въвеждате отрицателна цена.")
     private Double price;
-    @Nullable
+    @NotNull(message = "Моля попълнете полето. Ако няма възрастово ограничение , моля въведете 0")
     @PositiveOrZero(message = "Не можете да въвеждате отрицателни цифри")
     private Integer minAge;
-    @Nullable
+    @NotNull(message = "Моля попълнете полето. Ако няма възрастово ограничение , моля въведете 0")
     @PositiveOrZero(message = "Не можете да въвеждате отрицателни цифри")
     private Integer maxAge;
 
