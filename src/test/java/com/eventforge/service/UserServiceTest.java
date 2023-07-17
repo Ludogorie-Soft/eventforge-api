@@ -183,7 +183,7 @@ class UserServiceTest {
 
 
     @Test
-    public void generateNewRandomPasswordForUserViaVerificationToken() {
+    void generateNewRandomPasswordForUserViaVerificationToken() {
         // Arrange
         VerificationToken token = new VerificationToken();
         User user = new User();

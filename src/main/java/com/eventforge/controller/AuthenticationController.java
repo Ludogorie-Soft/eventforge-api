@@ -13,7 +13,6 @@ import com.eventforge.service.EmailVerificationTokenService;
 import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.UserService;
 import io.jsonwebtoken.io.IOException;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -23,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Set;
 
 @RestController

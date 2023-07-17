@@ -1,6 +1,5 @@
 package com.eventforge.model;
 
-import com.eventforge.constants.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

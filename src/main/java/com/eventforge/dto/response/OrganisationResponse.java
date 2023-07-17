@@ -1,6 +1,5 @@
 package com.eventforge.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDateTime;

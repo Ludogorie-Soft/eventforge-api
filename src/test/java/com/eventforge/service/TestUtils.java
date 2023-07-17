@@ -1,12 +1,10 @@
 package com.eventforge.service;
 
-import com.eventforge.constants.OrganisationPriorityCategory;
 import com.eventforge.model.OrganisationPriority;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.FieldError;
@@ -14,7 +12,6 @@ import org.springframework.validation.ObjectError;
 
 import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -27,13 +24,9 @@ class TestUtils {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @InjectMocks
     private Utils utils;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        utils = new Utils(organisationPriorityService, passwordEncoder);
-    }
     @Test
  void testReturnOrderByAscendingByDefaultIfParamNotProvided() {
         String result1 = utils.returnOrderByAscendingByDefaultIfParamNotProvided(null);
@@ -47,6 +40,30 @@ class TestUtils {
 
         String result4 = utils.returnOrderByAscendingByDefaultIfParamNotProvided("ASC");
         assertEquals("ASC", result4, "Should return the same order when order is provided");
+    }
+
+    @Test
+    public void convertIsOneTimeToString_WhenIsOneTimeIsTrue_ShouldReturnCorrectString() {
+        // Arrange
+        Boolean isOneTime = true;
+
+
+        // Act
+        String result = utils.convertIsOneTimeToString(isOneTime);
+
+        // Assert
+        assertEquals("еднократно", result);
+    }
+
+    @Test
+    public void convertIsOneTimeToString_WhenIsOneTimeIsFalse_ShouldReturnCorrectString() {
+        // Arrange
+        Boolean isOneTime = false;
+        // Act
+        String result = utils.convertIsOneTimeToString(isOneTime);
+
+        // Assert
+        assertEquals("регулярно", result);
     }
     @Test
  void testConvertPriceToString() {

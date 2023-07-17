@@ -36,7 +36,7 @@ class ExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleUserNotFoundException() {
+    void testHandleUserNotFoundException() {
         // Create an instance of YourController
 
         // Create a UsernameNotFoundException instance
@@ -224,7 +224,7 @@ class ExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleOrganisationRequestException() {
+    void testHandleOrganisationRequestException() {
         // Create an instance of YourController
 
 

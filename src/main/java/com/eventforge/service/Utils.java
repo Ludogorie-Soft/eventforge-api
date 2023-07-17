@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 public class Utils {
     private final OrganisationPriorityService organisationPriorityService;
     private final PasswordEncoder passwordEncoder;
+    private final static Random random = new Random();
+    private final static int NEW_GENERATED_PASSWORD_LENGTH = 15;
 
     public String returnOrderByAscendingByDefaultIfParamNotProvided(String order) {
         if (order == null || order.isEmpty()) {
@@ -144,17 +146,16 @@ public class Utils {
     }
 
     public String generateRandomPassword() {
-        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#*";
-        List<Character> charList =new ArrayList<>();
-        for(char c :  chars.toCharArray()){
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#*-_*";
+        List<Character> charList = new ArrayList<>();
+        for (char c : chars.toCharArray()) {
             charList.add(c);
         }
 
         Collections.shuffle(charList);
         StringBuilder password = new StringBuilder();
 
-        Random random = new Random();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < NEW_GENERATED_PASSWORD_LENGTH; i++) {
             password.append(charList.get(random.nextInt(charList.size())));
         }
 

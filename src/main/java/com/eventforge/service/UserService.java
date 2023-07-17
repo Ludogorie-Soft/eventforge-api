@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +41,6 @@ public class UserService {
         String username = jwtService.extractUsernameFromToken(extractedTokenFromHeader);
         return getUserByEmail(username);
     }
-
 
     public String updateUserIsEnabledFieldAfterConfirmedEmail(String token) {
 
@@ -97,10 +95,6 @@ public class UserService {
             emailVerificationTokenService.deleteVerificationToken(token);
         return newGeneratedPassword;
     }
-
-
-
-
 
     public void setApproveByAdminToTrue(Long userId){
         Optional<User> user =userRepository.findById(userId);

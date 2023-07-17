@@ -32,7 +32,7 @@ public class EmailVerificationTokenServiceTest {
 
 
     @Test
-    public void testGetVerificationTokenByToken_ExistingToken_ReturnsToken() {
+    void testGetVerificationTokenByToken_ExistingToken_ReturnsToken() {
         // Arrange
         String tokenValue = "token123";
         VerificationToken expectedToken = new VerificationToken();
@@ -47,7 +47,7 @@ public class EmailVerificationTokenServiceTest {
     }
 
     @Test
-    public void testGetVerificationTokenByToken_NonExistingToken_ThrowsException() {
+    void testGetVerificationTokenByToken_NonExistingToken_ThrowsException() {
         // Arrange
         String tokenValue = "nonExistingToken";
         when(verificationTokenRepository.findByToken(tokenValue)).thenReturn(Optional.empty());
@@ -60,14 +60,12 @@ public class EmailVerificationTokenServiceTest {
     }
 
 
-
     @Test
-    public void testValidateTokenExpirationTime_tokenExpired_confirmEmail() {
+    void testValidateTokenExpirationTime_tokenExpired_confirmEmail() {
         VerificationToken token = new VerificationToken();
         LocalDateTime updatedAt = LocalDateTime.now().minusDays(6); // Assuming token expired 6 days ago
         token.setUpdatedAt(updatedAt);
         token.setType(TokenType.CONFIRM_EMAIL.toString());
-
 
 
         assertThrows(InvalidEmailConfirmationLinkException.class,
@@ -76,7 +74,7 @@ public class EmailVerificationTokenServiceTest {
     }
 
     @Test
-    public void testValidateTokenExpirationTime_tokenExpired_resetPassword() {
+    void testValidateTokenExpirationTime_tokenExpired_resetPassword() {
         VerificationToken token = new VerificationToken();
         LocalDateTime updatedAt = LocalDateTime.now().minusDays(5); // Assuming token expired 5 days ago
         token.setUpdatedAt(updatedAt);
@@ -89,7 +87,7 @@ public class EmailVerificationTokenServiceTest {
     }
 
     @Test
-    public void testValidateTokenExpirationTime_tokenNotExpired() {
+    void testValidateTokenExpirationTime_tokenNotExpired() {
         VerificationToken token = new VerificationToken();
         LocalDateTime updatedAt = LocalDateTime.now().minusDays(1); // Assuming token was updated 1 day ago
         token.setUpdatedAt(updatedAt);
@@ -102,7 +100,7 @@ public class EmailVerificationTokenServiceTest {
 
 
     @Test
-    public void testDeleteVerificationToken() {
+    void testDeleteVerificationToken() {
         // Arrange
         VerificationToken token = new VerificationToken();
 
@@ -114,7 +112,7 @@ public class EmailVerificationTokenServiceTest {
     }
 
     @Test
-    public void testSaveVerificationToken() {
+    void testSaveVerificationToken() {
         // Arrange
         VerificationToken token = new VerificationToken();
 
