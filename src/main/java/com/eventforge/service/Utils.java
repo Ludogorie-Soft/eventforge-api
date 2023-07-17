@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,8 +17,8 @@ import java.util.stream.Collectors;
 public class Utils {
     private final OrganisationPriorityService organisationPriorityService;
     private final PasswordEncoder passwordEncoder;
-    private final static Random random = new Random();
-    private final static int NEW_GENERATED_PASSWORD_LENGTH = 15;
+    private static final SecureRandom random = new SecureRandom();
+    private static final int NEW_GENERATED_PASSWORD_LENGTH = 15;
 
     public String returnOrderByAscendingByDefaultIfParamNotProvided(String order) {
         if (order == null || order.isEmpty()) {

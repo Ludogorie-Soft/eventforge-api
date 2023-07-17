@@ -8,8 +8,8 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 @Setter
 public class RegistrationCompleteEvent extends ApplicationEvent {
-    @Transient
-    private  User user;
+
+    private transient User user;
     private String email;
     private String applicationUrl;
 
