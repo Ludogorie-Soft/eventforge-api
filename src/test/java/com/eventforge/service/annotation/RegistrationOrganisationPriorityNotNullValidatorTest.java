@@ -3,22 +3,15 @@ package com.eventforge.service.annotation;
 import com.eventforge.annotation.RegistrationOrganisationPriorityNotNullValidator;
 import com.eventforge.dto.request.RegistrationRequest;
 import jakarta.validation.ConstraintValidatorContext;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Path;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 public class RegistrationOrganisationPriorityNotNullValidatorTest {
     private RegistrationOrganisationPriorityNotNullValidator validator;

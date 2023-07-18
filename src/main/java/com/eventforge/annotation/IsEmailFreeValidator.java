@@ -1,6 +1,5 @@
 package com.eventforge.annotation;
 
-import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.service.UserService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

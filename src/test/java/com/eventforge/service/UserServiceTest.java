@@ -1,6 +1,5 @@
 package com.eventforge.service;
 
-import com.eventforge.dto.request.ChangePasswordRequest;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
@@ -14,7 +13,6 @@ import org.mockito.stubbing.Answer;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
