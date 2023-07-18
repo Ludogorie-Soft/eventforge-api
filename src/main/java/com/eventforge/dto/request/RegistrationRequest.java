@@ -1,12 +1,14 @@
 package com.eventforge.dto.request;
 
-import com.eventforge.annotation.PasswordsMustMatch;
+import com.eventforge.annotation.IsEmailFree;
 import com.eventforge.annotation.RegistrationOrganisationPriorityNotNull;
+import com.eventforge.annotation.RegistrationPasswordsMustMatch;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.URL;
 
 import java.util.Set;
@@ -19,9 +21,10 @@ import static com.eventforge.constants.regex.Regex.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @RegistrationOrganisationPriorityNotNull
-@PasswordsMustMatch
+@RegistrationPasswordsMustMatch
 public class RegistrationRequest  {
     @Pattern(regexp = EMAIL_PATTERN, message = "Грешно въведена електронна поща. Трябва да е във формат \"<потребител>@<домейн>.<tld>\"")
+    @IsEmailFree
     private String username;
     @Size(min = 5, max = 30, message = "Името на организацията трябва да е между 5 и 30 символа!")
     private String name;
@@ -32,6 +35,7 @@ public class RegistrationRequest  {
 
     @Nullable
     @Pattern(regexp = EVENT_CATEGORIES_PATTERN , message = "Моля използвайте само букви (латиница , кирилица) и запетаи.Не са позволени други символи.")
+    @Length(min = 3 , message = "Категорията трябва да съдържа поне 3 букви")
     private String optionalCategory;
 
 
@@ -39,8 +43,6 @@ public class RegistrationRequest  {
     private String organisationPurpose;
     private String logo;
     private String backgroundCover;
-//    @Max(value = 5 * 1024 * 1024, message = "Снимката не може да надвишата повече от 5MB.")
-//    @Pattern(regexp = IMAGE_PATTERN, message = "Файлът трябва да поддържа (JPG, JPEG, PNG, or GIF) формати.")
 
     @Nullable
     private String address;

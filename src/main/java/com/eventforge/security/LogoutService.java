@@ -1,6 +1,7 @@
 package com.eventforge.security;
 
 import com.eventforge.repository.TokenRepository;
+import com.eventforge.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -39,6 +40,7 @@ public class LogoutService implements LogoutHandler {
             SecurityContextHolder.clearContext();
             HttpSession session = request.getSession(false);
             if (session != null) {
+                UserService.currentUserHashedPassword = null;
                 session.invalidate();
             }
 

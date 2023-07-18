@@ -3,7 +3,6 @@ package com.eventforge.factory;
 import com.eventforge.constants.Role;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.RegistrationRequest;
-import com.eventforge.exception.EmailAlreadyTakenException;
 import com.eventforge.model.*;
 import com.eventforge.service.EventService;
 import com.eventforge.service.ImageService;
@@ -81,7 +80,7 @@ public class EntityFactory {
 
 
     public User createUser(RegistrationRequest request) {
-        if (userService.getUserByEmail(request.getUsername()) == null) {
+
             User user = User.builder()
                     .username(request.getUsername())
                     .password(utils.encodePassword(request.getPassword()))
@@ -94,10 +93,5 @@ public class EntityFactory {
                     .build();
             userService.saveUserInDb(user);
             return user;
-        } else {
-            log.warn("Неуспешна регистрация");
-            throw new EmailAlreadyTakenException();
-        }
-
     }
 }

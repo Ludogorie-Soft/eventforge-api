@@ -9,9 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class ExceptionHandler {
@@ -28,14 +25,6 @@ public class ExceptionHandler {
         return ResponseEntity.status(e.getHTTP_STATUS_CODE())
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(e.getMessage());
-    }
-
-
-    @org.springframework.web.bind.annotation.ExceptionHandler(EmailAlreadyTakenException.class)
-    public ResponseEntity<String> handleEmailAlreadyTakenException(EmailAlreadyTakenException ex) {
-        return ResponseEntity.status(ex.getHttpStatus())
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(ex.getMessage());
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
@@ -79,10 +68,6 @@ public class ExceptionHandler {
                 .contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<String> handleInvalidPasswordException(InvalidPasswordException ex) {
-        return ResponseEntity.status(ex.getHTTP_STATUS_CODE()).contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
-    }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(ImageException.class)
     public ResponseEntity<String> handleImageException(ImageException ex) {

@@ -10,9 +10,9 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = PasswordsMustMatchValidator.class)
-public @interface PasswordsMustMatch {
-    String message() default "Паролите не съвпадат!";
+@Constraint(validatedBy = RegistrationPasswordsMustMatchValidator.class)
+public @interface RegistrationPasswordsMustMatch {
+    String message() default "";
 
     Class<?>[] groups() default {};
 

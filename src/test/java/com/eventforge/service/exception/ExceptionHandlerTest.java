@@ -66,20 +66,6 @@ class ExceptionHandlerTest {
         assertEquals("Не може датата на започване да е по-голяма от датата на приключване", response.getBody());
     }
 
-    @Test
-    void testHandleEmailAlreadyTakenException() {
-        // Arrange
-        EmailAlreadyTakenException exception = new EmailAlreadyTakenException();
-
-        // Act
-        ResponseEntity<String> response = exceptionHandler.handleEmailAlreadyTakenException(exception);
-
-        // Assert
-        assertEquals(HttpStatus.FOUND, response.getStatusCode());
-        assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType());
-        assertEquals("Въведената електронна поща е вече заета.Моля опитайте с друга", response.getBody());
-    }
-
     // Add tests for other exception handlers
     @Test
     void testHandleValidationException() {
@@ -160,21 +146,6 @@ class ExceptionHandlerTest {
         assertEquals(expectedStatus, response.getStatusCode().value());
         assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType());
         assertEquals("Invalid email confirmation link", response.getBody());
-    }
-
-    @Test
-    void testHandleInvalidPasswordException() {
-        // Arrange
-        InvalidPasswordException exception = new InvalidPasswordException("Invalid password");
-        int expectedStatus = HttpStatus.CONFLICT.value();
-
-        // Act
-        ResponseEntity<String> response = exceptionHandler.handleInvalidPasswordException(exception);
-
-        // Assert
-        assertEquals(expectedStatus, response.getStatusCode().value());
-        assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType());
-        assertEquals("Invalid password", response.getBody());
     }
 
     @Test

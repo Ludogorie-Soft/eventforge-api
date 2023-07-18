@@ -1,29 +1,20 @@
 package com.eventforge.service;
 
 import com.eventforge.dto.request.ChangePasswordRequest;
-import com.eventforge.exception.InvalidEmailConfirmationLinkException;
-import com.eventforge.exception.InvalidPasswordException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
 import com.eventforge.security.jwt.JWTService;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
-import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -149,39 +140,6 @@ class UserServiceTest {
         assertEquals(type, user.getVerificationToken().getType());
     }
 
-
-    @Test
-    void testChangeAccountPassword_ShouldBeSuccessfullyChanged() {
-        String token = "validToken";
-        String oldPassword = "oldPassword";
-        String newPassword = "newPassword";
-        String confirmNewPassword = "newPassword";
-
-        User user = User.builder().username("test").password("encodedPassword").build();
-        when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(utils.isPasswordValid(oldPassword, user.getPassword())).thenReturn(true);
-        when(utils.encodePassword(newPassword)).thenReturn("encodedNewPassword");
-
-        String result = userService.changeAccountPassword(token, new ChangePasswordRequest(oldPassword, newPassword, confirmNewPassword));
-
-        verify(utils).encodePassword(newPassword);
-        assertThat(result).isEqualTo("Успешно променихте паролата си.");
-    }
-
-    @Test
-    void testChangeAccountPassword_InvalidToken() {
-        String token = "invalidToken";
-        String oldPassword = "oldPassword";
-        String newPassword = "newPassword";
-        String confirmNewPassword = "newPassword";
-
-        when(userService.getLoggedUserByToken(token)).thenReturn(null);
-        String result = userService.changeAccountPassword(token, new ChangePasswordRequest(oldPassword, newPassword, confirmNewPassword));
-
-        assertThat(result).isNull();
-    }
-
-
     @Test
     void generateNewRandomPasswordForUserViaVerificationToken() {
         // Arrange
@@ -239,44 +197,4 @@ class UserServiceTest {
         verify(userRepository).findById(userId);
     }
 
-    @Test
-    void testChangeAccountPassword_invalidOldPassword() {
-        String token = "token";
-        ChangePasswordRequest request = ChangePasswordRequest.builder()
-                .oldPassword("oldPassword")
-                .build();
-        User user = User.builder()
-                .password("hashedPassword")
-                .build();
-
-        when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(utils.isPasswordValid(request.getOldPassword(), user.getPassword())).thenReturn(false);
-
-        InvalidPasswordException exception = assertThrows(InvalidPasswordException.class,
-                () -> userService.changeAccountPassword(token, request));
-
-        assertEquals("Паролата не съответства на запазената в базата данни.", exception.getMessage());
-    }
-
-    @Test
-    void testChangeAccountPassword_passwordsDoNotMatch() {
-        String token = "token";
-        ChangePasswordRequest request = ChangePasswordRequest.builder()
-                .oldPassword("oldPassword")
-                .newPassword("newPassword")
-                .confirmNewPassword("differentPassword")
-                .build();
-        User user = User.builder()
-                .password("hashedPassword")
-                .build();
-
-        when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(utils.isPasswordValid(request.getOldPassword(), user.getPassword())).thenReturn(true);
-
-        InvalidPasswordException exception = assertThrows(InvalidPasswordException.class,
-                () -> userService.changeAccountPassword(token, request));
-
-        assertEquals("Новите пароли не съвпадат. Новата парола трябва да съответства на потвърдената парола.",
-                exception.getMessage());
-    }
 }

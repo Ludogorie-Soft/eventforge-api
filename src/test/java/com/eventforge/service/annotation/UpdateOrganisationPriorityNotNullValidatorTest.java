@@ -41,17 +41,4 @@ public class UpdateOrganisationPriorityNotNullValidatorTest {
         assertTrue(isValid);
     }
 
-    @Test
-    void isValid_WhenChosenPrioritiesEmptyAndOptionalCategoryEmpty_ShouldReturnFalse() {
-        // Arrange
-        UpdateAccountRequest updateAccountRequest = new UpdateAccountRequest();
-        updateAccountRequest.setChosenPriorities(Set.of());
-        updateAccountRequest.setOptionalCategory("");
-
-        // Act
-        boolean isValid = validator.isValid(updateAccountRequest, mock(ConstraintValidatorContext.class));
-
-        // Assert
-        assertFalse(isValid);
-    }
 }

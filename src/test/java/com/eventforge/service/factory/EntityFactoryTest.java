@@ -97,10 +97,8 @@ class EntityFactoryTest {
                 .isNonLocked(true)
                 .build();
 
-        when(userService.getUserByEmail(registrationRequest.getUsername())).thenReturn(null);
         User result = entityFactory.createUser(registrationRequest);
 
-        verify(userService).getUserByEmail(registrationRequest.getUsername());
         assertEquals(newUser.getUsername(), result.getUsername());
         assertEquals(newUser.getPassword(), result.getPassword());
         assertEquals(newUser.getPhoneNumber(), result.getPhoneNumber());

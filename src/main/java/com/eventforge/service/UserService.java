@@ -1,7 +1,6 @@
 package com.eventforge.service;
 
 import com.eventforge.dto.request.ChangePasswordRequest;
-import com.eventforge.exception.InvalidPasswordException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
@@ -26,6 +25,8 @@ public class UserService {
     private final JWTService jwtService;
     private final Utils utils;
 
+    public static String currentUserHashedPassword;
+
 
     public void saveUserInDb(User user) {
         userRepository.save(user);
@@ -39,7 +40,9 @@ public class UserService {
     public User getLoggedUserByToken(String token) {
         String extractedTokenFromHeader = jwtService.extractTokenValueFromHeader(token);
         String username = jwtService.extractUsernameFromToken(extractedTokenFromHeader);
-        return getUserByEmail(username);
+        User user = getUserByEmail(username);
+        currentUserHashedPassword = user.getPassword();
+        return user;
     }
 
     public String updateUserIsEnabledFieldAfterConfirmedEmail(String token) {
@@ -69,14 +72,6 @@ public class UserService {
     public String changeAccountPassword(String token, ChangePasswordRequest request) {
         User user = getLoggedUserByToken(token);
         if (user != null) {
-            if (!utils.isPasswordValid(request.getOldPassword(), user.getPassword())) {
-                log.info("Unsuccessful attempt to change the password for user" + user.getUsername());
-                throw new InvalidPasswordException("Паролата не съответства на запазената в базата данни.");
-            }
-            if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
-                log.info("Unsuccessful attempt to change the password for user" + user.getUsername());
-                throw new InvalidPasswordException("Новите пароли не съвпадат. Новата парола трябва да съответства на потвърдената парола.");
-            }
             String encodedPassword = utils.encodePassword(request.getNewPassword());
             user.setPassword(encodedPassword);
             saveUserInDb(user);

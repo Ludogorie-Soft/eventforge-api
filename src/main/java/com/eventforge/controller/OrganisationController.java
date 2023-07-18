@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -73,7 +74,7 @@ public class OrganisationController {
     }
 
     @PutMapping("/update-password")
-    public ResponseEntity<String> changePassword(@RequestHeader(AUTHORIZATION) String token, @Valid @RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<String> changePassword(@RequestHeader(AUTHORIZATION) String token, @Validated @RequestBody ChangePasswordRequest request) {
         return new ResponseEntity<>(userService.changeAccountPassword(token, request), HttpStatus.OK);
     }
 
@@ -93,7 +94,7 @@ public class OrganisationController {
         return new ResponseEntity<>(new EventRequest() ,HttpStatus.OK);
     }
     @PostMapping("create-event")
-    public ResponseEntity<String> submitCreatedEvent(@Valid @RequestBody EventRequest eventRequest, @RequestHeader(AUTHORIZATION) String authHeader) {
+    public ResponseEntity<String> submitCreatedEvent(@Validated @RequestBody EventRequest eventRequest, @RequestHeader(AUTHORIZATION) String authHeader) {
         entityFactory.createEvent(eventRequest , authHeader);
         return new ResponseEntity<>("Успешно създадохте събитие", HttpStatus.CREATED);
     }
@@ -105,7 +106,7 @@ public class OrganisationController {
     }
     @PutMapping("update/{id}")
     public ResponseEntity<String> updateEventByOrganisation(@RequestHeader(AUTHORIZATION)String authHeader  ,@PathVariable("id") Long id,
-                                              @Valid @RequestBody EventRequest eventRequest) {
+                                              @Validated @RequestBody EventRequest eventRequest) {
         eventService.updateEvent(id, eventRequest , authHeader);
         return new ResponseEntity<>("Успешно редактирахте събитието си", HttpStatus.OK);
     }

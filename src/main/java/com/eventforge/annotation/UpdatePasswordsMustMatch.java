@@ -10,9 +10,9 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = RegistrationOrganisationPriorityNotNullValidator.class)
-public @interface RegistrationOrganisationPriorityNotNull {
-    String message() default "";
+@Constraint(validatedBy = UpdatePasswordsMustMatchValidator.class)
+public @interface UpdatePasswordsMustMatch {
+    String message() default"";
 
     Class<?>[] groups() default {};
 

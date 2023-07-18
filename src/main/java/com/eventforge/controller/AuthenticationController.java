@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -42,7 +43,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegistrationRequest request,@RequestParam("appUrl") String appUrl) {
+    public ResponseEntity<String> register(@Validated @RequestBody RegistrationRequest request, @RequestParam("appUrl") String appUrl) {
         User user = authenticationService.register(request);
         publisher.publishEvent(new RegistrationCompleteEvent(user,null ,appUrl));
         return new ResponseEntity<>("Успешна регистрация. Моля потвърдете имейла си.", HttpStatus.CREATED);
