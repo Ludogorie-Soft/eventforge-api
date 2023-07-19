@@ -1,8 +1,10 @@
 package com.eventforge.security.jwt;
 
+import com.eventforge.model.Token;
 import com.eventforge.repository.TokenRepository;
 import com.eventforge.security.MyUserDetails;
 import com.eventforge.security.MyUserDetailsService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
@@ -36,7 +40,18 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         if(authHeader != null && authHeader.startsWith("Bearer ")){
             token = authHeader.substring(7);
-            username = jwtService.extractUsernameFromToken(token);
+            try {
+                username = jwtService.extractUsernameFromToken(token);
+            }catch (ExpiredJwtException ex){
+              Optional<Token> tokenDb= tokenRepository.findByTokenValue(token);
+              if(tokenDb.isPresent()){
+                  tokenDb.get().setRevoked(true);
+                  tokenDb.get().setExpired(true);
+                  tokenRepository.save(tokenDb.get());
+                  filterChain.doFilter(request , response);
+                  return;
+              }
+            }
         }
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
             MyUserDetails userDetails = (MyUserDetails) userDetailsService.loadUserByUsername(username);
