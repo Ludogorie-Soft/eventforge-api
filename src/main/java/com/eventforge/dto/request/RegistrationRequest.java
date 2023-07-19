@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.URL;
 
 import java.util.Set;
@@ -35,7 +34,6 @@ public class RegistrationRequest  {
 
     @Nullable
     @Pattern(regexp = EVENT_CATEGORIES_PATTERN , message = "Моля използвайте само букви (латиница , кирилица) и запетаи.Не са позволени други символи.")
-    @Length(min = 3 , message = "Категорията трябва да съдържа поне 3 букви")
     private String optionalCategory;
 
 
