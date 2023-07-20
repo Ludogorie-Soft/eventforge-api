@@ -74,6 +74,11 @@ public class ExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<String> handleInvalidPasswordException(InvalidPasswordException ex){
+        return ResponseEntity.status(ex.getHTTP_STATUS_CODE()).contentType(MediaType.TEXT_PLAIN).body(ex.getMessage());
+    }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(EventRequestException.class)
     public ResponseEntity<String> handleEventRequestException(EventRequestException exception) {
         return ResponseEntity.status(exception.getHTTP_STATUS_CODE()).contentType(MediaType.TEXT_PLAIN).body(exception.getMessage());

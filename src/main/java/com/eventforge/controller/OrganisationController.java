@@ -73,6 +73,11 @@ public class OrganisationController {
         return new ResponseEntity<>("Успешно обновихте акаунта си.", HttpStatus.OK);
     }
 
+    @GetMapping("/password-update")
+    public ResponseEntity<ChangePasswordRequest> changePasswordRequest(@RequestHeader("Authorization")String authHeader){
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
+        return new ResponseEntity<>(changePasswordRequest , HttpStatus.OK);
+    }
     @PutMapping("/update-password")
     public ResponseEntity<String> changePassword(@RequestHeader(AUTHORIZATION) String token, @Validated @RequestBody ChangePasswordRequest request) {
         return new ResponseEntity<>(userService.changeAccountPassword(token, request), HttpStatus.OK);

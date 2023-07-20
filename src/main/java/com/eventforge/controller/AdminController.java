@@ -1,17 +1,22 @@
 package com.eventforge.controller;
 
+import com.eventforge.dto.request.ChangePasswordRequest;
 import com.eventforge.dto.response.CommonEventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.OrganisationResponseForAdmin;
+import com.eventforge.model.User;
 import com.eventforge.service.EventService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +29,17 @@ public class AdminController {
 
     private final EventService eventService;
 
+    @GetMapping("/settings")
+    public ResponseEntity<ChangePasswordRequest> adminSettings(@RequestHeader("Authorization")String authHeader){
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
+        return new ResponseEntity<>(changePasswordRequest,HttpStatus.OK);
+    }
 
+    @PutMapping("update-profile")
+    public ResponseEntity<String> updateAdminProfile(@RequestHeader("Authorization")String authHeader , @Validated @RequestBody ChangePasswordRequest passwordRequest){
+        String result = userService.changeAccountPassword(authHeader , passwordRequest);
+        return new ResponseEntity<>(result ,HttpStatus.OK);
+    }
     @GetMapping("/organisation-management")
     public ResponseEntity<List<OrganisationResponseForAdmin>> getAllOrganisationsForAdminByApprovedOrNot(@RequestHeader("Authorization")String authHeader ){
         return new ResponseEntity<>(organisationService.getAllOrganisationsForAdminByApprovedOrNot() ,HttpStatus.OK);

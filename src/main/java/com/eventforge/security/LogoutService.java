@@ -40,7 +40,6 @@ public class LogoutService implements LogoutHandler {
             SecurityContextHolder.clearContext();
             HttpSession session = request.getSession(false);
             if (session != null) {
-                UserService.currentUserHashedPassword = null;
                 session.invalidate();
             }
 

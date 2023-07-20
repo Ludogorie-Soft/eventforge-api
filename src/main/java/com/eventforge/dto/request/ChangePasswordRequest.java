@@ -14,9 +14,10 @@ import static com.eventforge.constants.regex.Regex.CREDENTIAL_CHECK_REGEX;
 @Getter
 @NoArgsConstructor
 @UpdatePasswordsMustMatch
+@AllArgsConstructor
+@Setter
 public class ChangePasswordRequest {
-    @JsonIgnore
-    private String currentPassword = UserService.currentUserHashedPassword;
+
     private String oldPassword;
     @Pattern(regexp = CREDENTIAL_CHECK_REGEX,
             message = "Паролата трябва да е дълга поне 8 знака и да съдържа поне една цифра, една малка буква, една главна буква, един специален знак и без интервали!")
@@ -24,11 +25,5 @@ public class ChangePasswordRequest {
 
     private String confirmNewPassword;
 
-
-    public ChangePasswordRequest(String oldPassword, String newPassword, String confirmNewPassword) {
-        this.oldPassword = oldPassword;
-        this.newPassword = newPassword;
-        this.confirmNewPassword = confirmNewPassword;
-    }
 
 }

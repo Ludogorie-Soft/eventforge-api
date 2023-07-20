@@ -7,6 +7,7 @@ import com.eventforge.model.User;
 import com.eventforge.repository.OrganisationPriorityRepository;
 import com.eventforge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class PostConstruct {
+    @Value("${spring.admin.username}")
+    private  String ADMIN_USERNAME;
+    @Value("${spring.admin.password}")
+    private  String ADMIN_PASSWORD;
 
     private final OrganisationPriorityRepository organisationPriorityRepository;
 
@@ -29,8 +34,8 @@ public class PostConstruct {
         Optional<User> admin = userRepository.findAdmin();
         if (admin.isEmpty()) {
             User adminDb = User.builder()
-                    .username("admin@admin.com")
-                    .password(passwordEncoder.encode("admin"))
+                    .username(ADMIN_USERNAME)
+                    .password(passwordEncoder.encode(ADMIN_PASSWORD))
                     .fullName("admin")
                     .role(Role.ADMIN.toString())
                     .isEnabled(true)

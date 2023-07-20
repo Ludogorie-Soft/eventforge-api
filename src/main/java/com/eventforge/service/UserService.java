@@ -1,6 +1,7 @@
 package com.eventforge.service;
 
 import com.eventforge.dto.request.ChangePasswordRequest;
+import com.eventforge.exception.InvalidPasswordException;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
@@ -25,7 +26,6 @@ public class UserService {
     private final JWTService jwtService;
     private final Utils utils;
 
-    public static String currentUserHashedPassword;
 
 
     public void saveUserInDb(User user) {
@@ -40,9 +40,7 @@ public class UserService {
     public User getLoggedUserByToken(String token) {
         String extractedTokenFromHeader = jwtService.extractTokenValueFromHeader(token);
         String username = jwtService.extractUsernameFromToken(extractedTokenFromHeader);
-        User user = getUserByEmail(username);
-        currentUserHashedPassword = user.getPassword();
-        return user;
+        return getUserByEmail(username);
     }
 
     public String updateUserIsEnabledFieldAfterConfirmedEmail(String token) {
@@ -72,11 +70,14 @@ public class UserService {
     public String changeAccountPassword(String token, ChangePasswordRequest request) {
         User user = getLoggedUserByToken(token);
         if (user != null) {
-            String encodedPassword = utils.encodePassword(request.getNewPassword());
-            user.setPassword(encodedPassword);
-            saveUserInDb(user);
-            log.info("Паролата за потребител " + user.getUsername() + " е променена успешно.");
-            return "Успешно променихте паролата си.";
+            if(!utils.isPasswordValid(request.getOldPassword() , user.getPassword())){
+                throw new InvalidPasswordException("Текущата парола не съответства на запазената в базата данни.");
+            }
+                String encodedPassword = utils.encodePassword(request.getNewPassword());
+                user.setPassword(encodedPassword);
+                saveUserInDb(user);
+                log.info("Паролата за потребител " + user.getUsername() + " е променена успешно.");
+                return "Успешно променихте паролата си.";
         }
         return null;
     }
