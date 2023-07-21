@@ -170,37 +170,9 @@ public class EventServiceTest {
     }
 
     @Test
-    void testGetAllEventsByUserIdAndNameForOrganisation_WithName() {
-        // Arrange
-        String token = "your_token";
-        String name = "Event Name";
-
-        User user = new User(); // Create a user object for testing
-        user.setId(1L);
-
-        List<Event> events = Arrays.asList(new Event(), new Event()); // Create a list of events for testing
-        List<CommonEventResponse> expectedResponses = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
-
-        when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(eventRepository.findAllEventsForOrganisationByUserIdAndName(user.getId(), name)).thenReturn(events);
-        when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
-
-        // Act
-        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdAndNameForOrganisation(token, name);
-
-        // Assert
-        assertEquals(expectedResponses.size(), actualResponses.size());
-        // Add additional assertions as needed
-        verify(userService).getLoggedUserByToken(token);
-        verify(eventRepository).findAllEventsForOrganisationByUserIdAndName(user.getId(), name);
-        verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
-    }
-
-    @Test
     void testGetAllEventsByUserIdAndNameForOrganisation_NullOrEmptyName() {
         // Arrange
         String token = "your_token";
-        String name = null; // or name = ""
 
         User user = new User(); // Create a user object for testing
         user.setId(1L);
@@ -213,7 +185,7 @@ public class EventServiceTest {
         when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
 
         // Act
-        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdAndNameForOrganisation(token, name);
+        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdForOrganisation(token);
 
         // Assert
         assertEquals(expectedResponses.size(), actualResponses.size());
@@ -288,20 +260,6 @@ public class EventServiceTest {
                 () -> eventService.getEventDetailsWithoutConditionsById(eventId),
                 "Търсеното от вас събитие не е намерено.");
     }
-
-    @Test
-    void getOneTimeEventsByNameByUserId_shouldReturnListOfOneTimeEventResponses() {
-        String token = "your_token";
-        String name = "your_event_name";
-        User user = new User();
-
-        when(userService.getLoggedUserByToken((token))).thenReturn(user);
-        when(eventRepository.findAllEventsForOrganisationByUserIdAndName((user.getId()), (name))).thenReturn(new ArrayList<>());
-
-        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdAndNameForOrganisation(token, name);
-        assertThat(actualResponses).isEqualTo(new ArrayList<>());
-    }
-
 
     @Test
     void deleteEventById_shouldDeleteEventAndLogInfo() {

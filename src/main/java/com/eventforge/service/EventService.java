@@ -2,8 +2,8 @@ package com.eventforge.service;
 
 import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.EventRequest;
-import com.eventforge.dto.response.OneTimeEventResponse;
 import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.OneTimeEventResponse;
 import com.eventforge.dto.response.RecurrenceEventResponse;
 import com.eventforge.exception.DateTimeException;
 import com.eventforge.exception.EventRequestException;
@@ -83,15 +83,8 @@ public class EventService {
                 .toList();
     }
 
-    public List<CommonEventResponse> getAllEventsByUserIdAndNameForOrganisation(String token, String name) {
+    public List<CommonEventResponse> getAllEventsByUserIdForOrganisation(String token) {
         User user = userService.getLoggedUserByToken(token);
-        if (name != null && !name.isEmpty()) {
-            return eventRepository.findAllEventsForOrganisationByUserIdAndName(user.getId(), name)
-                    .stream()
-                    .map(responseFactory::buildCommonEventResponse)
-                    .toList();
-        }
-
         //if the name is null or empty/not provided , we will invoke different query , where the param name is not required
         return eventRepository.findAllEventsForOrganisationByUserId(user.getId())
                 .stream()
@@ -189,14 +182,15 @@ public class EventService {
 
         query.where(predicates.toArray(new Predicate[0]));
 
-        List<?> resultList = entityManager.createQuery(query)
-                .getResultList();
+        List<?> resultList = entityManager.createQuery(query).getResultList();
         if (request.getIsOneTime()) {
             return resultList.stream()
+                    .filter(event -> event instanceof Event) // Filter out elements of type Event
                     .map(event -> responseFactory.buildOneTimeEventResponse((Event) event))
                     .toList();
         } else {
             return resultList.stream()
+                    .filter(event -> event instanceof Event)
                     .map(event -> responseFactory.buildRecurrenceEventResponse((Event) event))
                     .toList();
         }

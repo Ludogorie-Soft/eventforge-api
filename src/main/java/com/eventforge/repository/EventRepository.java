@@ -42,13 +42,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllExpiredRecurrenceEvents(LocalDateTime passedDate , String order);
 
     // queries accessible for organisations!
-    @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.organisation.user.isNonLocked = true ORDER BY e.startsAt DESC")
+    @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.organisation.user.isNonLocked = true ORDER BY e.startsAt ASC")
     List<Event> findAllEventsForOrganisationByUserId(Long userId);
-
-
-    @Query("select e from Event e where e.organisation.user.id = :userId AND e.name LIKE %:name% ORDER BY e.startsAt DESC")
-    List<Event> findAllEventsForOrganisationByUserIdAndName(Long userId , String name );
-
 
     @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.id = :eventId")
     Event findEventByIdAndUserId(Long userId , Long eventId);

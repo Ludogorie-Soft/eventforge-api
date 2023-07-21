@@ -89,9 +89,8 @@ public class OrganisationController {
     }
 
     @GetMapping("/show-my-events")
-    public ResponseEntity<List<CommonEventResponse>> showAllOrganisationEvents(@RequestHeader(AUTHORIZATION) String authHeader,
-                                                                               @RequestParam(value = "findByName" ,required = false)String findByName){
-       List<CommonEventResponse> eventResponse = eventService.getAllEventsByUserIdAndNameForOrganisation(authHeader , findByName);
+    public ResponseEntity<List<CommonEventResponse>> showAllOrganisationEvents(@RequestHeader(AUTHORIZATION) String authHeader){
+       List<CommonEventResponse> eventResponse = eventService.getAllEventsByUserIdForOrganisation(authHeader);
         return new ResponseEntity<>(eventResponse , HttpStatus.OK);
     }
     @GetMapping("/create-event")
