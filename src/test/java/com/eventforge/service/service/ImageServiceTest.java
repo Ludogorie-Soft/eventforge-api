@@ -1,4 +1,4 @@
-package com.eventforge.service.Impl;
+package com.eventforge.service.service;
 
 import com.eventforge.model.Event;
 import com.eventforge.model.Image;

@@ -1,6 +1,8 @@
-package com.eventforge.service;
+package com.eventforge.service.service;
 
 import com.eventforge.model.OrganisationPriority;
+import com.eventforge.service.OrganisationPriorityService;
+import com.eventforge.service.Utils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,20 +29,7 @@ class TestUtils {
     @InjectMocks
     private Utils utils;
 
-    @Test
- void testReturnOrderByAscendingByDefaultIfParamNotProvided() {
-        String result1 = utils.returnOrderByAscendingByDefaultIfParamNotProvided(null);
-        assertEquals("ASC", result1, "Should return 'ASC' when order is null");
 
-        String result2 = utils.returnOrderByAscendingByDefaultIfParamNotProvided("");
-        assertEquals("ASC", result2, "Should return 'ASC' when order is empty");
-
-        String result3 = utils.returnOrderByAscendingByDefaultIfParamNotProvided("DESC");
-        assertEquals("DESC", result3, "Should return the same order when order is provided");
-
-        String result4 = utils.returnOrderByAscendingByDefaultIfParamNotProvided("ASC");
-        assertEquals("ASC", result4, "Should return the same order when order is provided");
-    }
 
     @Test
     public void convertIsOneTimeToString_WhenIsOneTimeIsTrue_ShouldReturnCorrectString() {

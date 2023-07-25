@@ -17,7 +17,6 @@ public class OrganisationResponse {
     private String logo;
     private String background;
     private String name;
-    private String bullstat;
     private String address;
     private String charityOption;
     private String organisationPurpose;
@@ -25,6 +24,5 @@ public class OrganisationResponse {
     private List<CommonEventResponse> expiredEvents;
     private List<CommonEventResponse> activeEvents;
     private List<CommonEventResponse> upcomingEvents;
-    private LocalDateTime registeredAt;
-    private LocalDateTime updatedAt;
+
 }

@@ -2,9 +2,8 @@ package com.eventforge.service;
 
 import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.EventRequest;
+import com.eventforge.dto.request.PageRequestDto;
 import com.eventforge.dto.response.CommonEventResponse;
-import com.eventforge.dto.response.OneTimeEventResponse;
-import com.eventforge.dto.response.RecurrenceEventResponse;
 import com.eventforge.exception.DateTimeException;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.factory.ResponseFactory;
@@ -13,9 +12,11 @@ import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,57 +36,44 @@ public class EventService {
     private final ResponseFactory responseFactory;
     private final ImageService imageService;
 
-    private final Utils utils;
 
-    public List<OneTimeEventResponse> getAllOneTimeEventsByOrganisationId(Long id) {
-        return eventRepository.findAllOneTimeEventsByOrganisationId(id).stream().map(responseFactory::buildOneTimeEventResponse).toList();
+    public List<CommonEventResponse> getAllOneTimeEventsByOrganisationId(Long id) {
+        return eventRepository.findAllOneTimeEventsByOrganisationId(id).stream().map(responseFactory::buildCommonEventResponse).toList();
     }
 
-    public List<RecurrenceEventResponse> getAllRecurrenceEventsByOrganisationId(Long id) {
-        return eventRepository.findAllRecurrenceEventsByOrganisationId(id).stream().map(responseFactory::buildRecurrenceEventResponse).toList();
+    public List<CommonEventResponse> getAllRecurrenceEventsByOrganisationId(Long id) {
+        return eventRepository.findAllRecurrenceEventsByOrganisationId(id).stream().map(responseFactory::buildCommonEventResponse).toList();
     }
 
 
-    public List<OneTimeEventResponse> getAllActiveOneTimeEvents(String order) {
-        String orderBy = utils.returnOrderByAscendingByDefaultIfParamNotProvided(order);
+    public List<Event> getAllActiveOneTimeEvents(PageRequestDto pageRequest) {
+        Pageable pageable= new PageRequestDto().getPageable(pageRequest);
         LocalDateTime dateTime = LocalDate.now().atStartOfDay();
-        return eventRepository.findAllActiveOneTimeEvents(dateTime, orderBy)
-                .stream()
-                .map(responseFactory::buildOneTimeEventResponse)
-                .toList();
+        return eventRepository.findAllActiveOneTimeEvents(dateTime, pageable);
     }
 
-    public List<RecurrenceEventResponse> getAllActiveRecurrenceEvents(String order) {
-        String orderBy = utils.returnOrderByAscendingByDefaultIfParamNotProvided(order);
+    public List<Event> getAllActiveRecurrenceEvents(PageRequestDto pageRequest) {
+        Pageable pageable = new PageRequestDto().getPageable(pageRequest);
         LocalDateTime dateTime = LocalDate.now().atStartOfDay();
-        return eventRepository.findAllActiveRecurrenceEvents(dateTime, orderBy)
-                .stream()
-                .map(responseFactory::buildRecurrenceEventResponse)
-                .toList();
+        return eventRepository.findAllActiveRecurrenceEvents(dateTime, pageable);
     }
 
 
-    public List<OneTimeEventResponse> getAllExpiredOneTimeEvents(String order) {
-        String orderBy = utils.returnOrderByAscendingByDefaultIfParamNotProvided(order);
+    public List<Event> getAllExpiredOneTimeEvents(PageRequestDto pageRequest) {
+        Pageable pageable= new PageRequestDto().getPageable(pageRequest);
         LocalDateTime dateTime = LocalDateTime.now();
-        return eventRepository.findAllExpiredOneTimeEvents(dateTime, orderBy)
-                .stream()
-                .map(responseFactory::buildOneTimeEventResponse)
-                .toList();
+        return eventRepository.findAllExpiredOneTimeEvents(dateTime , pageable);
     }
 
-    public List<RecurrenceEventResponse> getAllExpiredRecurrenceEvents(String order) {
-        String orderBy = utils.returnOrderByAscendingByDefaultIfParamNotProvided(order);
+    public List<Event> getAllExpiredRecurrenceEvents(PageRequestDto pageRequest) {
+        Pageable pageable= new PageRequestDto().getPageable(pageRequest);
+
         LocalDateTime dateTime = LocalDateTime.now();
-        return eventRepository.findAllExpiredRecurrenceEvents(dateTime, orderBy)
-                .stream()
-                .map(responseFactory::buildRecurrenceEventResponse)
-                .toList();
+        return eventRepository.findAllExpiredRecurrenceEvents(dateTime, pageable);
     }
 
     public List<CommonEventResponse> getAllEventsByUserIdForOrganisation(String token) {
         User user = userService.getLoggedUserByToken(token);
-        //if the name is null or empty/not provided , we will invoke different query , where the param name is not required
         return eventRepository.findAllEventsForOrganisationByUserId(user.getId())
                 .stream()
                 .map(responseFactory::buildCommonEventResponse)
@@ -163,7 +151,7 @@ public class EventService {
 
     }
 
-    public List<?> filterEventsByCriteria(CriteriaFilterRequest request) {
+    public List<Event> filterEventsByCriteria(CriteriaFilterRequest request , PageRequestDto pageRequest) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = cb.createQuery(Event.class);
         Root<Event> root = query.from(Event.class);
@@ -181,19 +169,21 @@ public class EventService {
         addExpiredPredicate(request, cb, root, predicates);
 
         query.where(predicates.toArray(new Predicate[0]));
-
-        List<?> resultList = entityManager.createQuery(query).getResultList();
-        if (request.getIsOneTime()) {
-            return resultList.stream()
-                    .filter(event -> event instanceof Event) // Filter out elements of type Event
-                    .map(event -> responseFactory.buildOneTimeEventResponse((Event) event))
-                    .toList();
+        if(pageRequest.getSort().isAscending()){
+            query.orderBy(cb.asc(root.get(pageRequest.getSortByColumn())));
         } else {
-            return resultList.stream()
-                    .filter(event -> event instanceof Event)
-                    .map(event -> responseFactory.buildRecurrenceEventResponse((Event) event))
-                    .toList();
+            query.orderBy(cb.desc(root.get(pageRequest.getSortByColumn())));
         }
+
+        Pageable pageable = new PageRequestDto().getPageable(pageRequest);
+
+        TypedQuery<Event> typedQuery = entityManager.createQuery(query);
+
+        typedQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        typedQuery.setMaxResults(pageable.getPageSize());
+
+
+        return typedQuery.getResultList();
     }
 
     public void addCategoryPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
@@ -277,7 +267,7 @@ public class EventService {
         }
     }
 
-    public void addUserPredicates(CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+    private void addUserPredicates(CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         Join<Event, Organisation> orgJoin = root.join("organisation");
         Join<Organisation, User> userJoin = orgJoin.join("user");
         predicates.add(cb.isTrue(userJoin.get("isNonLocked")));

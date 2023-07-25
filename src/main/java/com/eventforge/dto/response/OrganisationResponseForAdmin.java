@@ -22,6 +22,8 @@ package com.eventforge.dto.response;
 
         private String email;
 
+        private String bullstat;
+
         private boolean isEnabled;
 
         private boolean isApprovedByAdmin;
@@ -29,5 +31,6 @@ package com.eventforge.dto.response;
         private boolean isNonLocked;
 
         private LocalDateTime registeredAt;
+        private LocalDateTime updatedAt;
 
     }

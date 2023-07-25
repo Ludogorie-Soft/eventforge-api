@@ -1,6 +1,7 @@
 package com.eventforge.dto.response;
 
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 @Getter
@@ -18,7 +19,9 @@ public class CommonEventResponse {
     private String eventCategories;
     private String price;
     private String ageBoundary;
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime startsAt;
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime endsAt;
     private String description;
     private String isOneTime;

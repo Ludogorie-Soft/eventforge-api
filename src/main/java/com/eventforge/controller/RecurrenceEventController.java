@@ -1,31 +1,40 @@
 package com.eventforge.controller;
 
-import com.eventforge.dto.response.RecurrenceEventResponse;
-import com.eventforge.service.EventService;
+import com.eventforge.dto.request.PageRequestDto;
+import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.service.PaginationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/recurrence-events")
 public class RecurrenceEventController{
 
-    private final EventService eventService;
+    private final PaginationService paginationService;
 
     @GetMapping("/active")
-    public ResponseEntity<List<RecurrenceEventResponse>> showAllActiveRecurrenceEvents(@RequestParam(value = "order" , required = false) String order){
-        return new ResponseEntity<>(eventService.getAllActiveRecurrenceEvents(order) , HttpStatus.OK);
+    public Page<CommonEventResponse> showAllActiveRecurrenceEvents(@RequestParam(value = "pageNo", required = false) Integer pageNo
+            , @RequestParam(value = "pageSize" , required = false) Integer pageSize
+            , @RequestParam(value = "sort" , required = false) Sort.Direction sort
+            , @RequestParam(value = "sortByColumn" ,required = false)String sortByColumn){
+        PageRequestDto pageRequestDto = new PageRequestDto(pageNo , pageSize , sort ,sortByColumn);
+
+        return paginationService.getAllActiveRecurrenceEventsByPagination(pageRequestDto);
     }
 
     @GetMapping("/expired")
-    public ResponseEntity<List<RecurrenceEventResponse>> showAllExpiredRecurrenceEvents(@RequestParam(value = "order" , required = false) String order){
-        return new ResponseEntity<>(eventService.getAllExpiredRecurrenceEvents(order), HttpStatus.OK);
+    public Page<CommonEventResponse> showAllExpiredRecurrenceEvents(@RequestParam(value = "pageNo", required = false) Integer pageNo
+            , @RequestParam(value = "pageSize" , required = false) Integer pageSize
+            , @RequestParam(value = "sort" , required = false) Sort.Direction sort
+            , @RequestParam(value = "sortByColumn" ,required = false)String sortByColumn){
+        PageRequestDto pageRequestDto = new PageRequestDto(pageNo , pageSize , sort ,sortByColumn);
+
+        return paginationService.getAllExpiredRecurrenceEventsByPagination(pageRequestDto);
     }
 }

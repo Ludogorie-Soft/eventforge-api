@@ -1,6 +1,8 @@
 package com.eventforge.factory;
 
-import com.eventforge.dto.response.*;
+import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.OrganisationResponse;
+import com.eventforge.dto.response.OrganisationResponseForAdmin;
 import com.eventforge.model.Event;
 import com.eventforge.model.Image;
 import com.eventforge.model.Organisation;
@@ -31,36 +33,16 @@ public class ResponseFactory {
                 .fullName(org.getUser().getFullName())
                 .phoneNumber(org.getUser().getPhoneNumber())
                 .email(org.getUser().getUsername())
+                .bullstat(org.getBullstat())
                 .isEnabled(org.getUser().getIsEnabled())
                 .isApprovedByAdmin(org.getUser().getIsApprovedByAdmin())
                 .isNonLocked(org.getUser().getIsNonLocked())
                 .registeredAt(org.getUser().getRegisteredAt())
+                .updatedAt(org.getUser().getUpdatedAt())
                 .build();
     }
 
 
-    public OneTimeEventResponse buildOneTimeEventResponse(Event event) {
-        Image eventPicture = event.getEventImage();
-        Long imageId = eventPicture.getId();
-
-        String eventPictureData = eventPicture.getUrl();
-
-
-        return OneTimeEventResponse.builder()
-                .id(event.getId())
-                .imageId(imageId)
-                .imageUrl(eventPictureData)
-                .name(event.getName())
-                .description(event.getDescription())
-                .address(event.getAddress())
-                .eventCategories(event.getEventCategories())
-                .organisationName(event.getOrganisation().getName())
-                .price(utils.convertPriceToString(event.getPrice()))
-                .ageBoundary(utils.convertAgeToString(event.getMinAge(), event.getMaxAge()))
-                .startsAt(event.getStartsAt())
-                .endsAt(event.getEndsAt())
-                .build();
-    }
 
     public OrganisationResponse buildOrganisationResponse(Organisation org) {
         Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
@@ -75,7 +57,6 @@ public class ResponseFactory {
                 .logo(logoData)
                 .background(backgroundData)
                 .name(org.getName())
-                .bullstat(org.getBullstat())
                 .address(org.getAddress())
                 .charityOption(org.getCharityOption())
                 .organisationPurpose(org.getOrganisationPurpose())
@@ -83,8 +64,6 @@ public class ResponseFactory {
                 .expiredEvents(fetchExpiredEvents(org.getId()))
                 .activeEvents(fetchActiveEvents(org.getId()))
                 .upcomingEvents(fetchUpcomingEvents(org.getId()))
-                .registeredAt(org.getRegisteredAt())
-                .updatedAt(org.getUpdatedAt())
                 .build();
     }
 
@@ -107,27 +86,6 @@ public class ResponseFactory {
                 .toList();
     }
 
-    public RecurrenceEventResponse buildRecurrenceEventResponse(Event event) {
-        Long imageId = event.getEventImage() != null ? event.getEventImage().getId() : null;
-        String eventPictureData = event.getEventImage().getUrl();
-
-
-        return RecurrenceEventResponse.builder()
-                .id(event.getId())
-                .imageId(imageId)
-                .imageUrl(eventPictureData)
-                .name(event.getName())
-                .description(event.getDescription())
-                .address(event.getAddress())
-                .eventCategories(event.getEventCategories())
-                .organisationName(event.getOrganisation().getName())
-                .price(utils.convertPriceToString(event.getPrice()))
-                .ageBoundary(utils.convertAgeToString(event.getMinAge(), event.getMaxAge()))
-                .startsAt(event.getStartsAt())
-                .endsAt(event.getEndsAt())
-                .recurrenceDetails(event.getRecurrenceDetails())
-                .build();
-    }
 
     public CommonEventResponse buildCommonEventResponse(Event event) {
         CommonEventResponse eventResponse = new CommonEventResponse();
@@ -146,7 +104,11 @@ public class ResponseFactory {
         eventResponse.setStartsAt(event.getStartsAt());
         eventResponse.setEndsAt(event.getEndsAt());
         eventResponse.setIsOneTime(utils.convertIsOneTimeToString(event.getIsOneTime()));
-        eventResponse.setRecurrenceDetails(event.getRecurrenceDetails());
+        if(event.getRecurrenceDetails()!=null && !event.getIsOneTime()){
+            eventResponse.setRecurrenceDetails(event.getRecurrenceDetails());
+        } else {
+            eventResponse.setRecurrenceDetails(null);
+        }
 
         return eventResponse;
     }

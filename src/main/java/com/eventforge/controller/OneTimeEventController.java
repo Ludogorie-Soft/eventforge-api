@@ -1,32 +1,39 @@
 package com.eventforge.controller;
 
-import com.eventforge.dto.response.OneTimeEventResponse;
-import com.eventforge.service.EventService;
+import com.eventforge.dto.request.PageRequestDto;
+import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.service.PaginationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/one-time-events")
 public class OneTimeEventController {
 
-    private final EventService eventService;
+    private final PaginationService paginationService;
 
     @GetMapping("/active")
-    public ResponseEntity<List<OneTimeEventResponse>> showAllActiveOneTimeEvents(@RequestParam(value = "order", required = false) String order) {
-        return new ResponseEntity<>(eventService.getAllActiveOneTimeEvents(order), HttpStatus.OK);
+    public Page<CommonEventResponse> showAllActiveOneTimeEvents(@RequestParam(value = "pageNo", required = false) Integer pageNo
+            , @RequestParam(value = "pageSize" , required = false) Integer pageSize
+            , @RequestParam(value = "sort" , required = false) Sort.Direction sort
+            , @RequestParam(value = "sortByColumn" ,required = false)String sortByColumn) {
+        PageRequestDto pageRequestDto = new PageRequestDto(pageNo , pageSize , sort ,sortByColumn);
+        return paginationService.getAllActiveOneTimeEventsByPagination(pageRequestDto);
     }
 
     @GetMapping("/expired")
-    public ResponseEntity<List<OneTimeEventResponse>> showAllExpiredOneTimeEvents(@RequestParam(value = "order", required = false) String order) {
-        return new ResponseEntity<>(eventService.getAllExpiredOneTimeEvents(order), HttpStatus.OK);
+    public Page<CommonEventResponse> showAllExpiredOneTimeEvents( @RequestParam(value = "pageNo", required = false) Integer pageNo
+            , @RequestParam(value = "pageSize" , required = false) Integer pageSize
+            , @RequestParam(value = "sort" , required = false) Sort.Direction sort
+            , @RequestParam(value = "sortByColumn" ,required = false)String sortByColumn) {
+        PageRequestDto pageRequestDto = new PageRequestDto(pageNo , pageSize , sort ,sortByColumn);
+        return paginationService.getAllExpiredOneTimeEventsByPagination(pageRequestDto);
     }
 
 }
