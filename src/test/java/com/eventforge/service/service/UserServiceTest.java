@@ -1,9 +1,12 @@
-package com.eventforge.service;
+package com.eventforge.service.service;
 
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.UserRepository;
 import com.eventforge.security.jwt.JWTService;
+import com.eventforge.service.EmailVerificationTokenService;
+import com.eventforge.service.UserService;
+import com.eventforge.service.Utils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,9 +1,10 @@
-package com.eventforge.service;
+package com.eventforge.service.service;
 
 import com.eventforge.constants.TokenType;
 import com.eventforge.exception.InvalidEmailConfirmationLinkException;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.repository.VerificationTokenRepository;
+import com.eventforge.service.EmailVerificationTokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

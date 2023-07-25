@@ -1,6 +1,8 @@
 package com.eventforge.repository;
 
 import com.eventforge.model.Event;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -30,25 +32,21 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllOneTimeEventsByOrganisationId(Long orgId);
     @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+LEGAL_USER_CONDITION +" AND e.organisation.id = :orgId ORDER BY e.createdAt ASC")
     List<Event> findAllRecurrenceEventsByOrganisationId(Long orgId);
-    @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+ LEGAL_USER_CONDITION+" AND "+UNEXPIRED_CONDITION + " ORDER BY e.startsAt ASC")
-    List<Event> findAllActiveOneTimeEvents(LocalDateTime date , String order);
+    @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+ LEGAL_USER_CONDITION+" AND "+UNEXPIRED_CONDITION)
+    List<Event> findAllActiveOneTimeEvents(LocalDateTime date ,
+                                           Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+ LEGAL_USER_CONDITION+" AND "+UNEXPIRED_CONDITION + " ORDER BY e.startsAt ASC")
-    List<Event> findAllActiveRecurrenceEvents(LocalDateTime date , String order);
+    List<Event> findAllActiveRecurrenceEvents(LocalDateTime date , Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+LEGAL_USER_CONDITION+ " AND "+EXPIRED_CONDITION + " ORDER BY e.endsAt ASC")
-    List<Event> findAllExpiredOneTimeEvents(LocalDateTime passedDate , String order);
+    List<Event> findAllExpiredOneTimeEvents(LocalDateTime passedDate , Pageable pageable);
     @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+LEGAL_USER_CONDITION+" AND "+EXPIRED_CONDITION + "ORDER BY e.endsAt ASC")
-    List<Event> findAllExpiredRecurrenceEvents(LocalDateTime passedDate , String order);
+    List<Event> findAllExpiredRecurrenceEvents(LocalDateTime passedDate ,Pageable pageable);
 
     // queries accessible for organisations!
-    @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.organisation.user.isNonLocked = true ORDER BY e.startsAt DESC")
+    @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.organisation.user.isNonLocked = true ORDER BY e.startsAt ASC")
     List<Event> findAllEventsForOrganisationByUserId(Long userId);
-
-
-    @Query("select e from Event e where e.organisation.user.id = :userId AND e.name LIKE %:name% ORDER BY e.startsAt DESC")
-    List<Event> findAllEventsForOrganisationByUserIdAndName(Long userId , String name );
-
 
     @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.id = :eventId")
     Event findEventByIdAndUserId(Long userId , Long eventId);

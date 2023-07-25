@@ -1,7 +1,8 @@
-package com.eventforge.service;
+package com.eventforge.service.service;
 
 import com.eventforge.model.OrganisationPriority;
 import com.eventforge.repository.OrganisationPriorityRepository;
+import com.eventforge.service.OrganisationPriorityService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

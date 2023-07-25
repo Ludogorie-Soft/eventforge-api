@@ -20,14 +20,6 @@ public class Utils {
     private static final SecureRandom random = new SecureRandom();
     private static final int NEW_GENERATED_PASSWORD_LENGTH = 15;
 
-    public String returnOrderByAscendingByDefaultIfParamNotProvided(String order) {
-        if (order == null || order.isEmpty()) {
-            order = "ASC"; //by default we order them by ASC
-            return order;
-        }
-        return order;
-    }
-
     public String convertIsOneTimeToString(Boolean isOneTime) {
         if (isOneTime) {
             return "еднократно";

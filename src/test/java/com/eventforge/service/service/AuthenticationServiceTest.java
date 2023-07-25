@@ -1,4 +1,4 @@
-package com.eventforge.service;
+package com.eventforge.service.service;
 
 import com.eventforge.dto.request.JWTAuthenticationRequest;
 import com.eventforge.dto.request.RegistrationRequest;
@@ -13,6 +13,8 @@ import com.eventforge.model.User;
 import com.eventforge.repository.TokenRepository;
 import com.eventforge.security.MyUserDetails;
 import com.eventforge.security.jwt.JWTService;
+import com.eventforge.service.AuthenticationService;
+import com.eventforge.service.UserService;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package com.eventforge.service;
+package com.eventforge.service.service;
 
 import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.dto.response.OrganisationResponse;
@@ -7,6 +7,9 @@ import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.OrganisationRepository;
+import com.eventforge.service.OrganisationService;
+import com.eventforge.service.UserService;
+import com.eventforge.service.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

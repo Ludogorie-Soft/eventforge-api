@@ -1,10 +1,9 @@
-package com.eventforge.service.Impl;
+package com.eventforge.service.service;
 
 import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.EventRequest;
-import com.eventforge.dto.response.OneTimeEventResponse;
+import com.eventforge.dto.request.PageRequestDto;
 import com.eventforge.dto.response.CommonEventResponse;
-import com.eventforge.dto.response.RecurrenceEventResponse;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
@@ -24,6 +23,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,19 +65,19 @@ public class EventServiceTest {
         // Arrange
         Long id = 1L;
         List<Event> events = Arrays.asList(new Event(), new Event()); // Create a list of events for testing
-        List<OneTimeEventResponse> expectedResponses = Arrays.asList(new OneTimeEventResponse(), new OneTimeEventResponse());
+        List<CommonEventResponse> expectedResponses = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
 
         when(eventRepository.findAllOneTimeEventsByOrganisationId(id)).thenReturn(events);
-        when(responseFactory.buildOneTimeEventResponse(any(Event.class))).thenReturn(new OneTimeEventResponse());
+        when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
 
         // Act
-        List<OneTimeEventResponse> actualResponses = eventService.getAllOneTimeEventsByOrganisationId(id);
+        List<CommonEventResponse> actualResponses = eventService.getAllOneTimeEventsByOrganisationId(id);
 
         // Assert
         assertEquals(expectedResponses.size(), actualResponses.size());
         // Add additional assertions as needed
         verify(eventRepository).findAllOneTimeEventsByOrganisationId(id);
-        verify(responseFactory, times(events.size())).buildOneTimeEventResponse(any(Event.class));
+        verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
     }
 
     @Test
@@ -84,123 +85,71 @@ public class EventServiceTest {
         // Arrange
         Long id = 1L;
         List<Event> events = Arrays.asList(new Event(), new Event()); // Create a list of events for testing
-        List<RecurrenceEventResponse> expectedResponses = Arrays.asList(new RecurrenceEventResponse(), new RecurrenceEventResponse());
+        List<CommonEventResponse> expectedResponses = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
 
         when(eventRepository.findAllRecurrenceEventsByOrganisationId(id)).thenReturn(events);
-        when(responseFactory.buildRecurrenceEventResponse(any(Event.class))).thenReturn(new RecurrenceEventResponse());
+        when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
 
         // Act
-        List<RecurrenceEventResponse> actualResponses = eventService.getAllRecurrenceEventsByOrganisationId(id);
+        List<CommonEventResponse> actualResponses = eventService.getAllRecurrenceEventsByOrganisationId(id);
 
         // Assert
         assertEquals(expectedResponses.size(), actualResponses.size());
         // Add additional assertions as needed
         verify(eventRepository).findAllRecurrenceEventsByOrganisationId(id);
-        verify(responseFactory, times(events.size())).buildRecurrenceEventResponse(any(Event.class));
+        verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
     }
 
     @Test
     void getAllActiveOneTimeEvents_shouldReturnListOfOneTimeEventResponses() {
-        String order = "asc";
         LocalDateTime now = LocalDate.now().atStartOfDay();
-        List<Event> oneTimeEvents = List.of(Event.builder().name("event1").build(),
-                Event.builder().name("event2").build());
-
-        when(utils.returnOrderByAscendingByDefaultIfParamNotProvided(order)).thenReturn(order);
-        when(eventRepository.findAllActiveOneTimeEvents(now, order)).thenReturn(oneTimeEvents);
-        var result = eventService.getAllActiveOneTimeEvents(order);
-
-        assertThat(result)
-                .isNotNull()
-                .hasSize(2);
-
-        verify(utils).returnOrderByAscendingByDefaultIfParamNotProvided(order);
-        verify(eventRepository).findAllActiveOneTimeEvents(now, order);
-        verify(responseFactory, times(2)).buildOneTimeEventResponse(any(Event.class));
-    }
-
-    @Test
-    void getAllActiveRecurrenceEvents_shouldReturnListOfRecurrenceEventResponses() {
-        String order = "asc";
-        LocalDateTime now = LocalDate.now().atStartOfDay();
-        List<Event> recurrenceEvents = List.of(Event.builder().name("event1").build(),
-                Event.builder().name("event2").build());
-
-        when(utils.returnOrderByAscendingByDefaultIfParamNotProvided(order)).thenReturn(order);
-        when(eventRepository.findAllActiveRecurrenceEvents(now, order)).thenReturn(recurrenceEvents);
-
-        var result = eventService.getAllActiveRecurrenceEvents(order);
-
-
-        assertThat(result)
-                .isNotNull()
-                .hasSize(2);
-        verify(utils).returnOrderByAscendingByDefaultIfParamNotProvided(order);
-        verify(eventRepository).findAllActiveRecurrenceEvents(now, order);
-        verify(responseFactory, times(2)).buildRecurrenceEventResponse(any(Event.class));
-    }
-
-    @Test
-    void getAllExpiredOneTimeEvents_shouldReturnListOfOneTimeEventResponses() {
-        String order = "asc";
-        LocalDateTime expectedDateTime = LocalDateTime.parse("2023-06-13T11:38:32.947843100");
         List<Event> oneTimeEvents = List.of(
                 Event.builder().name("event1").build(),
                 Event.builder().name("event2").build()
         );
 
-        when(utils.returnOrderByAscendingByDefaultIfParamNotProvided(anyString())).thenReturn("asc");
-        when(eventRepository.findAllExpiredOneTimeEvents(any(LocalDateTime.class), eq(order))).thenReturn(oneTimeEvents);
+        PageRequestDto pageRequest = new PageRequestDto(1, 10, Sort.Direction.DESC, "dateTime");
+        Pageable pageable = new PageRequestDto().getPageable(pageRequest);
 
-        List<OneTimeEventResponse> result = eventService.getAllExpiredOneTimeEvents(expectedDateTime.toString());
+        when(eventRepository.findAllActiveOneTimeEvents(now, pageable)).thenReturn(oneTimeEvents);
+
+        List<Event> result = eventService.getAllActiveOneTimeEvents(pageRequest);
 
         assertThat(result)
                 .isNotNull()
                 .hasSize(2);
-        verify(responseFactory, times(2)).buildOneTimeEventResponse(any(Event.class));
+
+
+        verify(eventRepository).findAllActiveOneTimeEvents(now,pageable);
     }
 
     @Test
-    void getAllExpiredRecurrenceEvents_shouldReturnListOfRecurrenceEventResponses() {
-        String order = "asc";
-        when(utils.returnOrderByAscendingByDefaultIfParamNotProvided((order))).thenReturn("asc");
+    public void testGetAllActiveRecurrenceEvents() {
+        // Mock the current date and time
+        LocalDateTime now = LocalDateTime.of(2023, 7, 25, 12, 0);
 
-        List<RecurrenceEventResponse> actualResponses = eventService.getAllExpiredRecurrenceEvents(order);
-        assertThat(actualResponses).isEqualTo(new ArrayList<>());
-    }
+        PageRequestDto pageRequest = new PageRequestDto(1, 10, Sort.Direction.DESC, "dateTime");
 
-    @Test
-    void testGetAllEventsByUserIdAndNameForOrganisation_WithName() {
-        // Arrange
-        String token = "your_token";
-        String name = "Event Name";
+        // Mock the behavior of the PageRequestDto
+        Pageable pageable = new PageRequestDto().getPageable(pageRequest);
 
-        User user = new User(); // Create a user object for testing
-        user.setId(1L);
 
-        List<Event> events = Arrays.asList(new Event(), new Event()); // Create a list of events for testing
-        List<CommonEventResponse> expectedResponses = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
+        // Mock the behavior of the eventRepository to return some test events
+        List<Event> events = Arrays.asList(new Event(), new Event());
+        when(eventRepository.findAllActiveRecurrenceEvents(now.toLocalDate().atStartOfDay(), pageable)).thenReturn(events);
 
-        when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(eventRepository.findAllEventsForOrganisationByUserIdAndName(user.getId(), name)).thenReturn(events);
-        when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
+        // Call the method under test
+        List<Event> result = eventService.getAllActiveRecurrenceEvents(pageRequest);
 
-        // Act
-        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdAndNameForOrganisation(token, name);
-
-        // Assert
-        assertEquals(expectedResponses.size(), actualResponses.size());
-        // Add additional assertions as needed
-        verify(userService).getLoggedUserByToken(token);
-        verify(eventRepository).findAllEventsForOrganisationByUserIdAndName(user.getId(), name);
-        verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
+        // Verify the interaction and the result
+        verify(eventRepository).findAllActiveRecurrenceEvents(now.toLocalDate().atStartOfDay(), pageable);
+        assertEquals(events, result);
     }
 
     @Test
     void testGetAllEventsByUserIdAndNameForOrganisation_NullOrEmptyName() {
         // Arrange
         String token = "your_token";
-        String name = null; // or name = ""
 
         User user = new User(); // Create a user object for testing
         user.setId(1L);
@@ -213,7 +162,7 @@ public class EventServiceTest {
         when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
 
         // Act
-        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdAndNameForOrganisation(token, name);
+        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdForOrganisation(token);
 
         // Assert
         assertEquals(expectedResponses.size(), actualResponses.size());
@@ -288,20 +237,6 @@ public class EventServiceTest {
                 () -> eventService.getEventDetailsWithoutConditionsById(eventId),
                 "Търсеното от вас събитие не е намерено.");
     }
-
-    @Test
-    void getOneTimeEventsByNameByUserId_shouldReturnListOfOneTimeEventResponses() {
-        String token = "your_token";
-        String name = "your_event_name";
-        User user = new User();
-
-        when(userService.getLoggedUserByToken((token))).thenReturn(user);
-        when(eventRepository.findAllEventsForOrganisationByUserIdAndName((user.getId()), (name))).thenReturn(new ArrayList<>());
-
-        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdAndNameForOrganisation(token, name);
-        assertThat(actualResponses).isEqualTo(new ArrayList<>());
-    }
-
 
     @Test
     void deleteEventById_shouldDeleteEventAndLogInfo() {
