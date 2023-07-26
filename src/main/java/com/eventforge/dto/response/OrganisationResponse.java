@@ -2,7 +2,6 @@ package com.eventforge.dto.response;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +17,8 @@ public class OrganisationResponse {
     private String background;
     private String name;
     private String address;
+    private String website;
+    private String facebookLink;
     private String charityOption;
     private String organisationPurpose;
     private Set<String> organisationPriorities;

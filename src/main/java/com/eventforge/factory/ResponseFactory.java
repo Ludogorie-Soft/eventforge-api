@@ -58,6 +58,8 @@ public class ResponseFactory {
                 .background(backgroundData)
                 .name(org.getName())
                 .address(org.getAddress())
+                .website(org.getWebsite())
+                .facebookLink(org.getFacebookLink())
                 .charityOption(org.getCharityOption())
                 .organisationPurpose(org.getOrganisationPurpose())
                 .organisationPriorities(orgPriorities)
@@ -91,6 +93,7 @@ public class ResponseFactory {
         CommonEventResponse eventResponse = new CommonEventResponse();
 
         eventResponse.setId(event.getId());
+        eventResponse.setOrgId(event.getOrganisation().getId());
         eventResponse.setImageId(event.getEventImage().getId());
         eventResponse.setImageUrl(event.getEventImage().getUrl());
         eventResponse.setName(event.getName());
