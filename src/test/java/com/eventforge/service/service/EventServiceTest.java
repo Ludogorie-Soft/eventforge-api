@@ -126,17 +126,18 @@ public class EventServiceTest {
     @Test
     public void testGetAllActiveRecurrenceEvents() {
         // Mock the current date and time
-        LocalDateTime now = LocalDateTime.of(2023, 7, 25, 12, 0);
+        LocalDateTime now = LocalDate.now().atStartOfDay();
+        List<Event> events = List.of(
+                Event.builder().name("event1").build(),
+                Event.builder().name("event2").build()
+        );
 
         PageRequestDto pageRequest = new PageRequestDto(1, 10, Sort.Direction.DESC, "dateTime");
-
-        // Mock the behavior of the PageRequestDto
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
 
 
-        // Mock the behavior of the eventRepository to return some test events
-        List<Event> events = Arrays.asList(new Event(), new Event());
-        when(eventRepository.findAllActiveRecurrenceEvents(now.toLocalDate().atStartOfDay(), pageable)).thenReturn(events);
+
+        when(eventRepository.findAllActiveRecurrenceEvents(now, pageable)).thenReturn(events);
 
         // Call the method under test
         List<Event> result = eventService.getAllActiveRecurrenceEvents(pageRequest);
