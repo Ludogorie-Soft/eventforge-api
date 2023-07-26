@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommonEventResponse {
     private Long id;
+    private Long orgId;
     private Long imageId;
     private String imageUrl;
     private String name;
