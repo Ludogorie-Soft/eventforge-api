@@ -60,7 +60,7 @@ class TestUtils {
         assertEquals("безплатно", result1, "Should return 'безплатно' when price is less than 1");
 
         String result2 = utils.convertPriceToString(1.0);
-        assertEquals("1.0 лева", result2, "Should return '1.0 лева' when price is equal to 1");
+        assertEquals("1.00 лева", result2, "Should return '1.0 лева' when price is equal to 1");
 
         String result3 = utils.convertPriceToString(5.99);
         assertEquals("5.99 лева", result3, "Should return the price with 'лева' when price is greater than 1");

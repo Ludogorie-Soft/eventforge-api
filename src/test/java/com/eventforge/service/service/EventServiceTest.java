@@ -291,7 +291,7 @@ public class EventServiceTest {
         // Arrange
         Long eventId = 1L;
         String token = "token";
-        EventRequest eventRequest = EventRequest.builder().name("Updated Event").description("Updated description").imageUrl("image").build();
+        EventRequest eventRequest = EventRequest.builder().name("Updated Event").description("Updated description").imageUrl("image").price(10.00).build();
 
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
         when(eventRepository.findEventByIdAndUserId(user.getId(), eventId)).thenReturn(event);

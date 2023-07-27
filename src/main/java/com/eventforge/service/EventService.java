@@ -139,6 +139,7 @@ public class EventService {
         event.setEventCategories(eventRequest.getEventCategories());
         event.setMinAge(eventRequest.getMinAge());
         event.setMaxAge(eventRequest.getMaxAge());
+        event.setPrice(eventRequest.getPrice());
         event.setIsOnline(eventRequest.getIsOnline());
         event.setIsOneTime(eventRequest.getIsOneTime());
         event.setStartsAt(eventRequest.getStartsAt());

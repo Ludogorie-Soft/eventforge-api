@@ -9,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import java.security.SecureRandom;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,8 @@ public class Utils {
     private final PasswordEncoder passwordEncoder;
     private static final SecureRandom random = new SecureRandom();
     private static final int NEW_GENERATED_PASSWORD_LENGTH = 15;
+
+    private static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
     public String convertIsOneTimeToString(Boolean isOneTime) {
         if (isOneTime) {
@@ -31,7 +34,8 @@ public class Utils {
         if (price < 1) {
             return "безплатно";
         }
-        return price + " лева";
+
+        return decimalFormat.format(price) + " лева";
     }
 
     public String convertAgeToString(Integer minAge, Integer maxAge) {
