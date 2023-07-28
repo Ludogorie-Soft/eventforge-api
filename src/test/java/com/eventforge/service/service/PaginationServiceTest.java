@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -40,17 +41,23 @@ public class PaginationServiceTest {
 
     private CriteriaFilterRequest criteriaFilterRequest;
 
+    private List<Event> mockEvents;
+
+    private Page<Event> events;
+
     @BeforeEach
     void setUp(){
          this.pageRequest = new PageRequestDto(1, 10, Sort.Direction.DESC, "startsAt");
          this.pageable =new PageRequestDto().getPageable(pageRequest);
          this.criteriaFilterRequest = new CriteriaFilterRequest();
+         this.mockEvents = Arrays.asList(new Event(), new Event());
+         this.events = new PageImpl<>(mockEvents, Pageable.unpaged(), mockEvents.size());
     }
 
     @Test
     public void testGetAllActiveOneTimeEventsByPagination() {
         // Mock the behavior of the eventService to return some test events
-        List<Event> oneTimeEvents = Arrays.asList(new Event(), new Event());
+        Page<Event> oneTimeEvents = this.events;
         when(eventService.getAllActiveOneTimeEvents(pageRequest)).thenReturn(oneTimeEvents);
 
         // Mock the behavior of the responseFactory to return some test CommonEventResponse objects
@@ -70,8 +77,7 @@ public class PaginationServiceTest {
     @Test
     public void testGetAllExpiredOneTimeEventsByPagination() {
         // Mock the behavior of the eventService to return some test events
-        List<Event> oneTimeEvents = Arrays.asList(new Event(), new Event());
-        when(eventService.getAllExpiredOneTimeEvents(pageRequest)).thenReturn(oneTimeEvents);
+        when(eventService.getAllExpiredOneTimeEvents(pageRequest)).thenReturn(events);
 
         // Mock the behavior of the responseFactory to return some test CommonEventResponse objects
         List<CommonEventResponse> oneTimeEventsResponse = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
@@ -90,8 +96,8 @@ public class PaginationServiceTest {
     @Test
     public void testGetAllActiveRecurrenceEventsByPagination() {
         // Mock the behavior of the eventService to return some test events
-        List<Event> oneTimeEvents = Arrays.asList(new Event(), new Event());
-        when(eventService.getAllActiveRecurrenceEvents(pageRequest)).thenReturn(oneTimeEvents);
+
+        when(eventService.getAllActiveRecurrenceEvents(pageRequest)).thenReturn(events);
 
         // Mock the behavior of the responseFactory to return some test CommonEventResponse objects
         List<CommonEventResponse> oneTimeEventsResponse = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
@@ -110,8 +116,8 @@ public class PaginationServiceTest {
     @Test
     public void testGetAllExpiredRecurrenceEventsByPagination() {
         // Mock the behavior of the eventService to return some test events
-        List<Event> oneTimeEvents = Arrays.asList(new Event(), new Event());
-        when(eventService.getAllExpiredRecurrenceEvents(pageRequest)).thenReturn(oneTimeEvents);
+
+        when(eventService.getAllExpiredRecurrenceEvents(pageRequest)).thenReturn(events);
 
         // Mock the behavior of the responseFactory to return some test CommonEventResponse objects
         List<CommonEventResponse> oneTimeEventsResponse = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
@@ -130,8 +136,8 @@ public class PaginationServiceTest {
     @Test
     public void testGetEventsByCriteriaAndPagination() {
         // Mock the behavior of the eventService to return some test events
-        List<Event> oneTimeEvents = Arrays.asList(new Event(), new Event());
-        when(eventService.filterEventsByCriteria(criteriaFilterRequest,pageRequest)).thenReturn(oneTimeEvents);
+
+        when(eventService.filterEventsByCriteria(criteriaFilterRequest,pageRequest)).thenReturn(events);
 
         // Mock the behavior of the responseFactory to return some test CommonEventResponse objects
         List<CommonEventResponse> oneTimeEventsResponse = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());

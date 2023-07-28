@@ -23,6 +23,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -103,17 +105,15 @@ public class EventServiceTest {
     @Test
     void getAllActiveOneTimeEvents_shouldReturnListOfOneTimeEventResponses() {
         LocalDateTime now = LocalDate.now().atStartOfDay();
-        List<Event> oneTimeEvents = List.of(
-                Event.builder().name("event1").build(),
-                Event.builder().name("event2").build()
-        );
+        List<Event> mockEvents = Arrays.asList(new Event(), new Event());
+        Page<Event> oneTimeEvents = new PageImpl<>(mockEvents, Pageable.unpaged(), mockEvents.size());
 
         PageRequestDto pageRequest = new PageRequestDto(1, 10, Sort.Direction.DESC, "dateTime");
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
 
         when(eventRepository.findAllActiveOneTimeEvents(now, pageable)).thenReturn(oneTimeEvents);
 
-        List<Event> result = eventService.getAllActiveOneTimeEvents(pageRequest);
+        Page<Event> result = eventService.getAllActiveOneTimeEvents(pageRequest);
 
         assertThat(result)
                 .isNotNull()
@@ -127,10 +127,8 @@ public class EventServiceTest {
     public void testGetAllActiveRecurrenceEvents() {
         // Mock the current date and time
         LocalDateTime now = LocalDate.now().atStartOfDay();
-        List<Event> events = List.of(
-                Event.builder().name("event1").build(),
-                Event.builder().name("event2").build()
-        );
+        List<Event> mockEvents = Arrays.asList(new Event(), new Event());
+        Page<Event> events = new PageImpl<>(mockEvents, Pageable.unpaged(), mockEvents.size());
 
         PageRequestDto pageRequest = new PageRequestDto(1, 10, Sort.Direction.DESC, "dateTime");
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
@@ -140,7 +138,7 @@ public class EventServiceTest {
         when(eventRepository.findAllActiveRecurrenceEvents(now, pageable)).thenReturn(events);
 
         // Call the method under test
-        List<Event> result = eventService.getAllActiveRecurrenceEvents(pageRequest);
+        Page<Event> result = eventService.getAllActiveRecurrenceEvents(pageRequest);
 
         // Verify the interaction and the result
         verify(eventRepository).findAllActiveRecurrenceEvents(now.toLocalDate().atStartOfDay(), pageable);
