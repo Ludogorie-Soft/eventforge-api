@@ -36,6 +36,11 @@ public class EventService {
     private final ResponseFactory responseFactory;
     private final ImageService imageService;
 
+    public List<CommonEventResponse> getThreeUpcomingEvents(){
+        LocalDateTime now = LocalDateTime.now();
+        return eventRepository.findThreeUpcomingEvents(now).stream().map(responseFactory::buildCommonEventResponse).toList();
+
+    }
 
     public List<CommonEventResponse> getAllOneTimeEventsByOrganisationId(Long id) {
         return eventRepository.findAllOneTimeEventsByOrganisationId(id).stream().map(responseFactory::buildCommonEventResponse).toList();

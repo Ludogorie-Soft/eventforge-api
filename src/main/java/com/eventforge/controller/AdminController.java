@@ -62,11 +62,11 @@ public class AdminController {
     @PutMapping("/organisation-management/unban-account/{id}/{email}")
     public ResponseEntity<String> unbanAccountById(@RequestHeader("Authorization") String authHeader , @PathVariable("id")Long id ,@PathVariable("email")String email){
         userService.unlockAccountById(id);
-        return new ResponseEntity<>("Успешно отключихте акаунта на потребител с електронна поща : "+email , HttpStatus.OK);
+        return new ResponseEntity<>("Премахнахте забраната на потребител с електронна поща : "+email , HttpStatus.OK);
     }
     @PutMapping("/organisation-management/approve-account/{id}")
     public ResponseEntity<String> approveUserAccount(@RequestHeader("Authorization")String authHeader , @PathVariable("id")Long userId , @RequestParam("email")String email){
         userService.setApproveByAdminToTrue(userId);
-        return new ResponseEntity<>("Успешно одобрихте регистрацията на акаунт с електронна поща: "+email , HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("Наложихте забрана на потребител с електронна поща: "+email , HttpStatus.ACCEPTED);
     }
 }

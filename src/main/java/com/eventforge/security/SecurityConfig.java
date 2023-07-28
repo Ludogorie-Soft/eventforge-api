@@ -59,7 +59,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable().cors().disable()
                 .authorizeHttpRequests().requestMatchers(UNSECURED_URLs).permitAll()
-                .and().authorizeHttpRequests().requestMatchers("/proba").authenticated().and()
+                .and()
                 .authorizeHttpRequests().requestMatchers(ORGANISATION_URLs).hasAnyAuthority(Role.ORGANISATION.toString()).and()
                 .authorizeHttpRequests().requestMatchers(SECURED_URLs).hasAuthority(Role.ADMIN.toString())
                 .anyRequest().authenticated()

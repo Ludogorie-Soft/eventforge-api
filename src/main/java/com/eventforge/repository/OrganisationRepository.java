@@ -12,6 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface OrganisationRepository extends JpaRepository<Organisation, Long> {
+
+    @Query("SELECT o FROM Organisation o WHERE o.user.isNonLocked = true AND o.user.isApprovedByAdmin = true AND o.user.isEnabled = true ORDER BY RAND() LIMIT 3")
+    List<Organisation> findThreeRandomOrganisations();
     @Query("SELECT o FROM Organisation o ORDER BY o.registeredAt ASC")
     List<Organisation> findAllOrganisationsForAdmin();
 
