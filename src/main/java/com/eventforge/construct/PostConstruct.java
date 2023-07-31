@@ -25,7 +25,7 @@ public class PostConstruct {
     private final OrganisationPriorityRepository organisationPriorityRepository;
 
     private final UserRepository userRepository;
-    private HashSet<String> categories = OrganisationPriorityCategory.categories;
+    private HashSet<String> categories = OrganisationPriorityCategory.staticCategories;
 
     private final PasswordEncoder passwordEncoder;
 

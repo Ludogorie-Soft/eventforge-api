@@ -1,5 +1,6 @@
 package com.eventforge.factory;
 
+import com.eventforge.constants.OrganisationPriorityCategory;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.exception.EventRequestException;
@@ -7,7 +8,6 @@ import com.eventforge.model.Event;
 import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
-import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
 import com.eventforge.service.Utils;
@@ -28,7 +28,6 @@ public class RequestFactory {
 
     private final Utils utils;
 
-    private final OrganisationPriorityService organisationPriorityService;
 
     private final EventRepository eventRepository;
 
@@ -37,13 +36,17 @@ public class RequestFactory {
         User user = userService.getLoggedUserByToken(token);
         if (user != null) {
             Organisation organisation = organisationService.getOrganisationByUserId(user.getId());
-            Set<String> getChosenOrganisationPriorities = utils.convertListOfOrganisationPrioritiesToString(organisation.getOrganisationPriorities());
-            Set<String> allOrganisationPriorities = organisationPriorityService.getAllPriorityCategories();
+            Set<String> staticOrganisationPriorities = OrganisationPriorityCategory.staticCategories;
+
+            int staticOrganisationPrioritiesSize = staticOrganisationPriorities.size();
+
+            Set<String> getChosenStaticOrganisationPriorities = utils.convertListOfStaticOrganisationPrioritiesToString(organisation.getOrganisationPriorities() , staticOrganisationPrioritiesSize);
+            String getChoseOptionalOrganisationPriorities = utils.convertListOfOptionalOrganisationPrioritiesToString(organisation.getOrganisationPriorities() , staticOrganisationPrioritiesSize);
 
             return UpdateAccountRequest.builder()
                     .name(organisation.getName())
                     .bullstat(organisation.getBullstat())
-                    .chosenPriorities(getChosenOrganisationPriorities)
+                    .chosenPriorities(getChosenStaticOrganisationPriorities)
                     .organisationPurpose(organisation.getOrganisationPurpose())
                     .address(organisation.getAddress())
                     .website(organisation.getWebsite())
@@ -51,7 +54,8 @@ public class RequestFactory {
                     .fullName(user.getFullName())
                     .phoneNumber(user.getPhoneNumber())
                     .charityOption(organisation.getCharityOption())
-                    .allPriorities(allOrganisationPriorities)
+                    .allPriorities(staticOrganisationPriorities)
+                    .optionalCategory(getChoseOptionalOrganisationPriorities)
                     .build();
         }
         return null;

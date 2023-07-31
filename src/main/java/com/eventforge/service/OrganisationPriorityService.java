@@ -14,14 +14,6 @@ public class OrganisationPriorityService {
     private final OrganisationPriorityRepository organisationPriorityRepository;
 
 
-
-
-
-    public Set<String> getAllPriorityCategories(){
-        return organisationPriorityRepository.getAllOrganisationPriorityCategories();
-    }
-
-
     public OrganisationPriority getOrganisationPriorityByCategory(String category){
         return organisationPriorityRepository.findByCategory(category);
     }

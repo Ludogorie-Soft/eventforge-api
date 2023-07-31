@@ -1,5 +1,6 @@
 package com.eventforge.service.service;
 
+import com.eventforge.model.Organisation;
 import com.eventforge.model.OrganisationPriority;
 import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.Utils;
@@ -117,25 +118,64 @@ class TestUtils {
     }
 
     @Test
-    void testConvertListOfOrganisationPrioritiesToString() {
-        OrganisationPriority priority1 = new OrganisationPriority("Category1");
-        OrganisationPriority priority2 = new OrganisationPriority("Category2");
-        Set<OrganisationPriority> organisationPriorityCategories = new HashSet<>(Arrays.asList(priority1, priority2));
+    public void testConvertListOfOrganisationPrioritiesToString() {
+        // Create a mock for the OrganisationPriority
+        OrganisationPriority priority1 = mock(OrganisationPriority.class);
+        OrganisationPriority priority2 = mock(OrganisationPriority.class);
+        OrganisationPriority priority3 = mock(OrganisationPriority.class);
 
-        Set<String> result = utils.convertListOfOrganisationPrioritiesToString(organisationPriorityCategories);
+        // Set the behavior of the mock objects
+        when(priority1.getCategory()).thenReturn("Category1");
+        when(priority2.getCategory()).thenReturn("Category2");
+        when(priority3.getCategory()).thenReturn("Category3");
 
-        Set<String> expected = new HashSet<>(Arrays.asList("Category1", "Category2"));
+        // Create a HashSet of mock OrganisationPriority objects
+        Set<OrganisationPriority> organisationPriorities = new HashSet<>();
+        organisationPriorities.add(priority1);
+        organisationPriorities.add(priority2);
+        organisationPriorities.add(priority3);
+
+        // Create an instance of the class containing the method to be tested
+
+
+        // Call the method to be tested
+        Set<String> result = utils.convertListOfOrganisationPrioritiesToString(organisationPriorities);
+
+        // Verify the expected behavior
+        Set<String> expected = new HashSet<>();
+        expected.add("Category1");
+        expected.add("Category2");
+        expected.add("Category3");
+
         assertEquals(expected, result);
+        // Additional assertions can be added to verify other aspects of the method's behavior if needed
     }
 
     @Test
-    void testConvertStringListToString() {
-        List<String> stringList = Arrays.asList("Apple", "Banana", "Orange");
+    public void testConvertListOfOptionalOrganisationPrioritiesToString() {
+        // Mock OrganisationPriority objects
+        OrganisationPriority priority1 = mock(OrganisationPriority.class);
+        OrganisationPriority priority2 = mock(OrganisationPriority.class);
+        when(priority1.getId()).thenReturn(5L); // Assuming some ID greater than staticOrgPrioritiesSize
+        when(priority2.getId()).thenReturn(2L); // Assuming some ID less than staticOrgPrioritiesSize
 
-        String result = utils.convertStringListToString(stringList);
+        // Create a Set of OrganisationPriority objects
+        Set<OrganisationPriority> orgPriorities = new HashSet<>();
+        orgPriorities.add(priority1);
+        orgPriorities.add(priority2);
 
-        String expected = "apple,banana,orange";
-        assertEquals(expected, result);
+        // Mock the size of staticOrgPrioritiesSize
+        int staticOrgPrioritiesSize = 3;
+
+
+
+        // Call the method under test
+        String result = utils.convertListOfOptionalOrganisationPrioritiesToString(orgPriorities, staticOrgPrioritiesSize);
+
+        // Verify the behavior and the result
+        verify(priority1, times(1)).getId();
+        verify(priority2, times(1)).getId();
+        assertEquals("Priority 1 Category", "Priority 1 Category", result);
     }
 
     @Test

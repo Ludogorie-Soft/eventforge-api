@@ -1,6 +1,5 @@
 package com.eventforge.service;
 
-import com.eventforge.constants.OrganisationPriorityCategory;
 import com.eventforge.model.OrganisationPriority;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -73,14 +72,39 @@ public class Utils {
         return organisationPriorities;
     }
 
-    public Set<String> convertListOfOrganisationPrioritiesToString(Set<OrganisationPriority> organisationPriorityCategories) {
+    //this method is when we display the organisations for the end user-client
+    public Set<String> convertListOfOrganisationPrioritiesToString(Set<OrganisationPriority> organisationPriorities){
+        Set<String> orgPriorities = new HashSet<>();
+        for(OrganisationPriority priority : organisationPriorities){
+            orgPriorities.add(priority.getCategory());
+        }
+        return orgPriorities;
+    }
+
+    //this method is цаллед upon update for organisation
+    public Set<String> convertListOfStaticOrganisationPrioritiesToString(Set<OrganisationPriority> staticOrganisationPriorityCategories , int staticOrgPrioritiesSize) {
         Set<String> setOfOrgPriorities = new HashSet<>();
-        if (organisationPriorityCategories != null && organisationPriorityCategories.size() > 0) {
-            for (OrganisationPriority priority : organisationPriorityCategories) {
-                setOfOrgPriorities.add(priority.getCategory());
+        if (staticOrganisationPriorityCategories != null && staticOrganisationPriorityCategories.size() > 0) {
+            for (OrganisationPriority priority : staticOrganisationPriorityCategories) {
+                if(priority.getId() <= staticOrgPrioritiesSize){
+                    setOfOrgPriorities.add(priority.getCategory());
+                }
             }
         }
         return setOfOrgPriorities;
+    }
+
+    //this method is called upon update for organisation
+    public String convertListOfOptionalOrganisationPrioritiesToString(Set<OrganisationPriority> optionalOrganisationPriorityCategories, int staticOrgPrioritiesSize){
+        StringJoiner optionalOrgCategories = new StringJoiner(", ");
+        if(optionalOrganisationPriorityCategories != null && optionalOrganisationPriorityCategories.size() > 0){
+            for(OrganisationPriority optionalPriority : optionalOrganisationPriorityCategories){
+                if(optionalPriority.getId() > staticOrgPrioritiesSize){
+                    optionalOrgCategories.add(optionalPriority.getCategory());
+                }
+            }
+        }
+        return optionalOrgCategories.toString();
     }
 
 
@@ -101,7 +125,6 @@ public class Utils {
             if (organisationPriority == null) {
                 organisationPriority = new OrganisationPriority(category);
                 organisationPriorityService.saveOrganisationPriority(organisationPriority);
-                OrganisationPriorityCategory.addNewOrganisationPriorityCategory(category);
             }
             prioritiesToReturn.add(organisationPriority);
         }
