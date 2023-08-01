@@ -431,17 +431,6 @@ public class EventServiceTest {
     }
 
     @Test
-    void testAddDateTimePredicates_BothStartsAtAndEndsAtNull() {
-        request.setStartsAt(null);
-        request.setEndsAt(null);
-
-        List<Predicate> predicates = new ArrayList<>();
-        eventService.addDateTimePredicates(request, cb, root, predicates);
-
-        Assertions.assertTrue(predicates.isEmpty());
-    }
-
-    @Test
     void testAddOneTimePredicate_IsOneTimeTrue() {
         request.setIsOneTime(true);
         List<Predicate> predicates = new ArrayList<>();

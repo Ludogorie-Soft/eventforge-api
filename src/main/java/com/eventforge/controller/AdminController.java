@@ -69,4 +69,10 @@ public class AdminController {
         userService.setApproveByAdminToTrue(userId);
         return new ResponseEntity<>("Одобрихте потребител с електронна поща: "+email , HttpStatus.ACCEPTED);
     }
+
+    @DeleteMapping("delete-event/{id}")
+    public ResponseEntity<String> deleteEventById(@RequestHeader("Authorization")String authHeader ,@PathVariable("id")Long eventId){
+        eventService.deleteEventByIdForAdmin(eventId);
+        return new ResponseEntity<>("Успешно изтрихте събитието с номер " +eventId ,HttpStatus.OK);
+    }
 }

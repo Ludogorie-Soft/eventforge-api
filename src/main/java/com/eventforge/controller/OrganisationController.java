@@ -115,4 +115,10 @@ public class OrganisationController {
         return new ResponseEntity<>("Успешно редактирахте събитието си", HttpStatus.OK);
     }
 
+    @DeleteMapping("delete-event/{id}")
+    public ResponseEntity<String> deleteEventById(@RequestHeader("Authorization") String authHeader , @PathVariable("id")Long id){
+        eventService.deleteEventByIdAndUserIdForOrganisation(id , authHeader);
+        return new ResponseEntity<>("Успешно изтрихте събитието си" , HttpStatus.OK);
+    }
+
 }

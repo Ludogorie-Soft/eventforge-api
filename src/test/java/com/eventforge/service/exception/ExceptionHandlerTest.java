@@ -1,6 +1,7 @@
 package com.eventforge.service.exception;
 
 import com.eventforge.exception.*;
+import com.eventforge.exception.handler.ExceptionHandler;
 import com.eventforge.service.Utils;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,20 +53,6 @@ class ExceptionHandlerTest {
                 "Expected HTTP status code 321");
         assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType(), "Expected response content type TEXT_PLAIN");
         assertEquals("User not found", response.getBody(), "Expected response body to be 'User not found'");
-    }
-
-    @Test
-    void testHandleDateTimeException() {
-        // Arrange
-        DateTimeException exception = new DateTimeException();
-
-        // Act
-        ResponseEntity<String> response = exceptionHandler.handleDateTimeException(exception);
-
-        // Assert
-        assertEquals(HttpStatus.SEE_OTHER, response.getStatusCode());
-        assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType());
-        assertEquals("Не може датата на започване да е по-голяма от датата на приключване", response.getBody());
     }
 
     // Add tests for other exception handlers

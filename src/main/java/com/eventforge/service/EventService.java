@@ -4,7 +4,6 @@ import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.PageRequestDto;
 import com.eventforge.dto.response.CommonEventResponse;
-import com.eventforge.exception.DateTimeException;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -186,19 +186,19 @@ public class EventService {
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
 
         TypedQuery<Event> typedQuery = entityManager.createQuery(query);
-
+        int totalElements = typedQuery.getResultList().size();
         typedQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         typedQuery.setMaxResults(pageable.getPageSize());
 
 
         List<Event> resultList = typedQuery.getResultList();
-
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         countQuery.select(cb.count(countQuery.from(Event.class)));
         countQuery.where(predicates.toArray(new Predicate[0]));
-        Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
 
-        return new PageImpl<>(resultList,pageable, totalCount);
+        int totalPages = (int) Math.ceil((double) totalElements / pageRequest.getPageSize());
+
+        return new PageImpl<>(resultList,pageable, totalPages);
     }
 
     public void addCategoryPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
@@ -263,17 +263,26 @@ public class EventService {
     }
 
     public void addDateTimePredicates(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
-        if (request.getStartsAt() != null) {
-            predicates.add(cb.lessThanOrEqualTo(root.get("startsAt").as(LocalDateTime.class), request.getStartsAt()));
-        }
-        if (request.getEndsAt() != null) {
-            predicates.add(cb.greaterThanOrEqualTo(root.get("endsAt").as(LocalDateTime.class), request.getEndsAt()));
-        }
-        if (request.getStartsAt() != null && request.getEndsAt() != null && request.getStartsAt().isAfter(request.getEndsAt())) {
-            throw new DateTimeException();
+        if (request.getStartsAt() != null && request.getEndsAt() == null) {
+            LocalDateTime startsAt = request.getStartsAt();
+            LocalDateTime startOfDay = startsAt.with(LocalTime.MIN);
+            LocalDateTime endOfDay = startsAt.with(LocalTime.MAX);
+            predicates.add(cb.between(root.get("startsAt").as(LocalDateTime.class), startOfDay, endOfDay));
+        } else if (request.getStartsAt() == null && request.getEndsAt() != null) {
+            LocalDateTime endsAt = request.getEndsAt();
+            LocalDateTime startOfDay = endsAt.with(LocalTime.MIN);
+            LocalDateTime endOfDay = endsAt.with(LocalTime.MAX);
+            predicates.add(cb.between(root.get("endsAt").as(LocalDateTime.class), startOfDay, endOfDay));
+        } else if (request.getStartsAt() != null && request.getEndsAt() != null) {
+                LocalDateTime startsAt = request.getStartsAt();
+                LocalDateTime endsAt = request.getEndsAt();
+                LocalDateTime startOfDay = startsAt.with(LocalTime.MIN);
+                LocalDateTime endOfDay = endsAt.with(LocalTime.MAX);
+                predicates.add(cb.between(root.get("startsAt").as(LocalDateTime.class), startOfDay, endOfDay));
+                predicates.add(cb.between(root.get("endsAt").as(LocalDateTime.class), startOfDay, endOfDay));
+
         }
     }
-
     public void addOneTimePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getIsOneTime()) {
             predicates.add(cb.isTrue(root.get("isOneTime")));

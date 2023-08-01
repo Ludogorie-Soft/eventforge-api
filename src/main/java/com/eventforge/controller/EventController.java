@@ -30,10 +30,4 @@ public class EventController {
         return paginationService.getEventsByCriteriaAndPagination(filterRequest , pageRequestDto);
     }
 
-    @DeleteMapping("/delete-event/{id}")
-    public ResponseEntity<String> deleteEventById(@RequestHeader("Authorization") String authHeader , @PathVariable("id")Long id){
-        eventService.deleteEventByIdAndUserIdForOrganisation(id , authHeader);
-        return new ResponseEntity<>("Успешно изтрихте събитие" , HttpStatus.OK);
-    }
-
 }
