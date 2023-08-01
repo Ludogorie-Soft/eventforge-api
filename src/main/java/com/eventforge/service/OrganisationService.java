@@ -31,6 +31,10 @@ public class OrganisationService {
 
     private final Utils utils;
 
+    public List<OrganisationResponse> fetchThreeRandomOrganisations(){
+        return organisationRepository.findThreeRandomOrganisations().stream().map(responseFactory::buildOrganisationResponse).toList();
+    }
+
     public void saveOrganisationInDb(Organisation organisation){
         organisationRepository.save(organisation);
         log.info("Успешна регистрация");

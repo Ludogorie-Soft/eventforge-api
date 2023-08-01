@@ -26,6 +26,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllUpcomingEvents(Long orgId , LocalDateTime now);
 
     // queries accessible for everyone!
+
+    @Query("SELECT e FROM Event e WHERE "+LEGAL_USER_CONDITION + " AND e.startsAt > :now ORDER BY e.startsAt ASC LIMIT 3")
+    List<Event> findThreeUpcomingEvents(LocalDateTime now);
     @Query("SELECT e FROM Event e WHERE e.id = :eventId AND "+LEGAL_USER_CONDITION)
     Event findEventByIdWithCondition(Long eventId);
     @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+LEGAL_USER_CONDITION + " AND e.organisation.id = :orgId ORDER BY e.createdAt ASC")
@@ -33,16 +36,16 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+LEGAL_USER_CONDITION +" AND e.organisation.id = :orgId ORDER BY e.createdAt ASC")
     List<Event> findAllRecurrenceEventsByOrganisationId(Long orgId);
     @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+ LEGAL_USER_CONDITION+" AND "+UNEXPIRED_CONDITION)
-    List<Event> findAllActiveOneTimeEvents(LocalDateTime date ,
+    Page<Event> findAllActiveOneTimeEvents(LocalDateTime date ,
                                            Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+ LEGAL_USER_CONDITION+" AND "+UNEXPIRED_CONDITION + " ORDER BY e.startsAt ASC")
-    List<Event> findAllActiveRecurrenceEvents(LocalDateTime date , Pageable pageable);
+    Page<Event> findAllActiveRecurrenceEvents(LocalDateTime date , Pageable pageable);
 
     @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+LEGAL_USER_CONDITION+ " AND "+EXPIRED_CONDITION + " ORDER BY e.endsAt ASC")
-    List<Event> findAllExpiredOneTimeEvents(LocalDateTime passedDate , Pageable pageable);
+    Page<Event> findAllExpiredOneTimeEvents(LocalDateTime passedDate , Pageable pageable);
     @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+LEGAL_USER_CONDITION+" AND "+EXPIRED_CONDITION + "ORDER BY e.endsAt ASC")
-    List<Event> findAllExpiredRecurrenceEvents(LocalDateTime passedDate ,Pageable pageable);
+    Page<Event> findAllExpiredRecurrenceEvents(LocalDateTime passedDate ,Pageable pageable);
 
     // queries accessible for organisations!
     @Query("SELECT e FROM Event e WHERE e.organisation.user.id = :userId AND e.organisation.user.isNonLocked = true ORDER BY e.startsAt ASC")

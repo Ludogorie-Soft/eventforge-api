@@ -26,54 +26,38 @@ public class PaginationService {
 
 
     public Page<CommonEventResponse> getAllActiveOneTimeEventsByPagination(PageRequestDto pageRequest) {
-        List<Event> oneTimeEvents = eventService.getAllActiveOneTimeEvents(pageRequest);
-        List<Event> pageSlice = getPageSliceForEvents(oneTimeEvents, pageRequest);
-        List<CommonEventResponse>oneTimeEventsResponse = pageSlice.stream().map(responseFactory::buildCommonEventResponse).toList();
+        Page<Event> oneTimeEvents = eventService.getAllActiveOneTimeEvents(pageRequest);
+        List<CommonEventResponse>oneTimeEventsResponse = oneTimeEvents.stream().map(responseFactory::buildCommonEventResponse).toList();
 
-        return new PageImpl<>(oneTimeEventsResponse, new PageRequestDto().getPageable(pageRequest), oneTimeEvents.size());
+        return new PageImpl<>(oneTimeEventsResponse, new PageRequestDto().getPageable(pageRequest), oneTimeEvents.getTotalElements());
     }
 
     public Page<CommonEventResponse> getAllExpiredOneTimeEventsByPagination(PageRequestDto pageRequest){
-        List<Event> oneTimeEvents = eventService.getAllExpiredOneTimeEvents(pageRequest);
-        List<Event> pageSlice = getPageSliceForEvents( oneTimeEvents , pageRequest);
-        List<CommonEventResponse> oneTimeEventsResponse = pageSlice.stream().map(responseFactory::buildCommonEventResponse).toList();
+        Page<Event> oneTimeEvents = eventService.getAllExpiredOneTimeEvents(pageRequest);
+        List<CommonEventResponse> oneTimeEventsResponse = oneTimeEvents.stream().map(responseFactory::buildCommonEventResponse).toList();
 
-        return new PageImpl<>(oneTimeEventsResponse , new PageRequestDto().getPageable(pageRequest) , oneTimeEvents.size());
+        return new PageImpl<>(oneTimeEventsResponse , new PageRequestDto().getPageable(pageRequest) , oneTimeEvents.getTotalElements());
     }
 
     public Page<CommonEventResponse> getAllActiveRecurrenceEventsByPagination(PageRequestDto pageRequest){
-        List<Event> recurrenceEvents = eventService.getAllActiveRecurrenceEvents(pageRequest);
-        List<Event> pageSlice = getPageSliceForEvents(recurrenceEvents , pageRequest);
-        List<CommonEventResponse> recurrenceEventsResponse = pageSlice.stream().map(responseFactory::buildCommonEventResponse).toList();
+        Page<Event> recurrenceEvents = eventService.getAllActiveRecurrenceEvents(pageRequest);
+        List<CommonEventResponse> recurrenceEventsResponse = recurrenceEvents.stream().map(responseFactory::buildCommonEventResponse).toList();
 
-        return new PageImpl<>(recurrenceEventsResponse , new PageRequestDto().getPageable(pageRequest) , recurrenceEvents.size());
+        return new PageImpl<>(recurrenceEventsResponse , new PageRequestDto().getPageable(pageRequest) , recurrenceEvents.getTotalElements());
     }
 
     public Page<CommonEventResponse> getAllExpiredRecurrenceEventsByPagination(PageRequestDto pageRequest){
-        List<Event> recurrenceEvents = eventService.getAllExpiredRecurrenceEvents(pageRequest);
-        List<Event> pageSlice = getPageSliceForEvents(recurrenceEvents , pageRequest);
-        List<CommonEventResponse> recurrenceEventsResponse = pageSlice.stream().map(responseFactory::buildCommonEventResponse).toList();
+        Page<Event> recurrenceEvents = eventService.getAllExpiredRecurrenceEvents(pageRequest);
+        List<CommonEventResponse> recurrenceEventsResponse = recurrenceEvents.stream().map(responseFactory::buildCommonEventResponse).toList();
 
-        return new PageImpl<>(recurrenceEventsResponse , new PageRequestDto().getPageable(pageRequest) , recurrenceEvents.size());
+        return new PageImpl<>(recurrenceEventsResponse , new PageRequestDto().getPageable(pageRequest) , recurrenceEvents.getTotalElements());
     }
 
     public Page<CommonEventResponse> getEventsByCriteriaAndPagination(CriteriaFilterRequest criteriaFilterRequest , PageRequestDto pageRequest){
-        List<Event> events = eventService.filterEventsByCriteria(criteriaFilterRequest , pageRequest);
-        List<Event> pageSlice = getPageSliceForEvents(events ,pageRequest);
-        List<CommonEventResponse> eventsByCriteria = pageSlice.stream().map(responseFactory::buildCommonEventResponse).toList();
+        Page<Event> events = eventService.filterEventsByCriteria(criteriaFilterRequest , pageRequest);
+        List<CommonEventResponse> eventsByCriteria = events.stream().map(responseFactory::buildCommonEventResponse).toList();
 
-        return new PageImpl<>(eventsByCriteria , new PageRequestDto().getPageable(pageRequest) , events.size());
-    }
-    private List<Event> getPageSliceForEvents(List<Event> events, PageRequestDto pageRequest) {
-        PagedListHolder<Event> pagedListHolder = new PagedListHolder<>(events);
-        pagedListHolder.setPage(pageRequest.getPageNo());
-        pagedListHolder.setPageSize(pageRequest.getPageSize());
-        sortPageSliceForEvents(pagedListHolder.getPageList(), pageRequest);
-        return pagedListHolder.getPageList();
+        return new PageImpl<>(eventsByCriteria , new PageRequestDto().getPageable(pageRequest) , events.getTotalElements());
     }
 
-    private void sortPageSliceForEvents(List<Event> pageSlice, PageRequestDto pageRequest) {
-        boolean ascending = pageRequest.getSort().isAscending();
-        PropertyComparator.sort(pageSlice, new MutableSortDefinition(pageRequest.getSortByColumn(), true, ascending));
-    }
 }

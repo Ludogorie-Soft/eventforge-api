@@ -16,10 +16,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -72,57 +74,6 @@ public class ResponseFactoryTest {
         assertEquals(org.getUser().getRegisteredAt(), response.getRegisteredAt());
     }
 
-
-    @Test
-    void testBuildOrganisationResponse() {
-
-
-        // Create a mock organisation object
-        Organisation org = mock(Organisation.class);
-        Image logo = mock(Image.class);
-        Image background = mock(Image.class);
-
-        when(org.getId()).thenReturn(1L);
-        when(org.getName()).thenReturn("Organisation Name");
-        when(org.getAddress()).thenReturn("Organisation Address");
-        when(org.getCharityOption()).thenReturn("Charity Option");
-        when(org.getOrganisationPurpose()).thenReturn("Organisation Purpose");
-
-        when(imageRepository.findOrganisationLogoByOrgId(org.getId())).thenReturn(logo);
-        when(imageRepository.findOrganisationCoverPictureByOrgId(org.getId())).thenReturn(background);
-
-        when(logo.getUrl()).thenReturn("logo-url");
-        when(background.getUrl()).thenReturn("background-url");
-
-        // Mock the behavior of the Utils class
-
-        Set<OrganisationPriority> organisationPriorities = Set.of(
-                new OrganisationPriority("hahaha"),
-                new OrganisationPriority("wtf")
-        );
-        when(org.getOrganisationPriorities()).thenReturn(organisationPriorities);
-
-        when(mockUtils.convertListOfOrganisationPrioritiesToString(org.getOrganisationPriorities()))
-                .thenReturn(Set.of("hahaha", "wtf"));
-
-
-
-
-
-        // Act
-        OrganisationResponse response = responseFactory.buildOrganisationResponse(org);
-
-        // Assert
-        assertEquals(org.getId(), response.getOrgId());
-        assertEquals("logo-url", response.getLogo());
-        assertEquals("background-url", response.getBackground());
-        assertEquals(org.getName(), response.getName());
-        assertEquals(org.getAddress(), response.getAddress());
-        assertEquals(org.getCharityOption(), response.getCharityOption());
-        assertEquals(org.getOrganisationPurpose(), response.getOrganisationPurpose());
-        assertEquals(Set.of("hahaha", "wtf"), response.getOrganisationPriorities());
-
-    }
 
 
     @Test

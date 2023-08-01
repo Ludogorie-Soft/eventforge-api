@@ -16,6 +16,8 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,11 @@ public class EventService {
     private final ResponseFactory responseFactory;
     private final ImageService imageService;
 
+    public List<CommonEventResponse> getThreeUpcomingEvents(){
+        LocalDateTime now = LocalDateTime.now();
+        return eventRepository.findThreeUpcomingEvents(now).stream().map(responseFactory::buildCommonEventResponse).toList();
+
+    }
 
     public List<CommonEventResponse> getAllOneTimeEventsByOrganisationId(Long id) {
         return eventRepository.findAllOneTimeEventsByOrganisationId(id).stream().map(responseFactory::buildCommonEventResponse).toList();
@@ -46,26 +53,26 @@ public class EventService {
     }
 
 
-    public List<Event> getAllActiveOneTimeEvents(PageRequestDto pageRequest) {
+    public Page<Event> getAllActiveOneTimeEvents(PageRequestDto pageRequest) {
         Pageable pageable= new PageRequestDto().getPageable(pageRequest);
         LocalDateTime dateTime = LocalDate.now().atStartOfDay();
         return eventRepository.findAllActiveOneTimeEvents(dateTime, pageable);
     }
 
-    public List<Event> getAllActiveRecurrenceEvents(PageRequestDto pageRequest) {
+    public Page<Event> getAllActiveRecurrenceEvents(PageRequestDto pageRequest) {
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
         LocalDateTime dateTime = LocalDate.now().atStartOfDay();
         return eventRepository.findAllActiveRecurrenceEvents(dateTime, pageable);
     }
 
 
-    public List<Event> getAllExpiredOneTimeEvents(PageRequestDto pageRequest) {
+    public Page<Event> getAllExpiredOneTimeEvents(PageRequestDto pageRequest) {
         Pageable pageable= new PageRequestDto().getPageable(pageRequest);
         LocalDateTime dateTime = LocalDateTime.now();
         return eventRepository.findAllExpiredOneTimeEvents(dateTime , pageable);
     }
 
-    public List<Event> getAllExpiredRecurrenceEvents(PageRequestDto pageRequest) {
+    public Page<Event> getAllExpiredRecurrenceEvents(PageRequestDto pageRequest) {
         Pageable pageable= new PageRequestDto().getPageable(pageRequest);
 
         LocalDateTime dateTime = LocalDateTime.now();
@@ -152,7 +159,7 @@ public class EventService {
 
     }
 
-    public List<Event> filterEventsByCriteria(CriteriaFilterRequest request , PageRequestDto pageRequest) {
+    public Page<Event> filterEventsByCriteria(CriteriaFilterRequest request , PageRequestDto pageRequest) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = cb.createQuery(Event.class);
         Root<Event> root = query.from(Event.class);
@@ -184,7 +191,14 @@ public class EventService {
         typedQuery.setMaxResults(pageable.getPageSize());
 
 
-        return typedQuery.getResultList();
+        List<Event> resultList = typedQuery.getResultList();
+
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        countQuery.select(cb.count(countQuery.from(Event.class)));
+        countQuery.where(predicates.toArray(new Predicate[0]));
+        Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
+
+        return new PageImpl<>(resultList,pageable, totalCount);
     }
 
     public void addCategoryPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {

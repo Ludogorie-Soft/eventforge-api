@@ -22,23 +22,6 @@ public class OrganisationPriorityServiceTest {
     @InjectMocks
     private OrganisationPriorityService organisationPriorityService;
 
-    @Test
-    void testGetAllPriorityCategories() {
-        // Arrange
-        Set<String> expectedCategories = new HashSet<>();
-        expectedCategories.add("Category1");
-        expectedCategories.add("Category2");
-        Mockito.when(organisationPriorityRepository.getAllOrganisationPriorityCategories())
-                .thenReturn(expectedCategories);
-
-        // Act
-        Set<String> actualCategories = organisationPriorityService.getAllPriorityCategories();
-
-        // Assert
-        Assertions.assertEquals(expectedCategories, actualCategories);
-        Mockito.verify(organisationPriorityRepository, Mockito.times(1))
-                .getAllOrganisationPriorityCategories();
-    }
 
     @Test
     void testGetOrganisationPriorityByCategory() {

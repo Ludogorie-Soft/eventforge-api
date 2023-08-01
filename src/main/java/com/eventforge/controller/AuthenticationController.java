@@ -1,5 +1,6 @@
 package com.eventforge.controller;
 
+import com.eventforge.constants.OrganisationPriorityCategory;
 import com.eventforge.dto.request.JWTAuthenticationRequest;
 import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.dto.response.AuthenticationResponse;
@@ -33,12 +34,11 @@ public class AuthenticationController {
     private final ApplicationEventPublisher publisher;
     private final EmailVerificationTokenService emailVerificationTokenService;
     private final UserService userService;
-    private final RegistrationCompleteEventListener eventListener;
     private final OrganisationPriorityService organisationPriorityService;
 
     @GetMapping("/getAllPriorityCategories")
     public ResponseEntity<Set<String>> getAllPriorityCategories() {
-        return new ResponseEntity<>(organisationPriorityService.getAllPriorityCategories(), HttpStatus.OK);
+        return new ResponseEntity<>(OrganisationPriorityCategory.staticCategories, HttpStatus.OK);
     }
 
     @PostMapping("/register")

@@ -14,7 +14,6 @@ import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
 import com.eventforge.service.Utils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,12 +24,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,50 +54,9 @@ class RequestFactoryTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        requestFactory = new RequestFactory(userService, organisationService, utils, organisationPriorityService, eventRepository);
+        requestFactory = new RequestFactory(userService, organisationService, utils, eventRepository);
     }
 
-    @Test
-    void testCreateUpdateAccountRequestThenReturnUpdateAccountRequest() {
-        String token = "exampleToken";
-        User user = new User();
-        user.setId(1L);
-        Organisation organisation = new Organisation();
-        organisation.setUser(user);
-        Set<String> chosenPriorities = new HashSet<>();
-        chosenPriorities.add("Priority1");
-        chosenPriorities.add("Priority2");
-        Set<String> allPriorities = new HashSet<>();
-        allPriorities.add("Priority1");
-        allPriorities.add("Priority2");
-
-        when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(organisationService.getOrganisationByUserId(user.getId())).thenReturn(organisation);
-        when(utils.convertListOfOrganisationPrioritiesToString(organisation.getOrganisationPriorities())).thenReturn(chosenPriorities);
-        when(organisationPriorityService.getAllPriorityCategories()).thenReturn(allPriorities);
-
-        UpdateAccountRequest expectedRequest = UpdateAccountRequest.builder()
-                .name(organisation.getName())
-                .bullstat(organisation.getBullstat())
-                .chosenPriorities(chosenPriorities)
-                .organisationPurpose(organisation.getOrganisationPurpose())
-                .address(organisation.getAddress())
-                .website(organisation.getWebsite())
-                .facebookLink(organisation.getFacebookLink())
-                .fullName(user.getFullName())
-                .phoneNumber(user.getPhoneNumber())
-                .charityOption(organisation.getCharityOption())
-                .allPriorities(allPriorities)
-                .build();
-
-        UpdateAccountRequest result = requestFactory.createUpdateAccountRequest(token);
-
-        verify(organisationService).getOrganisationByUserId(user.getId());
-        verify(utils).convertListOfOrganisationPrioritiesToString(organisation.getOrganisationPriorities());
-        verify(organisationPriorityService).getAllPriorityCategories();
-
-        assertThat(result).usingRecursiveComparison().isEqualTo(expectedRequest);
-    }
 
     @Test
     void testCreateUpdateAccountRequestThenReturnNull() {

@@ -27,13 +27,13 @@ public class UpdateAccountRequest  {
     @Nullable
     @Pattern(regexp = EVENT_CATEGORIES_PATTERN , message = "Моля използвайте само букви (латиница , кирилица) и запетаи.Не са позволени други символи.")
     private String optionalCategory;
-    @Size (min = 15 , message = "Обоснованието трябва да е поне 15 символа!")
+    @Size(min = 50, message = "Съдържанието на полето трябва да е поне 50 символа!")
     private String organisationPurpose;
 
     @Nullable
     private String address;
     @Nullable
-    @URL(message = "Моля въведете валиден линк")
+    @URL (message = "Разрешени са само URL адреси/линкове.")
     private String website;
     @Nullable
     @Pattern(regexp = FACEBOOK_PATTERN , message = "Моля въведете валиден фейсбук линк (www.facebook.com/...)")
@@ -45,6 +45,7 @@ public class UpdateAccountRequest  {
     @Size(min = 10 , max = 13 , message = "Невалиден телефонен номер.Телефонният номер трябва да съдържа между 10 и 13 цифри")
     private String phoneNumber;
     @Nullable
+    @URL (message = "Разрешени са само URL адреси/линкове.")
     private String charityOption;
     private Set<String> allPriorities;
 }

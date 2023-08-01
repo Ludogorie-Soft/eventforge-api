@@ -45,7 +45,7 @@ public class RegistrationRequest  {
     @Nullable
     private String address;
     @Nullable
-    @URL(message = "Моля въведете валиден линк")
+    @URL (message = "Разрешени са само URL адреси/линкове.")
     private String website;
     @Nullable
     @Pattern(regexp = FACEBOOK_PATTERN, message = "Моля въведете валиден фейсбук линк (www.facebook.com/...)")
@@ -57,6 +57,7 @@ public class RegistrationRequest  {
     @Size(min = 10, max = 13, message = "Невалиден телефонен номер.Телефонният номер трябва да съдържа между 10 и 13 цифри")
     private String phoneNumber;
     @Nullable
+    @URL (message = "Разрешени са само URL адреси/линкове.")
     private String charityOption;
     @Pattern(regexp = CREDENTIAL_CHECK_REGEX,
             message = "Паролата трябва да е дълга поне 8 знака и да съдържа поне една цифра, една малка буква, една главна буква, един специален знак и без интервали!")
