@@ -38,7 +38,7 @@ public class EventService {
     private final ResponseFactory responseFactory;
     private final ImageService imageService;
 
-    public List<CommonEventResponse> getThreeUpcomingEvents(){
+    public List<CommonEventResponse> getThreeUpcomingEvents() {
         LocalDateTime now = LocalDateTime.now();
         return eventRepository.findThreeUpcomingEvents(now).stream().map(responseFactory::buildCommonEventResponse).toList();
 
@@ -54,7 +54,7 @@ public class EventService {
 
 
     public Page<Event> getAllActiveOneTimeEvents(PageRequestDto pageRequest) {
-        Pageable pageable= new PageRequestDto().getPageable(pageRequest);
+        Pageable pageable = new PageRequestDto().getPageable(pageRequest);
         LocalDateTime dateTime = LocalDate.now().atStartOfDay();
         return eventRepository.findAllActiveOneTimeEvents(dateTime, pageable);
     }
@@ -67,13 +67,13 @@ public class EventService {
 
 
     public Page<Event> getAllExpiredOneTimeEvents(PageRequestDto pageRequest) {
-        Pageable pageable= new PageRequestDto().getPageable(pageRequest);
+        Pageable pageable = new PageRequestDto().getPageable(pageRequest);
         LocalDateTime dateTime = LocalDateTime.now();
-        return eventRepository.findAllExpiredOneTimeEvents(dateTime , pageable);
+        return eventRepository.findAllExpiredOneTimeEvents(dateTime, pageable);
     }
 
     public Page<Event> getAllExpiredRecurrenceEvents(PageRequestDto pageRequest) {
-        Pageable pageable= new PageRequestDto().getPageable(pageRequest);
+        Pageable pageable = new PageRequestDto().getPageable(pageRequest);
 
         LocalDateTime dateTime = LocalDateTime.now();
         return eventRepository.findAllExpiredRecurrenceEvents(dateTime, pageable);
@@ -92,7 +92,7 @@ public class EventService {
     }
 
 
-    public CommonEventResponse getEventDetailWithConditionsById(Long eventId ) {
+    public CommonEventResponse getEventDetailWithConditionsById(Long eventId) {
         Event event = eventRepository.findEventByIdWithCondition(eventId);
         if (event != null) {
             return responseFactory.buildCommonEventResponse(event);
@@ -101,9 +101,9 @@ public class EventService {
         }
     }
 
-    public CommonEventResponse getEventDetailsWithoutConditionsById(Long eventId){
+    public CommonEventResponse getEventDetailsWithoutConditionsById(Long eventId) {
         Optional<Event> event = eventRepository.findById(eventId);
-        if(event.isEmpty()){
+        if (event.isEmpty()) {
             throw new EventRequestException("Търсеното от вас събитие не е наремено");
         }
         return responseFactory.buildCommonEventResponse(event.get());
@@ -122,7 +122,7 @@ public class EventService {
 
     }
 
-    public void deleteEventByIdForAdmin(Long eventId){
+    public void deleteEventByIdForAdmin(Long eventId) {
         eventRepository.deleteById(eventId);
     }
 
@@ -159,7 +159,7 @@ public class EventService {
 
     }
 
-    public Page<Event> filterEventsByCriteria(CriteriaFilterRequest request , PageRequestDto pageRequest) {
+    public Page<Event> filterEventsByCriteria(CriteriaFilterRequest request, PageRequestDto pageRequest) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = cb.createQuery(Event.class);
         Root<Event> root = query.from(Event.class);
@@ -177,7 +177,7 @@ public class EventService {
         addExpiredPredicate(request, cb, root, predicates);
 
         query.where(predicates.toArray(new Predicate[0]));
-        if(pageRequest.getSort().isAscending()){
+        if (pageRequest.getSort().isAscending()) {
             query.orderBy(cb.asc(root.get(pageRequest.getSortByColumn())));
         } else {
             query.orderBy(cb.desc(root.get(pageRequest.getSortByColumn())));
@@ -198,7 +198,7 @@ public class EventService {
 
         int totalPages = (int) Math.ceil((double) totalElements / pageRequest.getPageSize());
 
-        return new PageImpl<>(resultList,pageable, totalPages);
+        return new PageImpl<>(resultList, pageable, totalPages);
     }
 
     public void addCategoryPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
@@ -241,15 +241,29 @@ public class EventService {
     }
 
     public void addAgePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+        Predicate ageNotZero;
+        Predicate ageLessThanOrEqualTo;
+        Predicate finalPredicate;
         if (request.getMinAge() != null && request.getMaxAge() != null) {
             if (request.getMinAge() == 0 && request.getMaxAge() == 0) {
                 predicates.add(cb.equal(root.get("minAge"), 0));
                 predicates.add(cb.equal(root.get("maxAge"), 0));
             } else if (request.getMinAge() == 0 && request.getMaxAge() > 0) {
+
                 predicates.add(cb.equal(root.get("minAge"), 0));
-                predicates.add(cb.lessThanOrEqualTo(root.get("maxAge"), request.getMaxAge()));
+                ageNotZero = cb.notEqual(root.get("maxAge"), 0);
+                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get("maxAge"), request.getMaxAge());
+
+                // Combine the predicates using AND
+                finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
+                predicates.add(finalPredicate);
             } else if (request.getMaxAge() == 0 && request.getMinAge() > 0) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("minAge"), request.getMinAge()));
+                predicates.add(cb.equal(root.get("maxAge") ,request.getMaxAge()));
+                ageNotZero = cb.notEqual(root.get("minAge"), 0);
+                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get("minAge"), request.getMinAge());
+
+                finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
+                predicates.add(finalPredicate);
             } else {
                 if (request.getMinAge() <= request.getMaxAge()) {
                     predicates.add(cb.and(
@@ -258,6 +272,27 @@ public class EventService {
                     ));
                 }
 
+            }
+        } else if (request.getMinAge() != null && request.getMaxAge() == null) {
+            if (request.getMinAge() == 0) {
+                predicates.add(cb.equal(root.get("minAge"), request.getMinAge()));
+            } else {
+                ageNotZero = cb.notEqual(root.get("minAge"), 0);
+                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get("minAge"), request.getMinAge());
+
+                finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
+                predicates.add(finalPredicate);
+            }
+        } else if (request.getMinAge() == null && request.getMaxAge() != null) {
+            if (request.getMaxAge() == 0) {
+                predicates.add(cb.equal(root.get("maxAge"), request.getMaxAge()));
+            } else {
+                ageNotZero = cb.notEqual(root.get("maxAge"), 0);
+                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get("maxAge"), request.getMaxAge());
+
+                // Combine the predicates using AND
+                finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
+                predicates.add(finalPredicate);
             }
         }
     }
@@ -274,15 +309,16 @@ public class EventService {
             LocalDateTime endOfDay = endsAt.with(LocalTime.MAX);
             predicates.add(cb.between(root.get("endsAt").as(LocalDateTime.class), startOfDay, endOfDay));
         } else if (request.getStartsAt() != null && request.getEndsAt() != null) {
-                LocalDateTime startsAt = request.getStartsAt();
-                LocalDateTime endsAt = request.getEndsAt();
-                LocalDateTime startOfDay = startsAt.with(LocalTime.MIN);
-                LocalDateTime endOfDay = endsAt.with(LocalTime.MAX);
-                predicates.add(cb.between(root.get("startsAt").as(LocalDateTime.class), startOfDay, endOfDay));
-                predicates.add(cb.between(root.get("endsAt").as(LocalDateTime.class), startOfDay, endOfDay));
+            LocalDateTime startsAt = request.getStartsAt();
+            LocalDateTime endsAt = request.getEndsAt();
+            LocalDateTime startOfDay = startsAt.with(LocalTime.MIN);
+            LocalDateTime endOfDay = endsAt.with(LocalTime.MAX);
+            predicates.add(cb.between(root.get("startsAt").as(LocalDateTime.class), startOfDay, endOfDay));
+            predicates.add(cb.between(root.get("endsAt").as(LocalDateTime.class), startOfDay, endOfDay));
 
         }
     }
+
     public void addOneTimePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getIsOneTime()) {
             predicates.add(cb.isTrue(root.get("isOneTime")));

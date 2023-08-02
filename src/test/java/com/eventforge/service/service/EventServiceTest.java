@@ -514,16 +514,111 @@ public class EventServiceTest {
         Assertions.assertEquals(2, predicates.size());
     }
 
+
+
     @Test
-    void testAddAgePredicate_MinAgeGreaterThanZeroAndMaxAgeZero() {
-        List<Predicate> predicates = new ArrayList<>();
+    public void testAddAgePredicate_MinAgeAndMaxAgeNonNull() {
+        // Set up your request with appropriate values
         request.setMinAge(18);
         request.setMaxAge(0);
 
-        Predicate minAgePredicate = Mockito.mock(Predicate.class);
-        when(cb.greaterThanOrEqualTo(root.get("minAge"), request.getMinAge())).thenReturn(minAgePredicate);
-
+        // Call the method under test
+        List<Predicate> predicates = new ArrayList<>();
         eventService.addAgePredicate(request, cb, root, predicates);
-        Assertions.assertEquals(1, predicates.size());
+
+        // Assert that the predicates list contains the expected predicates
+        // For example, check if ageNotZero and ageLessThanOrEqualTo predicates are added
+        // You can use Hamcrest or any other assertion library for more readability
+        // Assuming your test checks for the right predicates
+        // For simplicity, I am just checking the list size here
+        assertEquals(2, predicates.size());
     }
+
+
+    @Test
+    public void testAddAgePredicate_OnlyMinAgeNonNull() {
+        // Set up your request with appropriate values
+        request.setMinAge(18);
+        request.setMaxAge(null);
+
+        // Call the method under test
+        List<Predicate> predicates = new ArrayList<>();
+        eventService.addAgePredicate(request, cb, root, predicates);
+
+        // Assert that the predicates list contains the expected predicates
+        // Assuming your test checks for the right predicates
+        // For simplicity, I am just checking the list size here
+        assertEquals(1, predicates.size());
+    }
+    @Test
+    public void testAddAgePredicate_BothMinAndMaxAgeZero() {
+        request.setMinAge(0);
+        request.setMaxAge(0);
+
+        List<Predicate> predicates = new ArrayList<>();
+        eventService.addAgePredicate(request, cb, root, predicates);
+
+        assertEquals(2, predicates.size());
+        // Add more assertions if required for specific predicates
+    }
+    @Test
+    public void testAddAgePredicate_MaxAgeZeroAndMinAgeGreaterThanZero() {
+        request.setMinAge(10);
+        request.setMaxAge(0);
+
+        List<Predicate> predicates = new ArrayList<>();
+        eventService.addAgePredicate(request, cb, root, predicates);
+
+        assertEquals(2, predicates.size());
+        // Add more assertions if required for specific predicates
+    }
+
+    @Test
+    public void testAddAgePredicate_MinAgeLessThanMaxAge() {
+        request.setMinAge(10);
+        request.setMaxAge(20);
+
+        List<Predicate> predicates = new ArrayList<>();
+        eventService.addAgePredicate(request, cb, root, predicates);
+
+        assertEquals(1, predicates.size());
+        // Add more assertions if required for specific predicates
+    }
+
+    @Test
+    public void testAddAgePredicate_MinAgeGreaterThanMaxAge() {
+        request.setMinAge(20);
+        request.setMaxAge(10);
+
+        List<Predicate> predicates = new ArrayList<>();
+        eventService.addAgePredicate(request, cb, root, predicates);
+
+        assertEquals(0, predicates.size());
+        // Add more assertions if required for specific predicates
+    }
+    @Test
+    public void testAddAgePredicate_OnlyMaxAgeNonNull() {
+        request.setMinAge(null);
+        request.setMaxAge(30);
+
+
+        List<Predicate> predicates = new ArrayList<>();
+        eventService.addAgePredicate(request, cb, root, predicates);
+
+        assertEquals(1, predicates.size());
+        // Add more assertions if required for specific predicates
+    }
+
+    @Test
+    public void testAddAgePredicate_BothMinAndMaxAgeNull() {
+        request.setMinAge(null);
+        request.setMaxAge(null);
+
+        List<Predicate> predicates = new ArrayList<>();
+        eventService.addAgePredicate(request, cb, root, predicates);
+
+        assertEquals(0, predicates.size());
+        // Add more assertions if required for specific predicates
+    }
+
 }
