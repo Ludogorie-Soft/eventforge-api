@@ -299,20 +299,20 @@ public class EventService {
 
     public void addDateTimePredicates(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getStartsAt() != null && request.getEndsAt() == null) {
-            LocalDateTime startsAt = request.getStartsAt();
-            LocalDateTime startOfDay = startsAt.with(LocalTime.MIN);
-            LocalDateTime endOfDay = startsAt.with(LocalTime.MAX);
+            LocalDate startsAt = request.getStartsAt();
+            LocalDateTime startOfDay = startsAt.atTime(LocalTime.MIN);
+            LocalDateTime endOfDay = startsAt.atTime(LocalTime.MAX);
             predicates.add(cb.between(root.get("startsAt").as(LocalDateTime.class), startOfDay, endOfDay));
         } else if (request.getStartsAt() == null && request.getEndsAt() != null) {
-            LocalDateTime endsAt = request.getEndsAt();
-            LocalDateTime startOfDay = endsAt.with(LocalTime.MIN);
-            LocalDateTime endOfDay = endsAt.with(LocalTime.MAX);
+            LocalDate endsAt = request.getEndsAt();
+            LocalDateTime startOfDay = endsAt.atTime(LocalTime.MIN);
+            LocalDateTime endOfDay = endsAt.atTime(LocalTime.MAX);
             predicates.add(cb.between(root.get("endsAt").as(LocalDateTime.class), startOfDay, endOfDay));
         } else if (request.getStartsAt() != null && request.getEndsAt() != null) {
-            LocalDateTime startsAt = request.getStartsAt();
-            LocalDateTime endsAt = request.getEndsAt();
-            LocalDateTime startOfDay = startsAt.with(LocalTime.MIN);
-            LocalDateTime endOfDay = endsAt.with(LocalTime.MAX);
+            LocalDate startsAt = request.getStartsAt();
+            LocalDate endsAt = request.getEndsAt();
+            LocalDateTime startOfDay = startsAt.atTime(LocalTime.MIN);
+            LocalDateTime endOfDay = endsAt.atTime(LocalTime.MAX);
             predicates.add(cb.between(root.get("startsAt").as(LocalDateTime.class), startOfDay, endOfDay));
             predicates.add(cb.between(root.get("endsAt").as(LocalDateTime.class), startOfDay, endOfDay));
 

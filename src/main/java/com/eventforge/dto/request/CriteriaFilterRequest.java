@@ -1,9 +1,12 @@
 package com.eventforge.dto.request;
 
 import jakarta.annotation.Nullable;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,7 +32,7 @@ public class CriteriaFilterRequest {
         @Nullable
         private String eventCategories;
         @Nullable
-        private LocalDateTime startsAt;
+        private LocalDate startsAt;
         @Nullable
-        private LocalDateTime endsAt;
+        private LocalDate endsAt;
 }
