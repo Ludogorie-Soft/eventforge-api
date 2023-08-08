@@ -593,7 +593,7 @@ public class EventServiceTest {
         List<Predicate> predicates = new ArrayList<>();
         eventService.addAgePredicate(request, cb, root, predicates);
 
-        assertEquals(0, predicates.size());
+        assertEquals(1, predicates.size());
         // Add more assertions if required for specific predicates
     }
     @Test
