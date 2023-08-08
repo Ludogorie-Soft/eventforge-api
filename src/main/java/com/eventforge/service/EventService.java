@@ -265,12 +265,10 @@ public class EventService {
                 finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
                 predicates.add(finalPredicate);
             } else {
-                if (request.getMinAge() <= request.getMaxAge()) {
                     predicates.add(cb.and(
                             cb.greaterThanOrEqualTo(root.get("minAge"), request.getMinAge()),
                             cb.lessThanOrEqualTo(root.get("maxAge"), request.getMaxAge())
                     ));
-                }
 
             }
         } else if (request.getMinAge() != null && request.getMaxAge() == null) {
