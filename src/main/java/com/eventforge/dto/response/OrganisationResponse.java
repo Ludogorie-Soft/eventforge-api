@@ -16,6 +16,7 @@ public class OrganisationResponse {
     private String logo;
     private String background;
     private String name;
+    private String email;
     private String address;
     private String website;
     private String facebookLink;

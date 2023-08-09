@@ -39,11 +39,11 @@ public class OrganisationService {
         organisationRepository.save(organisation);
         log.info("Успешна регистрация");
     }
-    public List<OrganisationResponse> getAllOrganisationsForUnauthorizedUser(String name){
-        if(name == null || name.isEmpty()){
+    public List<OrganisationResponse> getAllOrganisationsForUnauthorizedUser(String search){
+        if(search == null || search.isEmpty()){
             return organisationRepository.findAllOrganisations().stream().map(responseFactory::buildOrganisationResponse).toList();
         }
-        return organisationRepository.findAllOrganisationsForUserByName(name).stream().map(responseFactory::buildOrganisationResponse).toList();
+        return organisationRepository.findAllOrganisationsForUserBySearchField(search).stream().map(responseFactory::buildOrganisationResponse).toList();
     }
 
 

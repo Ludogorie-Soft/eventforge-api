@@ -31,6 +31,12 @@ public interface OrganisationRepository extends JpaRepository<Organisation, Long
     @Query("SELECT o FROM Organisation o WHERE o.user.isEnabled = true AND o.user.isApprovedByAdmin = true AND o.user.isNonLocked = true")
     List<Organisation> findAllOrganisations();
 
-    @Query("SELECT o FROM Organisation o WHERE o.user.isEnabled = true AND o.user.isApprovedByAdmin = true AND o.user.isNonLocked = true AND o.name LIKE %:name%")
-    List<Organisation> findAllOrganisationsForUserByName(@RequestParam("name") String name);
+    @Query("SELECT o FROM Organisation o " +
+            "JOIN o.organisationPriorities op " +
+            "WHERE o.user.isEnabled = true " +
+            "AND o.user.isApprovedByAdmin = true " +
+            "AND o.user.isNonLocked = true " +
+            "AND (o.name LIKE %:search% OR o.address LIKE %:search% OR o.website LIKE %:search% OR o.facebookLink LIKE %:search%" +
+            " OR op.category LIKE %:search% OR o.user.username LIKE %:search%)")
+    List<Organisation> findAllOrganisationsForUserBySearchField(@RequestParam("search") String search);
 }

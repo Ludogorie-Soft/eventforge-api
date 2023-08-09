@@ -55,13 +55,13 @@ public class EventService {
 
     public Page<Event> getAllActiveOneTimeEvents(PageRequestDto pageRequest) {
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
-        LocalDateTime dateTime = LocalDate.now().atStartOfDay();
+        LocalDateTime dateTime = LocalDateTime.now();
         return eventRepository.findAllActiveOneTimeEvents(dateTime, pageable);
     }
 
     public Page<Event> getAllActiveRecurrenceEvents(PageRequestDto pageRequest) {
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
-        LocalDateTime dateTime = LocalDate.now().atStartOfDay();
+        LocalDateTime dateTime = LocalDateTime.now();
         return eventRepository.findAllActiveRecurrenceEvents(dateTime, pageable);
     }
 

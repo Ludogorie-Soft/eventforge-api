@@ -57,6 +57,7 @@ public class ResponseFactory {
                 .logo(logoData)
                 .background(backgroundData)
                 .name(org.getName())
+                .email(org.getUser().getUsername())
                 .address(org.getAddress())
                 .website(org.getWebsite())
                 .facebookLink(org.getFacebookLink())

@@ -45,11 +45,11 @@ public class Scheduler {
         LocalDateTime cutoffDateTime = LocalDateTime.now().minus(Duration.ofDays(7));
         List<User> unverifiedAccounts = userRepository.getUnverifiedAccountsOlderThan(cutoffDateTime);
 
-        for (User user : unverifiedAccounts) {
-            LocalDateTime createdAt = user.getRegisteredAt();
-            if ((!user.getIsEnabled()) && createdAt.isBefore(cutoffDateTime)) {
+        for (User unverifiedUser : unverifiedAccounts) {
+            LocalDateTime createdAt = unverifiedUser.getRegisteredAt();
+            if ((!unverifiedUser.getIsEnabled()) && createdAt.isBefore(cutoffDateTime)) {
                 // Double-Check if the account has remained unverified for more than 7 days
-                userRepository.delete(user);
+                userRepository.delete(unverifiedUser);
             }
         }
     }
