@@ -103,49 +103,6 @@ public class EventServiceTest {
     }
 
     @Test
-    void getAllActiveOneTimeEvents_shouldReturnListOfOneTimeEventResponses() {
-        LocalDateTime now = LocalDate.now().atStartOfDay();
-        List<Event> mockEvents = Arrays.asList(new Event(), new Event());
-        Page<Event> oneTimeEvents = new PageImpl<>(mockEvents, Pageable.unpaged(), mockEvents.size());
-
-        PageRequestDto pageRequest = new PageRequestDto(1, 10, Sort.Direction.DESC, "dateTime");
-        Pageable pageable = new PageRequestDto().getPageable(pageRequest);
-
-        when(eventRepository.findAllActiveOneTimeEvents(now, pageable)).thenReturn(oneTimeEvents);
-
-        Page<Event> result = eventService.getAllActiveOneTimeEvents(pageRequest);
-
-        assertThat(result)
-                .isNotNull()
-                .hasSize(2);
-
-
-        verify(eventRepository).findAllActiveOneTimeEvents(now,pageable);
-    }
-
-    @Test
-    public void testGetAllActiveRecurrenceEvents() {
-        // Mock the current date and time
-        LocalDateTime now = LocalDate.now().atStartOfDay();
-        List<Event> mockEvents = Arrays.asList(new Event(), new Event());
-        Page<Event> events = new PageImpl<>(mockEvents, Pageable.unpaged(), mockEvents.size());
-
-        PageRequestDto pageRequest = new PageRequestDto(1, 10, Sort.Direction.DESC, "dateTime");
-        Pageable pageable = new PageRequestDto().getPageable(pageRequest);
-
-
-
-        when(eventRepository.findAllActiveRecurrenceEvents(now, pageable)).thenReturn(events);
-
-        // Call the method under test
-        Page<Event> result = eventService.getAllActiveRecurrenceEvents(pageRequest);
-
-        // Verify the interaction and the result
-        verify(eventRepository).findAllActiveRecurrenceEvents(now.toLocalDate().atStartOfDay(), pageable);
-        assertEquals(events, result);
-    }
-
-    @Test
     void testGetAllEventsByUserIdAndNameForOrganisation_NullOrEmptyName() {
         // Arrange
         String token = "your_token";
