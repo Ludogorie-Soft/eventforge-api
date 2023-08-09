@@ -28,7 +28,7 @@ public class ImageService {
     }
 
     public void saveImageToDb(String logo , String cover , String eventPicture , Organisation org , Event event ){
-        Image image = new Image();
+        Image newImage = new Image();
         Image imageToUpdate;
         if(logo!=null){
              imageToUpdate = imageRepository.findOrganisationLogoByOrgId(org.getId());
@@ -37,10 +37,10 @@ public class ImageService {
                  imageRepository.save(imageToUpdate);
                  return;
              }
-            image.setUrl(logo);
-            image.setType(ImageType.LOGO);
-            image.setOrganisation(org);
-            imageRepository.save(image);
+            newImage.setUrl(logo);
+            newImage.setType(ImageType.LOGO);
+            newImage.setOrganisation(org);
+            imageRepository.save(newImage);
 //            log.info("Successfully uploaded LOGO for user with email:" + org.getUser().getUsername());
             return;
         }
@@ -51,10 +51,10 @@ public class ImageService {
                 imageRepository.save(imageToUpdate);
                 return;
             }
-            image.setUrl(cover);
-            image.setType(ImageType.COVER);
-            image.setOrganisation(org);
-            imageRepository.save(image);
+            newImage.setUrl(cover);
+            newImage.setType(ImageType.COVER);
+            newImage.setOrganisation(org);
+            imageRepository.save(newImage);
 //            log.info("Successfully uploaded BACKGROUND_COVER for user with email:" + org.getUser().getUsername());
             return;
         }
@@ -65,10 +65,10 @@ public class ImageService {
                 imageRepository.save(imageToUpdate);
                 return;
             }
-            image.setUrl(eventPicture);
-            image.setType(ImageType.EVENT_PICTURE);
-            image.setEvent(event);
-            imageRepository.save(image);
+            newImage.setUrl(eventPicture);
+            newImage.setType(ImageType.EVENT_PICTURE);
+            newImage.setEvent(event);
+            imageRepository.save(newImage);
 //            log.info("Successfully uploaded EVENT_PICTURE for user with email:" + event.getOrganisation().getUser().getUsername());
             return;
         }

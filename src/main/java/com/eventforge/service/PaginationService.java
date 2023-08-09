@@ -56,8 +56,8 @@ public class PaginationService {
     public Page<CommonEventResponse> getEventsByCriteriaAndPagination(CriteriaFilterRequest criteriaFilterRequest , PageRequestDto pageRequest){
         Page<Event> events = eventService.filterEventsByCriteria(criteriaFilterRequest , pageRequest);
         List<CommonEventResponse> eventsByCriteria = events.stream().map(responseFactory::buildCommonEventResponse).toList();
-
-        return new PageImpl<>(eventsByCriteria , new PageRequestDto().getPageable(pageRequest) , events.getTotalElements());
+        long elements = events.getTotalElements();
+        return new PageImpl<>(eventsByCriteria , new PageRequestDto().getPageable(pageRequest) ,elements);
     }
 
 }

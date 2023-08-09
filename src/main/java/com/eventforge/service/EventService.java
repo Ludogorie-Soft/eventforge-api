@@ -185,20 +185,17 @@ public class EventService {
 
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
 
+        CriteriaQuery<Long> countQuery = entityManager.getCriteriaBuilder().createQuery(Long.class);
+        countQuery.select(entityManager.getCriteriaBuilder().count(countQuery.from(Event.class)));
+
         TypedQuery<Event> typedQuery = entityManager.createQuery(query);
-        int totalElements = typedQuery.getResultList().size();
+        int totalElements =typedQuery.getResultList().size();
         typedQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         typedQuery.setMaxResults(pageable.getPageSize());
-
-
         List<Event> resultList = typedQuery.getResultList();
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        countQuery.select(cb.count(countQuery.from(Event.class)));
-        countQuery.where(predicates.toArray(new Predicate[0]));
 
-        int totalPages = (int) Math.ceil((double) totalElements / pageRequest.getPageSize());
 
-        return new PageImpl<>(resultList, pageable, totalPages);
+        return new PageImpl<>(resultList, pageable, totalElements);
     }
 
     public void addCategoryPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {

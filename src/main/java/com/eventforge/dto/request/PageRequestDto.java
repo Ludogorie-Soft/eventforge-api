@@ -16,7 +16,7 @@ public class PageRequestDto {
 
     private Integer pageNo = 0;
 
-    private Integer pageSize = 12;
+    private Integer pageSize = 10;
 
     private Sort.Direction sort = Sort.Direction.ASC;
 

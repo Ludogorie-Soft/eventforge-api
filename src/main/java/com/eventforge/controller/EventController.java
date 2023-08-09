@@ -22,13 +22,13 @@ public class EventController {
 
 
     @PostMapping("/filter-by-criteria")
-    public Page<CommonEventResponse>getEventsByCriteria(@RequestParam(value = "pageNo", required = false) Integer pageNo
-            , @RequestParam(value = "pageSize" , required = false) Integer pageSize
-            , @RequestParam(value = "sort" , required = false) Sort.Direction sort
-            , @RequestParam(value = "sortByColumn" ,required = false)String sortByColumn, @RequestBody CriteriaFilterRequest filterRequest){
-        PageRequestDto pageRequestDto = new PageRequestDto(pageNo , pageSize , sort ,sortByColumn);
+    public Page<CommonEventResponse> getEventsByCriteria(@RequestParam(value = "pageNo", required = false) Integer pageNo
+            , @RequestParam(value = "pageSize", required = false) Integer pageSize
+            , @RequestParam(value = "sort", required = false) Sort.Direction sort
+            , @RequestParam(value = "sortByColumn", required = false) String sortByColumn, @RequestBody CriteriaFilterRequest filterRequest) {
+        PageRequestDto pageRequestDto = new PageRequestDto(pageNo, pageSize, sort, sortByColumn);
 
-        return paginationService.getEventsByCriteriaAndPagination(filterRequest , pageRequestDto);
+        return paginationService.getEventsByCriteriaAndPagination(filterRequest, pageRequestDto);
     }
 
 }
