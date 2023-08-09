@@ -1,1 +1,0 @@
-ALTER TABLE event ADD is_one_time BOOLEAN DEFAULT TRUE;

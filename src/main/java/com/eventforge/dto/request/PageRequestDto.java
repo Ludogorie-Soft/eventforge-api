@@ -34,20 +34,18 @@ public class PageRequestDto {
 
 
     public PageRequestDto(Integer pageNo, Integer pageSize, Sort.Direction sort, String sortByColumn) {
-        if(pageNo!=null){
-            this.pageNo = pageNo;
-        }
-        if(pageSize!=null){
-            this.pageSize = pageSize;
 
-        }
-        if(sort!=null){
-            this.sort = sort;
+        this.pageNo = pageNo;
 
-        }
-        if(sortByColumn!=null && !sortByColumn.isEmpty()){
-            this.sortByColumn = sortByColumn;
 
-        }
+        this.pageSize = pageSize;
+
+
+        this.sort = sort;
+
+
+        this.sortByColumn = sortByColumn;
+
+
     }
 }

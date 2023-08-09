@@ -39,12 +39,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findAllActiveOneTimeEvents(LocalDateTime date ,
                                            Pageable pageable);
 
-    @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+ LEGAL_USER_CONDITION+" AND "+UNEXPIRED_CONDITION + " ORDER BY e.startsAt ASC")
+    @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+ LEGAL_USER_CONDITION+" AND "+UNEXPIRED_CONDITION)
     Page<Event> findAllActiveRecurrenceEvents(LocalDateTime date , Pageable pageable);
 
-    @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+LEGAL_USER_CONDITION+ " AND "+EXPIRED_CONDITION + " ORDER BY e.endsAt ASC")
+    @Query("SELECT e FROM Event e WHERE e.isOneTime = true AND "+LEGAL_USER_CONDITION+ " AND "+EXPIRED_CONDITION)
     Page<Event> findAllExpiredOneTimeEvents(LocalDateTime passedDate , Pageable pageable);
-    @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+LEGAL_USER_CONDITION+ " AND "+EXPIRED_CONDITION + " ORDER BY e.endsAt ASC")
+    @Query("SELECT e FROM Event e WHERE e.isOneTime = false AND "+LEGAL_USER_CONDITION+ " AND "+EXPIRED_CONDITION)
     Page<Event> findAllExpiredRecurrenceEvents(LocalDateTime passedDate , Pageable pageable);
 
     // queries accessible for organisations!

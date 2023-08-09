@@ -7,9 +7,9 @@ create table if not exists organisation(
     website VARCHAR(255),
     facebook_link VARCHAR(255),
     charity_option VARCHAR(255),
-    organisation_purpose VARCHAR(255),
-    registered_at TIMESTAMP,
-    updated_at TIMESTAMP,
+    organisation_purpose VARCHAR(2000),
+    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
