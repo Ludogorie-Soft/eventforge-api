@@ -22,6 +22,7 @@ public class Event {
     private String name;
     private String description;
     private String address;
+    private String facebookLink;
     private String eventCategories;
     private double price;
     private Integer minAge;

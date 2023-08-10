@@ -36,6 +36,7 @@ public class EntityFactory {
                 .name(eventRequest.getName())
                 .description(eventRequest.getDescription())
                 .address(eventRequest.getAddress())
+                .facebookLink(eventRequest.getFacebookLink())
                 .eventCategories(eventRequest.getEventCategories())
                 .organisation(organisation)
                 .isOnline(eventRequest.getIsOnline())

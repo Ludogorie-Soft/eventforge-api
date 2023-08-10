@@ -143,6 +143,7 @@ public class EventService {
         event.setName(eventRequest.getName());
         event.setDescription(eventRequest.getDescription());
         event.setAddress(eventRequest.getAddress());
+        event.setFacebookLink(eventRequest.getFacebookLink());
         event.setEventCategories(eventRequest.getEventCategories());
         event.setMinAge(eventRequest.getMinAge());
         event.setMaxAge(eventRequest.getMaxAge());
