@@ -43,7 +43,6 @@ public class ResponseFactory {
     }
 
 
-
     public OrganisationResponse buildOrganisationResponse(Organisation org) {
         Image logo = imageRepository.findOrganisationLogoByOrgId(org.getId());
         Image background = imageRepository.findOrganisationCoverPictureByOrgId(org.getId());
@@ -70,20 +69,20 @@ public class ResponseFactory {
                 .build();
     }
 
-    private List<CommonEventResponse> fetchExpiredEvents(Long orgId){
+    private List<CommonEventResponse> fetchExpiredEvents(Long orgId) {
 
         return eventRepository.findAllExpiredEvents(orgId, LocalDateTime.now()).stream()
                 .map(this::buildCommonEventResponse)
                 .toList();
     }
 
-    private List<CommonEventResponse> fetchActiveEvents(Long orgId){
+    private List<CommonEventResponse> fetchActiveEvents(Long orgId) {
         return eventRepository.findAllActiveEvents(orgId, LocalDateTime.now()).stream()
                 .map(this::buildCommonEventResponse)
                 .toList();
     }
 
-    private List<CommonEventResponse> fetchUpcomingEvents(Long orgId){
+    private List<CommonEventResponse> fetchUpcomingEvents(Long orgId) {
         return eventRepository.findAllUpcomingEvents(orgId, LocalDateTime.now()).stream()
                 .map(this::buildCommonEventResponse)
                 .toList();
@@ -102,13 +101,16 @@ public class ResponseFactory {
         eventResponse.setOnline(event.getIsOnline());
         eventResponse.setDescription(event.getDescription());
         eventResponse.setAddress(event.getAddress());
+        if (event.getFacebookLink() != null) {
+            eventResponse.setFacebookLink(event.getFacebookLink());
+        }
         eventResponse.setEventCategories(event.getEventCategories());
         eventResponse.setPrice(utils.convertPriceToString(event.getPrice()));
         eventResponse.setAgeBoundary(utils.convertAgeToString(event.getMinAge(), event.getMaxAge()));
         eventResponse.setStartsAt(event.getStartsAt());
         eventResponse.setEndsAt(event.getEndsAt());
         eventResponse.setIsOneTime(utils.convertIsOneTimeToString(event.getIsOneTime()));
-        if(event.getRecurrenceDetails()!=null && !event.getIsOneTime()){
+        if (event.getRecurrenceDetails() != null && !event.getIsOneTime()) {
             eventResponse.setRecurrenceDetails(event.getRecurrenceDetails());
         } else {
             eventResponse.setRecurrenceDetails(null);

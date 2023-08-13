@@ -17,6 +17,7 @@ public class CommonEventResponse {
     private String organisationName;
     private boolean isOnline;
     private String address;
+    private String facebookLink;
     private String eventCategories;
     private String price;
     private String ageBoundary;

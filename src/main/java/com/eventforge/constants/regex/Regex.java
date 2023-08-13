@@ -6,6 +6,7 @@ public class Regex {
 
     public static final String FACEBOOK_PATTERN = "(?:https?:\\/\\/)?(?:www\\.)?(mbasic.facebook|m\\.facebook|facebook|fb)\\.(com|me)\\/(?:(?:\\w\\.)*#!\\/)?(?:pages\\/)?(?:[\\w\\-\\.]*\\/)*([\\w\\-\\.]*)";
 
+    public static final String FACEBOOK_OR_EMPTY_PATTERN = "^(?:https?:\\/\\/)?(?:www\\.)?(mbasic.facebook|m\\.facebook|facebook|fb)\\.(com|me)\\/(?:(?:\\w\\.)*#!\\/)?(?:pages\\/)?(?:[\\w\\-\\.]*\\/)*([\\w\\-\\.]*)$|^$";
     public static final String FULL_NAME_PATTERN = "^([a-zA-Zа-яА-Я -]*)$";
 
     public static final String PHONE_NUMBER_PATTERN = "^\\+?[0-9]+$";

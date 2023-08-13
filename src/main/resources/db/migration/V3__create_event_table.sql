@@ -3,6 +3,7 @@ create table if not exists event(
     name VARCHAR(255),
     description TEXT,
     address VARCHAR(255),
+    facebook_link VARCHAR(255),
     event_categories VARCHAR(255),
     organisation_id BIGINT,
     is_online BOOLEAN,

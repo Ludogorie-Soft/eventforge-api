@@ -73,6 +73,7 @@ public class RequestFactory {
                         .description(foundEvent.getDescription())
                         .isOnline(foundEvent.getIsOnline())
                         .address(foundEvent.getAddress())
+                        .facebookLink(foundEvent.getFacebookLink())
                         .eventCategories(foundEvent.getEventCategories())
                         .price(foundEvent.getPrice())
                         .minAge(foundEvent.getMinAge())
