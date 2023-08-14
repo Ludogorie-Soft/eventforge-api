@@ -1,6 +1,8 @@
 package com.eventforge.repository;
 
 import com.eventforge.model.Organisation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,7 +31,7 @@ public interface OrganisationRepository extends JpaRepository<Organisation, Long
     Organisation findOrganisationByUserId(Long userId);
 
     @Query("SELECT o FROM Organisation o WHERE o.user.isEnabled = true AND o.user.isApprovedByAdmin = true AND o.user.isNonLocked = true")
-    List<Organisation> findAllOrganisations();
+    Page<Organisation> findAllOrganisations(Pageable pageable);
 
     @Query("SELECT o FROM Organisation o " +
             "JOIN o.organisationPriorities op " +
@@ -38,5 +40,5 @@ public interface OrganisationRepository extends JpaRepository<Organisation, Long
             "AND o.user.isNonLocked = true " +
             "AND (o.name LIKE %:search% OR o.address LIKE %:search% OR o.website LIKE %:search% OR o.facebookLink LIKE %:search%" +
             " OR op.category LIKE %:search% OR o.user.username LIKE %:search%)")
-    List<Organisation> findAllOrganisationsForUserBySearchField(@RequestParam("search") String search);
+    Page<Organisation> findAllOrganisationsForUserBySearchField(@RequestParam("search") String search , Pageable pageable);
 }

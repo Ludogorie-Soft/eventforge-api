@@ -1,15 +1,13 @@
 package com.eventforge.dto.request;
 
 import com.eventforge.annotation.UpdatePasswordsMustMatch;
-import com.eventforge.service.UserService;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Pattern;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import static com.eventforge.constants.regex.Regex.CREDENTIAL_CHECK_REGEX;
-
-
-
 
 @Getter
 @NoArgsConstructor

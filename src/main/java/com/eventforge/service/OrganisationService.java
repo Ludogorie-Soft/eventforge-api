@@ -1,5 +1,6 @@
 package com.eventforge.service;
 
+import com.eventforge.dto.request.PageRequestDto;
 import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.OrganisationResponseForAdmin;
@@ -12,6 +13,8 @@ import com.eventforge.repository.OrganisationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,11 +42,12 @@ public class OrganisationService {
         organisationRepository.save(organisation);
         log.info("Успешна регистрация");
     }
-    public List<OrganisationResponse> getAllOrganisationsForUnauthorizedUser(String search){
+    public Page<Organisation> getAllOrganisationsForUnauthorizedUser(PageRequestDto pageRequest, String search){
+        Pageable pageable = new PageRequestDto().getPageable(pageRequest);
         if(search == null || search.isEmpty()){
-            return organisationRepository.findAllOrganisations().stream().map(responseFactory::buildOrganisationResponse).toList();
+            return organisationRepository.findAllOrganisations(pageable);
         }
-        return organisationRepository.findAllOrganisationsForUserBySearchField(search).stream().map(responseFactory::buildOrganisationResponse).toList();
+        return organisationRepository.findAllOrganisationsForUserBySearchField(search , pageable);
     }
 
 

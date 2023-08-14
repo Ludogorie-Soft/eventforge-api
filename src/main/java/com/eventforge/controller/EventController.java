@@ -3,7 +3,6 @@ package com.eventforge.controller;
 import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.PageRequestDto;
 import com.eventforge.dto.response.CommonEventResponse;
-import com.eventforge.service.EventService;
 import com.eventforge.service.PaginationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 public class EventController {
-    private final EventService eventService;
 
     private final PaginationService paginationService;
 

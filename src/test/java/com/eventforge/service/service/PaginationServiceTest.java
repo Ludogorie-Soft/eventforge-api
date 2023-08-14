@@ -3,9 +3,12 @@ package com.eventforge.service.service;
 import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.PageRequestDto;
 import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
+import com.eventforge.model.Organisation;
 import com.eventforge.service.EventService;
+import com.eventforge.service.OrganisationService;
 import com.eventforge.service.PaginationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +36,8 @@ public class PaginationServiceTest {
     @Mock
     private EventService eventService;
     @Mock
+    private OrganisationService organisationService;
+    @Mock
     private ResponseFactory responseFactory;
 
     private PageRequestDto pageRequest;
@@ -41,6 +46,9 @@ public class PaginationServiceTest {
 
     private CriteriaFilterRequest criteriaFilterRequest;
 
+    private List<Organisation> mockOrgs;
+
+    private Page<Organisation> organisations;
     private List<Event> mockEvents;
 
     private Page<Event> events;
@@ -52,8 +60,27 @@ public class PaginationServiceTest {
          this.criteriaFilterRequest = new CriteriaFilterRequest();
          this.mockEvents = Arrays.asList(new Event(), new Event());
          this.events = new PageImpl<>(mockEvents, Pageable.unpaged(), mockEvents.size());
+         this.mockOrgs = Arrays.asList(new Organisation() , new Organisation());
+        this.organisations = new PageImpl<>(mockOrgs, Pageable.unpaged(), mockOrgs.size());
+
     }
 
+    @Test
+    void testGetAllOrganisationsForUnauthorizedUser(){
+        Page<Organisation> organisations =this.organisations;
+        String search = "searchCriteria";
+        when(organisationService.getAllOrganisationsForUnauthorizedUser(pageRequest ,search)).thenReturn(organisations);
+
+        List<OrganisationResponse> orgResponse = Arrays.asList(new OrganisationResponse() ,new OrganisationResponse());
+        when(responseFactory.buildOrganisationResponse(any())).thenReturn(orgResponse.get(0), orgResponse.get(1));
+
+        Page<OrganisationResponse> result = paginationService.getAllOrganisationsForUnauthorizedUser(pageRequest , search);
+
+        verify(organisationService).getAllOrganisationsForUnauthorizedUser(pageRequest,search);
+        verify(responseFactory, times(2)).buildOrganisationResponse(any());
+        assertEquals(orgResponse, result.getContent());
+        assertEquals(12, result.getTotalElements());
+    }
     @Test
     public void testGetAllActiveOneTimeEventsByPagination() {
         // Mock the behavior of the eventService to return some test events

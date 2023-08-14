@@ -5,8 +5,6 @@ import com.eventforge.repository.OrganisationPriorityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
 @RequiredArgsConstructor
 public class OrganisationPriorityService {
