@@ -5,7 +5,6 @@ import com.eventforge.email.RegistrationCompleteEvent;
 import com.eventforge.exception.EmailConfirmationNotSentException;
 import com.eventforge.exception.InvalidEmailConfirmationLinkException;
 import com.eventforge.model.User;
-import com.eventforge.model.VerificationToken;
 import com.eventforge.service.UserService;
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;

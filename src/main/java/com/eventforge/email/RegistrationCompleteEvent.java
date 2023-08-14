@@ -1,7 +1,6 @@
 package com.eventforge.email;
 
 import com.eventforge.model.User;
-import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;

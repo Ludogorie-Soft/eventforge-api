@@ -3,12 +3,11 @@ package com.eventforge.service;
 import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.PageRequestDto;
 import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
+import com.eventforge.model.Organisation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.support.MutableSortDefinition;
-import org.springframework.beans.support.PagedListHolder;
-import org.springframework.beans.support.PropertyComparator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,15 @@ public class PaginationService {
     private final EventService eventService;
 
     private final ResponseFactory responseFactory;
+
+    private final OrganisationService organisationService;
+
+    public Page<OrganisationResponse> getAllOrganisationsForUnauthorizedUser(PageRequestDto pageRequest , String search){
+        Page<Organisation> organisations = organisationService.getAllOrganisationsForUnauthorizedUser(pageRequest,search);
+        List<OrganisationResponse> mappedOrganisations =organisations.stream().map(responseFactory::buildOrganisationResponse).toList();
+
+        return new PageImpl<>(mappedOrganisations , new PageRequestDto().getPageable(pageRequest) ,organisations.getTotalElements());
+    }
 
 
 

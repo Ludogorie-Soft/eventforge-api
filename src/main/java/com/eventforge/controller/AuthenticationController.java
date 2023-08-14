@@ -6,7 +6,6 @@ import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.dto.response.AuthenticationResponse;
 import com.eventforge.email.ForgottenPasswordEvent;
 import com.eventforge.email.RegistrationCompleteEvent;
-import com.eventforge.email.listener.RegistrationCompleteEventListener;
 import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.service.AuthenticationService;
