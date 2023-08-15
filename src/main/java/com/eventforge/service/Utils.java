@@ -26,7 +26,7 @@ public class Utils {
         if (isOneTime) {
             return "еднократно";
         }
-        return "регулярно";
+        return "инициатива";
     }
 
     public String convertPriceToString(Double price) {
