@@ -53,7 +53,7 @@ class TestUtils {
         String result = utils.convertIsOneTimeToString(isOneTime);
 
         // Assert
-        assertEquals("регулярно", result);
+        assertEquals("инициатива", result);
     }
     @Test
  void testConvertPriceToString() {
