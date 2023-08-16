@@ -82,7 +82,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         MimeMessage message = mailSender.createMimeMessage();
 
         message.setSubject(subject);
-        message.setFrom(new InternetAddress(senderEmail ,"EventForge-Varna"));
+        message.setFrom(new InternetAddress(senderEmail ,"Активна Варна"));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getUsername()));
 
         MimeBodyPart messageBodyPart = new MimeBodyPart();
@@ -96,12 +96,12 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
                 "<tr><td>" +
                 "<p style='font-size:18px;'>Здравей, " + user.getFullName() + "!</p>" +
                 "<p>Благодарим ти за създадената регистрация! Моля, посетете долния линк, за да потвърдите регистрацията си.</p>" +
-                "<p><a href='" + url + "'>Потвърждаване на електронна поща за активиране на акаунт</a></p>" +
+                "<p><a href='" + url + "'>Потвърждаване на регистрация</a></p>" +
                 "</td></tr>" +
                 "<tr><td>" +
                 "<p style='font-size:14px;'>Благодарим ти!</p>" +
                 "<p style='font-size:14px;'>С най-добри пожелания,<br>" +
-                "\uD83D\uDC4B Екипът на Eventforge </p>" +
+                "\uD83D\uDC4B Екипът на Активна Варна</p>" +
                 "</td></tr>" +
                 "</table>" +
                 "</body></html>";

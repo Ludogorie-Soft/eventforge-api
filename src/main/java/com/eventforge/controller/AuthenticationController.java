@@ -10,7 +10,6 @@ import com.eventforge.model.User;
 import com.eventforge.model.VerificationToken;
 import com.eventforge.service.AuthenticationService;
 import com.eventforge.service.EmailVerificationTokenService;
-import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.UserService;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +32,6 @@ public class AuthenticationController {
     private final ApplicationEventPublisher publisher;
     private final EmailVerificationTokenService emailVerificationTokenService;
     private final UserService userService;
-    private final OrganisationPriorityService organisationPriorityService;
 
     @GetMapping("/getAllPriorityCategories")
     public ResponseEntity<Set<String>> getAllPriorityCategories() {
@@ -95,6 +93,6 @@ public class AuthenticationController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorization) {
 
-        return ResponseEntity.ok("Успещно се отписахте");
+        return ResponseEntity.ok("Успешно се отписахте");
     }
 }

@@ -70,6 +70,6 @@ public class AdminController {
     @DeleteMapping("delete-event/{id}")
     public ResponseEntity<String> deleteEventById(@RequestHeader("Authorization")String authHeader ,@PathVariable("id")Long eventId){
         eventService.deleteEventByIdForAdmin(eventId);
-        return new ResponseEntity<>("Успешно изтрихте събитието с номер " +eventId ,HttpStatus.OK);
+        return new ResponseEntity<>("Успешно изтрихте събитие с номер " +eventId ,HttpStatus.OK);
     }
 }

@@ -86,7 +86,7 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
         MimeMessage message = mailSender.createMimeMessage();
 
         message.setSubject(subject);
-        message.setFrom(new InternetAddress(senderEmail, "EventForge-Varna"));
+        message.setFrom(new InternetAddress(senderEmail, "Активна Варна"));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getUsername()));
 
         MimeBodyPart messageBodyPart = new MimeBodyPart();
@@ -135,7 +135,7 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
                 OPEN_TAG_TR_TD +
                 "<p style='font-size:14px;'>Благодарим ви!</p>" +
                 "<p style='font-size:14px;'>С най-добри пожелания,<br>" +
-                "\uD83D\uDC4B Екипът на Eventforge </p>" +
+                "\uD83D\uDC4B Екипът на Активна Варна </p>" +
                 CLOSE_TAG_TD_TR +
                 "</table>" +
                 "</body></html>";
@@ -151,13 +151,13 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
                 "<p style='font-size:18px;'>Нова генерирана парола!</p>" +
                 "<p>Получавате това съобщение, защото сте потвърдили възстановяване на достъпа до вашият профил.</p>" +
                 "<p>Моля не излагайте публично вашата парола.</p>" +
-                "<p>Препоръчваме Ви веднага след като се впишете , да си смените паролата.</p>" +
+                "<p>Препоръчваме Ви веднага след като се впишете, да си смените паролата.</p>" +
                 "<p>Нова парола - <span style='font-size:20px; font-weight:bold;'>" + generatedPassword + "</span></p>" +
                 CLOSE_TAG_TD_TR +
                 OPEN_TAG_TR_TD +
                 "<p style='font-size:14px;'>Благодарим ви!</p>" +
                 "<p style='font-size:14px;'>С най-добри пожелания,<br>" +
-                "\uD83D\uDC4B Екипът на Eventforge </p>" +
+                "\uD83D\uDC4B Екипът на Активна Варна </p>" +
                 CLOSE_TAG_TD_TR +
                 "</table>" +
                 "</body></html>";

@@ -58,7 +58,7 @@ public class OrganisationController {
         Organisation organisation = organisationService.getOrganisationByUserId(user.getId());
         imageService.saveImageToDb(logo, null , null, organisation , null);
         imageService.saveImageToDb(null , cover , null , organisation , null);
-            return new ResponseEntity<>("Успешно променихте логото/корицата!" , HttpStatus.OK);
+            return new ResponseEntity<>("Успешно променихте логото/корицата." , HttpStatus.OK);
     }
 
 
@@ -112,13 +112,13 @@ public class OrganisationController {
     public ResponseEntity<String> updateEventByOrganisation(@RequestHeader(AUTHORIZATION)String authHeader  ,@PathVariable("id") Long id,
                                               @Validated @RequestBody EventRequest eventRequest) {
         eventService.updateEvent(id, eventRequest , authHeader);
-        return new ResponseEntity<>("Успешно редактирахте събитието си", HttpStatus.OK);
+        return new ResponseEntity<>("Успешно редактирахте събитието си.", HttpStatus.OK);
     }
 
     @DeleteMapping("delete-event/{id}")
     public ResponseEntity<String> deleteEventById(@RequestHeader("Authorization") String authHeader , @PathVariable("id")Long id){
         eventService.deleteEventByIdAndUserIdForOrganisation(id , authHeader);
-        return new ResponseEntity<>("Успешно изтрихте събитието си" , HttpStatus.OK);
+        return new ResponseEntity<>("Успешно изтрихте събитието си." , HttpStatus.OK);
     }
 
 }
