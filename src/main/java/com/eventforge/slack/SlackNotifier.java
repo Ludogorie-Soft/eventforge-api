@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 @Component
 public class SlackNotifier {
-    private static final String WEBHOOK_URL = "https://hooks.slack.com/services/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";
+    private static final String WEBHOOK_URL = "https://hooks.slack.com/services/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";
 
     public void sendNotification(String message) {
         Payload payload = Payload.builder()
