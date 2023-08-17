@@ -34,8 +34,6 @@ public class ExceptionHandler {
                 throwable.getMessage(),
                 throwable.getCause()
         );
-        // Log the exception (optional)
-        throwable.printStackTrace();
 
         // Send the exception details to Slack
         slackNotifier.sendNotification(message);
