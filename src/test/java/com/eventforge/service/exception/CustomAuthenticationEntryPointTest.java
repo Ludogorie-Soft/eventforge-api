@@ -1,6 +1,6 @@
 package com.eventforge.service.exception;
 
-import com.eventforge.exception.AuthenticationEntryPoint;
+import com.eventforge.exception.CustomAuthenticationEntryPoint;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,7 @@ import java.io.StringWriter;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AuthenticationEntryPointTest {
+class CustomAuthenticationEntryPointTest {
     @Mock
     private HttpServletRequest mockRequest;
 
@@ -30,7 +30,7 @@ public class AuthenticationEntryPointTest {
     @Test
     void testCommence() throws IOException {
         // Arrange
-        AuthenticationEntryPoint entryPoint = new AuthenticationEntryPoint();
+        CustomAuthenticationEntryPoint entryPoint = new CustomAuthenticationEntryPoint();
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
 

@@ -1,6 +1,5 @@
 package com.eventforge.annotation;
 
-import com.eventforge.dto.request.UpdateAccountRequest;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class AgeBoundaryValidatorTest {
+class AgeBoundaryValidatorTest {
     private final AgeBoundaryValidator validator = new AgeBoundaryValidator();
 
     @Test

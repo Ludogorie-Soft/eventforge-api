@@ -5,25 +5,23 @@ import com.eventforge.dto.request.RegistrationRequest;
 import jakarta.validation.ConstraintValidatorContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class RegistrationOrganisationPriorityNotNullValidatorTest {
+@ExtendWith(MockitoExtension.class)
+class RegistrationOrganisationPriorityNotNullValidatorTest {
+    @InjectMocks
     private RegistrationOrganisationPriorityNotNullValidator validator;
     @Mock
     private ConstraintValidatorContext constraintValidatorContext;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        validator = new RegistrationOrganisationPriorityNotNullValidator();
-
-    }
 
     @Test
     void isValid_WhenOrganisationPrioritiesNotEmpty_ShouldReturnTrue() {

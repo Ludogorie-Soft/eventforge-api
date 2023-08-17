@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class EventServiceTest {
+class EventServiceTest {
     @Mock
     private EventRepository eventRepository;
     @Mock
@@ -474,7 +474,7 @@ public class EventServiceTest {
 
 
     @Test
-    public void testAddAgePredicate_MinAgeAndMaxAgeNonNull() {
+    void testAddAgePredicate_MinAgeAndMaxAgeNonNull() {
         // Set up your request with appropriate values
         request.setMinAge(18);
         request.setMaxAge(0);
@@ -493,7 +493,7 @@ public class EventServiceTest {
 
 
     @Test
-    public void testAddAgePredicate_OnlyMinAgeNonNull() {
+    void testAddAgePredicate_OnlyMinAgeNonNull() {
         // Set up your request with appropriate values
         request.setMinAge(18);
         request.setMaxAge(null);
@@ -508,7 +508,7 @@ public class EventServiceTest {
         assertEquals(1, predicates.size());
     }
     @Test
-    public void testAddAgePredicate_BothMinAndMaxAgeZero() {
+    void testAddAgePredicate_BothMinAndMaxAgeZero() {
         request.setMinAge(0);
         request.setMaxAge(0);
 
@@ -519,7 +519,7 @@ public class EventServiceTest {
         // Add more assertions if required for specific predicates
     }
     @Test
-    public void testAddAgePredicate_MaxAgeZeroAndMinAgeGreaterThanZero() {
+    void testAddAgePredicate_MaxAgeZeroAndMinAgeGreaterThanZero() {
         request.setMinAge(10);
         request.setMaxAge(0);
 
@@ -531,7 +531,7 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testAddAgePredicate_MinAgeLessThanMaxAge() {
+    void testAddAgePredicate_MinAgeLessThanMaxAge() {
         request.setMinAge(10);
         request.setMaxAge(20);
 
@@ -543,7 +543,7 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testAddAgePredicate_MinAgeGreaterThanMaxAge() {
+    void testAddAgePredicate_MinAgeGreaterThanMaxAge() {
         request.setMinAge(20);
         request.setMaxAge(10);
 
@@ -554,7 +554,7 @@ public class EventServiceTest {
         // Add more assertions if required for specific predicates
     }
     @Test
-    public void testAddAgePredicate_OnlyMaxAgeNonNull() {
+    void testAddAgePredicate_OnlyMaxAgeNonNull() {
         request.setMinAge(null);
         request.setMaxAge(30);
 
@@ -567,7 +567,7 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testAddAgePredicate_BothMinAndMaxAgeNull() {
+    void testAddAgePredicate_BothMinAndMaxAgeNull() {
         request.setMinAge(null);
         request.setMaxAge(null);
 
@@ -575,7 +575,6 @@ public class EventServiceTest {
         eventService.addAgePredicate(request, cb, root, predicates);
 
         assertEquals(0, predicates.size());
-        // Add more assertions if required for specific predicates
     }
 
 }

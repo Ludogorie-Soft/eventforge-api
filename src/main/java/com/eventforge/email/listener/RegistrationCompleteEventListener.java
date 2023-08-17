@@ -39,6 +39,9 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
     private String senderEmail;
 
 
+    private static final String [] TR_TD_TAG = {"<tr><td>" , "</td></tr>"};
+
+
     @Override
     public void onApplicationEvent(RegistrationCompleteEvent event) {
 
@@ -90,19 +93,19 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         // Set the HTML content, be sure it references the attachment
         String htmlContent = "<html><body>" +
                 "<table style='width:100%; text-align:left;'>" +
-                "<tr><td>" +
+                TR_TD_TAG[0] +
                 "<img src='cid:image' style='max-width:100px;' />" +
-                "</td></tr>" +
-                "<tr><td>" +
+                TR_TD_TAG[1] +
+                TR_TD_TAG[0] +
                 "<p style='font-size:18px;'>Здравей, " + user.getFullName() + "!</p>" +
                 "<p>Благодарим ти за създадената регистрация! Моля, посетете долния линк, за да потвърдите регистрацията си.</p>" +
                 "<p><a href='" + url + "'>Потвърждаване на регистрация</a></p>" +
-                "</td></tr>" +
-                "<tr><td>" +
+                TR_TD_TAG[1] +
+                TR_TD_TAG[0] +
                 "<p style='font-size:14px;'>Благодарим ти!</p>" +
                 "<p style='font-size:14px;'>С най-добри пожелания,<br>" +
                 "\uD83D\uDC4B Екипът на Активна Варна</p>" +
-                "</td></tr>" +
+                TR_TD_TAG[1] +
                 "</table>" +
                 "</body></html>";
 

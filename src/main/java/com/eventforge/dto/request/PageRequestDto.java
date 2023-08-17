@@ -25,11 +25,11 @@ public class PageRequestDto {
     public Pageable getPageable(PageRequestDto pageRequestDto) {
         Integer page = Objects.nonNull(pageRequestDto.getPageNo()) ? pageRequestDto.getPageNo() : this.pageNo;
         Integer size = Objects.nonNull(pageRequestDto.getPageSize()) ? pageRequestDto.getPageSize() : this.pageSize;
-        Sort.Direction sort = Objects.nonNull(pageRequestDto.getSort()) ? pageRequestDto.getSort() : this.sort;
-        String sortByColumn = Objects.nonNull(pageRequestDto.getSortByColumn()) ? pageRequestDto.getSortByColumn() : this.sortByColumn ;
+        Sort.Direction sortDirection = Objects.nonNull(pageRequestDto.getSort()) ? pageRequestDto.getSort() : this.sort;
+        String column = Objects.nonNull(pageRequestDto.getSortByColumn()) ? pageRequestDto.getSortByColumn() : this.sortByColumn ;
 
 
-        return PageRequest.of(page, size , sort , sortByColumn);
+        return PageRequest.of(page, size , sortDirection , column);
     }
 
 

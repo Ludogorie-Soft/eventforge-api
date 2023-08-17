@@ -10,7 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+
 @Getter
 @Setter
 public class MyUserDetails implements UserDetails {
@@ -31,7 +33,7 @@ public class MyUserDetails implements UserDetails {
         this.authorities = Arrays.stream(user.getRole()
                 .split(","))
                 .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @Override

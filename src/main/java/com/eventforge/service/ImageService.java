@@ -41,7 +41,6 @@ public class ImageService {
             newImage.setType(ImageType.LOGO);
             newImage.setOrganisation(org);
             imageRepository.save(newImage);
-//            log.info("Successfully uploaded LOGO for user with email:" + org.getUser().getUsername());
             return;
         }
         if(cover!=null){
@@ -55,7 +54,6 @@ public class ImageService {
             newImage.setType(ImageType.COVER);
             newImage.setOrganisation(org);
             imageRepository.save(newImage);
-//            log.info("Successfully uploaded BACKGROUND_COVER for user with email:" + org.getUser().getUsername());
             return;
         }
         if(eventPicture!=null){
@@ -69,7 +67,6 @@ public class ImageService {
             newImage.setType(ImageType.EVENT_PICTURE);
             newImage.setEvent(event);
             imageRepository.save(newImage);
-//            log.info("Successfully uploaded EVENT_PICTURE for user with email:" + event.getOrganisation().getUser().getUsername());
             return;
         }
         log.info("Unsuccessful attempt to upload picture!!");

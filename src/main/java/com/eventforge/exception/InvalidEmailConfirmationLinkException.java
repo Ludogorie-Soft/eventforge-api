@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 @Getter
 public class InvalidEmailConfirmationLinkException extends RuntimeException{
-    private final int HTTP_STATUS_CODE = HttpServletResponse.SC_BAD_REQUEST;
+    private final int httpStatusCode = HttpServletResponse.SC_BAD_REQUEST;
 
     public InvalidEmailConfirmationLinkException(String message){
         super(message);

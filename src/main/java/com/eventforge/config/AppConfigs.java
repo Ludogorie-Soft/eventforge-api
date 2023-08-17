@@ -1,6 +1,6 @@
 package com.eventforge.config;
 
-import com.eventforge.exception.AuthenticationEntryPoint;
+import com.eventforge.exception.CustomAuthenticationEntryPoint;
 import com.eventforge.exception.CustomAccessDeniedHandler;
 import com.eventforge.repository.OrganisationRepository;
 import org.modelmapper.ModelMapper;
@@ -52,8 +52,8 @@ public class AppConfigs {
         return new CustomAccessDeniedHandler();
     }
     @Bean
-    public AuthenticationEntryPoint authenticationEntryPoint() {
-        return new AuthenticationEntryPoint();
+    public CustomAuthenticationEntryPoint authenticationEntryPoint() {
+        return new CustomAuthenticationEntryPoint();
     }
 
     @Bean

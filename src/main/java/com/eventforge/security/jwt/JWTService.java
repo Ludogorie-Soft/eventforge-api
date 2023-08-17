@@ -24,11 +24,11 @@ public class JWTService {
 
 
     @Value("${spring.jwt.secret}")
-    private String JWT_SECRET;
+    private String jwtSecret;
     @Value("${spring.jwt.jwtExpirationTime}")
-    private int JWT_EXPIRATION_TIME;
+    private int jwtExpirationTime;
     @Value("${application.security.jwt.refresh-token.expiration}")
-    private long REFRESH_EXPIRATION;
+    private long refreshExpiration;
 
     public String extractTokenValueFromHeader(String authHeader) {
         if (authHeader.startsWith("Bearer ")) {
@@ -47,13 +47,13 @@ public class JWTService {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationTime))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
 
     private Key getSignKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
