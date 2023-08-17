@@ -12,9 +12,9 @@ import java.util.Properties;
 @Configuration
 public class MailConfig {
     @Value("${spring.mail.username}")
-    private String SPRING_MAIL_USERNAME;
+    private String springMailUsername;
     @Value("${spring.mail.password}")
-    private String SPRING_MAIL_PASSWORD;
+    private String springMailPassword;
 
     @Bean
     public JavaMailSender javaMailSender() {
@@ -22,8 +22,8 @@ public class MailConfig {
         // Configure the mail properties
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
-        mailSender.setUsername(SPRING_MAIL_USERNAME);
-        mailSender.setPassword(SPRING_MAIL_PASSWORD);
+        mailSender.setUsername(springMailUsername);
+        mailSender.setPassword(springMailPassword);
 
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", true);

@@ -101,8 +101,8 @@ public class AuthenticationService {
       
          User user = userService.getUserByEmail(userEmail);
          MyUserDetails userDetails = new MyUserDetails(user);
-            
-          if (jwtService.validateToken(refreshToken, userDetails)) {
+         boolean validateToken = jwtService.validateToken(refreshToken , userDetails);
+          if (validateToken) {
                 String accessToken = jwtService.getGeneratedToken(user.getUsername());
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);

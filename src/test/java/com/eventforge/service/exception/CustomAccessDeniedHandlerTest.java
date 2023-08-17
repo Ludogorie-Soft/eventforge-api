@@ -16,7 +16,7 @@ import java.io.StringWriter;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class CustomAccessDeniedHandlerTest {
+class CustomAccessDeniedHandlerTest {
     @Mock
     private HttpServletRequest mockRequest;
 

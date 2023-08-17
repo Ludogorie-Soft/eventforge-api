@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class RegistrationCompleteEventListenerTest {
+class RegistrationCompleteEventListenerTest {
     @Mock
     private JavaMailSender mailSender;
 
@@ -29,7 +29,7 @@ public class RegistrationCompleteEventListenerTest {
 
 
     @Test
-    public void testSendVerificationEmail() throws MessagingException, UnsupportedEncodingException {
+    void testSendVerificationEmail() throws MessagingException, UnsupportedEncodingException {
         // Create a mock MimeMessage
         MimeMessage mockMimeMessage = mock(MimeMessage.class);
 

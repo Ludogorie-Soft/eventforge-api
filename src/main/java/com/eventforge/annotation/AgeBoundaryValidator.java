@@ -9,10 +9,7 @@ public class AgeBoundaryValidator implements ConstraintValidator<AgeBoundary, Ev
     public boolean isValid(EventRequest eventRequest, ConstraintValidatorContext constraintValidatorContext) {
         int minAge = eventRequest.getMinAge();
         int maxAge = eventRequest.getMaxAge();
-        if (minAge > 0 && maxAge == 0) {
-            return true;
-        }
-        if (maxAge > 0 && maxAge < minAge) {
+        if ((minAge > 0 && maxAge > 0) &&  maxAge < minAge) {
             return false;
         }
         return true;

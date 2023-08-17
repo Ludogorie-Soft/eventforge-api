@@ -59,7 +59,7 @@ class AuthenticationServiceTest {
     private AuthenticationService authenticationService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         authenticationService = new AuthenticationService(authenticationManager, userService, entityFactory, tokenRepository, jwtService);
     }
 

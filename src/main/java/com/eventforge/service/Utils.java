@@ -10,7 +10,6 @@ import org.springframework.validation.ObjectError;
 import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +18,8 @@ public class Utils {
     private final PasswordEncoder passwordEncoder;
     private static final SecureRandom random = new SecureRandom();
     private static final int NEW_GENERATED_PASSWORD_LENGTH = 15;
+
+    private static final String AGE_STRING = " години";
 
     private static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
@@ -42,12 +43,12 @@ public class Utils {
             return "Няма ограничение за възрастта";
         }
         if (minAge > 0 && maxAge == 0) {
-            return "Минимална възраст: " + minAge + " години";
+            return "Минимална възраст: " + minAge + AGE_STRING;
         }
         if (minAge == 0 && maxAge > 0) {
-            return "Максимална възраст: " + maxAge + " години";
+            return "Максимална възраст: " + maxAge +AGE_STRING;
         }
-        return "Възрастов диапазон: " + minAge + " - " + maxAge + " години";
+        return "Възрастов диапазон: " + minAge + " - " + maxAge + AGE_STRING;
     }
 
     public Set<OrganisationPriority> assignOrganisationPrioritiesToOrganisation(Set<String> priorityCategories, String optionalCategory) {
@@ -84,7 +85,7 @@ public class Utils {
     //this method is цаллед upon update for organisation
     public Set<String> convertListOfStaticOrganisationPrioritiesToString(Set<OrganisationPriority> staticOrganisationPriorityCategories , int staticOrgPrioritiesSize) {
         Set<String> setOfOrgPriorities = new HashSet<>();
-        if (staticOrganisationPriorityCategories != null && staticOrganisationPriorityCategories.size() > 0) {
+        if (staticOrganisationPriorityCategories != null && !staticOrganisationPriorityCategories.isEmpty()) {
             for (OrganisationPriority priority : staticOrganisationPriorityCategories) {
                 if(priority.getId() <= staticOrgPrioritiesSize){
                     setOfOrgPriorities.add(priority.getCategory());
@@ -97,7 +98,7 @@ public class Utils {
     //this method is called upon update for organisation
     public String convertListOfOptionalOrganisationPrioritiesToString(Set<OrganisationPriority> optionalOrganisationPriorityCategories, int staticOrgPrioritiesSize){
         StringJoiner optionalOrgCategories = new StringJoiner(", ");
-        if(optionalOrganisationPriorityCategories != null && optionalOrganisationPriorityCategories.size() > 0){
+        if(optionalOrganisationPriorityCategories != null && !optionalOrganisationPriorityCategories.isEmpty()){
             for(OrganisationPriority optionalPriority : optionalOrganisationPriorityCategories){
                 if(optionalPriority.getId() > staticOrgPrioritiesSize){
                     optionalOrgCategories.add(optionalPriority.getCategory());
@@ -111,7 +112,7 @@ public class Utils {
     public String convertStringListToString(List<String> stringList) {
         List<String> lowercaseList = stringList.stream()
                 .map(String::toLowerCase)
-                .collect(Collectors.toList());
+                .toList();
 
         return String.join(",", lowercaseList);
     }

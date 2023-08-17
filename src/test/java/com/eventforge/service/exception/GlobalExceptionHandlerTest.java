@@ -1,7 +1,7 @@
 package com.eventforge.service.exception;
 
 import com.eventforge.exception.*;
-import com.eventforge.exception.handler.ExceptionHandler;
+import com.eventforge.exception.handler.GlobalExceptionHandler;
 import com.eventforge.service.Utils;
 import com.eventforge.slack.SlackNotifier;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,19 +26,19 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-class ExceptionHandlerTest {
+class GlobalExceptionHandlerTest {
 
     @Mock
     private Utils mockUtils;
     @Mock
     private SlackNotifier slackNotifier;
 
-    private ExceptionHandler exceptionHandler;
+    private GlobalExceptionHandler globalExceptionHandler;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        exceptionHandler = new ExceptionHandler(mockUtils , slackNotifier);
+        globalExceptionHandler = new GlobalExceptionHandler(mockUtils , slackNotifier);
     }
 
     @Test
@@ -49,7 +49,7 @@ class ExceptionHandlerTest {
         UsernameNotFoundException exception = new UsernameNotFoundException("User not found");
 
         // Call the method under test
-        ResponseEntity<String> response = exceptionHandler.handleUserNotFoundException(exception);
+        ResponseEntity<String> response = globalExceptionHandler.handleUserNotFoundException(exception);
 
         // Assert the response
         assertEquals(321, response.getStatusCode().value(),
@@ -72,7 +72,7 @@ class ExceptionHandlerTest {
         when(mockUtils.generateErrorStringFromMethodArgumentNotValidException(eq(Collections.emptyList()), eq(bindingResult.getFieldErrors()))).thenReturn("Validation error");
 
         // Act
-        ResponseEntity<String> response = exceptionHandler.handleValidationException(exception);
+        ResponseEntity<String> response = globalExceptionHandler.handleValidationException(exception);
 
         // Assert
         assertEquals(HttpStatus.PRECONDITION_FAILED, response.getStatusCode());
@@ -86,7 +86,7 @@ class ExceptionHandlerTest {
        UserDisabledException exception = new UserDisabledException();
 
         // Act
-        ResponseEntity<String> response = exceptionHandler.handleUserDisabledException(exception);
+        ResponseEntity<String> response = globalExceptionHandler.handleUserDisabledException(exception);
 
         // Assert
         assertEquals(HttpStatus.SERVICE_UNAVAILABLE, response.getStatusCode());
@@ -101,7 +101,7 @@ class ExceptionHandlerTest {
         int expectedStatus = HttpStatus.EXPECTATION_FAILED.value();
 
         // Act
-        ResponseEntity<String> response = exceptionHandler.handleEmailConfirmationNotSentException(exception);
+        ResponseEntity<String> response = globalExceptionHandler.handleEmailConfirmationNotSentException(exception);
 
 
         // Assert
@@ -117,7 +117,7 @@ class ExceptionHandlerTest {
         int expectedStatus = HttpServletResponse.SC_NOT_FOUND;
 
         // Act
-        ResponseEntity<String> response = exceptionHandler.handleInvalidCredentialsException(exception);
+        ResponseEntity<String> response = globalExceptionHandler.handleInvalidCredentialsException(exception);
 
         // Assert
         assertEquals(expectedStatus, response.getStatusCode().value());
@@ -132,7 +132,7 @@ class ExceptionHandlerTest {
         int expectedStatus = HttpStatus.BAD_REQUEST.value();
 
         // Act
-        ResponseEntity<String> response = exceptionHandler.handleInvalidEmailConfirmationLinkException(exception);
+        ResponseEntity<String> response = globalExceptionHandler.handleInvalidEmailConfirmationLinkException(exception);
 
         // Assert
         assertEquals(expectedStatus, response.getStatusCode().value());
@@ -147,7 +147,7 @@ class ExceptionHandlerTest {
         int expectedStatus = HttpStatus.UNSUPPORTED_MEDIA_TYPE.value();
 
         // Act
-        ResponseEntity<String> response = exceptionHandler.handleImageException(exception);
+        ResponseEntity<String> response = globalExceptionHandler.handleImageException(exception);
 
         // Assert
         assertEquals(expectedStatus, response.getStatusCode().value());
@@ -160,10 +160,10 @@ class ExceptionHandlerTest {
     void testHandleEventRequestException() {
         // Arrange
         EventRequestException exception = new EventRequestException("Invalid event request");
-        int expectedStatus = exception.getHTTP_STATUS_CODE();
+        int expectedStatus = exception.getHttpStatusCode();
 
         // Act
-        ResponseEntity<String> response = exceptionHandler.handleEventRequestException(exception);
+        ResponseEntity<String> response = globalExceptionHandler.handleEventRequestException(exception);
 
         // Assert
         assertEquals(expectedStatus, response.getStatusCode().value());
@@ -175,10 +175,10 @@ class ExceptionHandlerTest {
     void testHandleUserLockedException() {
         // Arrange
         UserLockedException exception = new UserLockedException();
-        int expectedStatus = exception.getHTTP_STATUS_CODE();
+        int expectedStatus = exception.getHttpStatusCode();
 
         // Act
-        ResponseEntity<String> response = exceptionHandler.handleUserLockedException(exception);
+        ResponseEntity<String> response = globalExceptionHandler.handleUserLockedException(exception);
 
         // Assert
         assertEquals(expectedStatus, response.getStatusCode().value());
@@ -195,7 +195,7 @@ class ExceptionHandlerTest {
         OrganisationRequestException exception = new OrganisationRequestException("Request expired");
 
         // Call the method under test
-        ResponseEntity<String> response = exceptionHandler.handleOrganisationRequestException(exception);
+        ResponseEntity<String> response = globalExceptionHandler.handleOrganisationRequestException(exception);
 
         // Assert the response
         assertEquals(HttpStatus.GONE, response.getStatusCode(),

@@ -10,7 +10,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public class UpdateOrganisationPriorityNotNullValidatorTest {
+class UpdateOrganisationPriorityNotNullValidatorTest {
     private final UpdateOrganisationPriorityNotNullValidator validator = new UpdateOrganisationPriorityNotNullValidator();
 
     @Test

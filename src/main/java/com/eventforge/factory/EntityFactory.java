@@ -49,7 +49,7 @@ public class EntityFactory {
                 .isOneTime(eventRequest.getIsOneTime())
                 .build();
         eventService.saveEvent(event);
-        imageService.saveImageToDb(null,null ,eventRequest.getImageUrl(),null ,event);
+        imageService.saveImageToDb(null, null, eventRequest.getImageUrl(), null, event);
         return event;
     }
 
@@ -72,27 +72,29 @@ public class EntityFactory {
                 .build();
 
         organisationService.saveOrganisationInDb(org);
-        assert request.getLogo() != null;
-        imageService.saveImageToDb(request.getLogo(), null,null, org , null);
-        assert request.getBackgroundCover() != null;
-        imageService.saveImageToDb(null,request.getBackgroundCover(),null, org , null);
+        if (request.getLogo() != null) {
+            imageService.saveImageToDb(request.getLogo(), null, null, org, null);
+        }
+        if (request.getBackgroundCover() != null) {
+            imageService.saveImageToDb(null, request.getBackgroundCover(), null, org, null);
+        }
         return user;
     }
 
 
     public User createUser(RegistrationRequest request) {
 
-            User user = User.builder()
-                    .username(request.getUsername())
-                    .password(utils.encodePassword(request.getPassword()))
-                    .role(Role.ORGANISATION.toString())
-                    .phoneNumber(request.getPhoneNumber())
-                    .fullName(request.getFullName())
-                    .isEnabled(false)
-                    .isNonLocked(true)
-                    .isApprovedByAdmin(false)
-                    .build();
-            userService.saveUserInDb(user);
-            return user;
+        User user = User.builder()
+                .username(request.getUsername())
+                .password(utils.encodePassword(request.getPassword()))
+                .role(Role.ORGANISATION.toString())
+                .phoneNumber(request.getPhoneNumber())
+                .fullName(request.getFullName())
+                .isEnabled(false)
+                .isNonLocked(true)
+                .isApprovedByAdmin(false)
+                .build();
+        userService.saveUserInDb(user);
+        return user;
     }
 }

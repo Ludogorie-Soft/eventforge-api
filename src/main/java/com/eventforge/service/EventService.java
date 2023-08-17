@@ -38,6 +38,8 @@ public class EventService {
     private final ResponseFactory responseFactory;
     private final ImageService imageService;
 
+    private static final String [] START_END_DATE = {"startsAt" , "endsAt"};
+
     public List<CommonEventResponse> getThreeUpcomingEvents() {
         LocalDateTime now = LocalDateTime.now();
         return eventRepository.findThreeUpcomingEvents(now).stream().map(responseFactory::buildCommonEventResponse).toList();
@@ -190,7 +192,7 @@ public class EventService {
         countQuery.select(entityManager.getCriteriaBuilder().count(countQuery.from(Event.class)));
 
         TypedQuery<Event> typedQuery = entityManager.createQuery(query);
-        int totalElements =typedQuery.getResultList().size();
+        int totalElements = typedQuery.getResultList().size();
         typedQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         typedQuery.setMaxResults(pageable.getPageSize());
         List<Event> resultList = typedQuery.getResultList();
@@ -239,52 +241,55 @@ public class EventService {
     }
 
     public void addAgePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+        String minAge = "minAge";
+        String maxAge = "maxAge";
+
         Predicate ageNotZero;
         Predicate ageLessThanOrEqualTo;
         Predicate finalPredicate;
         if (request.getMinAge() != null && request.getMaxAge() != null) {
             if (request.getMinAge() == 0 && request.getMaxAge() == 0) {
-                predicates.add(cb.equal(root.get("minAge"), 0));
-                predicates.add(cb.equal(root.get("maxAge"), 0));
+                predicates.add(cb.equal(root.get(minAge), 0));
+                predicates.add(cb.equal(root.get(maxAge), 0));
             } else if (request.getMinAge() == 0 && request.getMaxAge() > 0) {
 
-                predicates.add(cb.equal(root.get("minAge"), 0));
-                ageNotZero = cb.notEqual(root.get("maxAge"), 0);
-                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get("maxAge"), request.getMaxAge());
+                predicates.add(cb.equal(root.get(minAge), 0));
+                ageNotZero = cb.notEqual(root.get(maxAge), 0);
+                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get(maxAge), request.getMaxAge());
 
                 // Combine the predicates using AND
                 finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
                 predicates.add(finalPredicate);
             } else if (request.getMaxAge() == 0 && request.getMinAge() > 0) {
-                predicates.add(cb.equal(root.get("maxAge") ,request.getMaxAge()));
-                ageNotZero = cb.notEqual(root.get("minAge"), 0);
-                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get("minAge"), request.getMinAge());
+                predicates.add(cb.equal(root.get(maxAge), request.getMaxAge()));
+                ageNotZero = cb.notEqual(root.get(minAge), 0);
+                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get(minAge), request.getMinAge());
 
                 finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
                 predicates.add(finalPredicate);
             } else {
-                    predicates.add(cb.and(
-                            cb.greaterThanOrEqualTo(root.get("minAge"), request.getMinAge()),
-                            cb.lessThanOrEqualTo(root.get("maxAge"), request.getMaxAge())
-                    ));
+                predicates.add(cb.and(
+                        cb.greaterThanOrEqualTo(root.get(minAge), request.getMinAge()),
+                        cb.lessThanOrEqualTo(root.get(maxAge), request.getMaxAge())
+                ));
 
             }
         } else if (request.getMinAge() != null && request.getMaxAge() == null) {
             if (request.getMinAge() == 0) {
-                predicates.add(cb.equal(root.get("minAge"), request.getMinAge()));
+                predicates.add(cb.equal(root.get(minAge), request.getMinAge()));
             } else {
-                ageNotZero = cb.notEqual(root.get("minAge"), 0);
-                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get("minAge"), request.getMinAge());
+                ageNotZero = cb.notEqual(root.get(minAge), 0);
+                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get(minAge), request.getMinAge());
 
                 finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
                 predicates.add(finalPredicate);
             }
         } else if (request.getMinAge() == null && request.getMaxAge() != null) {
             if (request.getMaxAge() == 0) {
-                predicates.add(cb.equal(root.get("maxAge"), request.getMaxAge()));
+                predicates.add(cb.equal(root.get(maxAge), request.getMaxAge()));
             } else {
-                ageNotZero = cb.notEqual(root.get("maxAge"), 0);
-                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get("maxAge"), request.getMaxAge());
+                ageNotZero = cb.notEqual(root.get(maxAge), 0);
+                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get(maxAge), request.getMaxAge());
 
                 // Combine the predicates using AND
                 finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
@@ -298,25 +303,26 @@ public class EventService {
             LocalDate startsAt = request.getStartsAt();
             LocalDateTime startOfDay = startsAt.atTime(LocalTime.MIN);
             LocalDateTime endOfDay = startsAt.atTime(LocalTime.MAX);
-            predicates.add(cb.between(root.get("startsAt").as(LocalDateTime.class), startOfDay, endOfDay));
+            predicates.add(cb.between(root.get(START_END_DATE[0]).as(LocalDateTime.class), startOfDay, endOfDay));
         } else if (request.getStartsAt() == null && request.getEndsAt() != null) {
             LocalDate endsAt = request.getEndsAt();
             LocalDateTime startOfDay = endsAt.atTime(LocalTime.MIN);
             LocalDateTime endOfDay = endsAt.atTime(LocalTime.MAX);
-            predicates.add(cb.between(root.get("endsAt").as(LocalDateTime.class), startOfDay, endOfDay));
+            predicates.add(cb.between(root.get(START_END_DATE[1]).as(LocalDateTime.class), startOfDay, endOfDay));
         } else if (request.getStartsAt() != null && request.getEndsAt() != null) {
             LocalDate startsAt = request.getStartsAt();
             LocalDate endsAt = request.getEndsAt();
             LocalDateTime startOfDay = startsAt.atTime(LocalTime.MIN);
             LocalDateTime endOfDay = endsAt.atTime(LocalTime.MAX);
-            predicates.add(cb.between(root.get("startsAt").as(LocalDateTime.class), startOfDay, endOfDay));
-            predicates.add(cb.between(root.get("endsAt").as(LocalDateTime.class), startOfDay, endOfDay));
+            predicates.add(cb.between(root.get(START_END_DATE[0]).as(LocalDateTime.class), startOfDay, endOfDay));
+            predicates.add(cb.between(root.get(START_END_DATE[1]).as(LocalDateTime.class), startOfDay, endOfDay));
 
         }
     }
 
     public void addOneTimePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
-        if (request.getIsOneTime()) {
+        boolean isOneTime = request.getIsOneTime();
+        if (isOneTime) {
             predicates.add(cb.isTrue(root.get("isOneTime")));
         } else {
             predicates.add(cb.isFalse(root.get("isOneTime")));
@@ -332,10 +338,10 @@ public class EventService {
 
     public void addExpiredPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.isSortByExpired()) {
-            predicates.add(cb.lessThan(root.get("endsAt"), LocalDateTime.now()));
+            predicates.add(cb.lessThan(root.get(START_END_DATE[1]), LocalDateTime.now()));
 
         } else {
-            predicates.add(cb.greaterThan(root.get("endsAt"), LocalDateTime.now()));
+            predicates.add(cb.greaterThan(root.get(START_END_DATE[1]), LocalDateTime.now()));
         }
     }
 
