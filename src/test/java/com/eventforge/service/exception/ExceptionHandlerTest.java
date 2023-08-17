@@ -3,6 +3,7 @@ package com.eventforge.service.exception;
 import com.eventforge.exception.*;
 import com.eventforge.exception.handler.ExceptionHandler;
 import com.eventforge.service.Utils;
+import com.eventforge.slack.SlackNotifier;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,13 +30,15 @@ class ExceptionHandlerTest {
 
     @Mock
     private Utils mockUtils;
+    @Mock
+    private SlackNotifier slackNotifier;
 
     private ExceptionHandler exceptionHandler;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        exceptionHandler = new ExceptionHandler(mockUtils);
+        exceptionHandler = new ExceptionHandler(mockUtils , slackNotifier);
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.eventforge.security;
 import com.eventforge.constants.Role;
 import com.eventforge.exception.AuthenticationEntryPoint;
 import com.eventforge.security.jwt.JWTAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -22,8 +23,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 public class SecurityConfig {
 
     private static final String[] SECURED_URLs = {"/admin/**"};
-    private static final String[] UNSECURED_URLs = {"/menu/**", "/auth/**", "/api/v1/events/**" ,"/api/v1/one-time-events/**","/unauthorized/**", "/api/v1/recurrence-events/**" ,"/filter-by-criteria"};
-
+    private static final String[] UNSECURED_URLs = {"/actuator/**","/menu/**", "/auth/**", "/api/v1/events/**" ,"/api/v1/one-time-events/**","/unauthorized/**", "/api/v1/recurrence-events/**" ,"/filter-by-criteria"};
     private static final String ORGANISATION_URLs = "/organisation/**";
     private final JWTAuthenticationFilter authenticationFilter;
     private final MyUserDetailsService userDetailsService;

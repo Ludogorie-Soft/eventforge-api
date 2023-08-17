@@ -1,5 +1,6 @@
 package com.eventforge.exception.handler;
 
+import com.eventforge.slack.SlackNotifier;
 import com.eventforge.exception.*;
 import com.eventforge.service.Utils;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +11,35 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class ExceptionHandler {
 
     private final Utils utils;
+
+    private final SlackNotifier slackNotifier;
+    @org.springframework.web.bind.annotation.ExceptionHandler(Throwable.class)
+    public void sendNotificationToSlackWhenInternalServerErrorOccurs(Throwable throwable) {
+        // Get the current timestamp
+        LocalDateTime timestamp = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+        // Create a detailed message including timestamp, exception message, and cause
+        String message = String.format(
+                "Exception occurred at %s%nBACKEND APPLICATION%nMessage: %s%nCause: %s",
+                formatter.format(timestamp),
+                throwable.getMessage(),
+                throwable.getCause()
+        );
+        // Log the exception (optional)
+        throwable.printStackTrace();
+
+        // Send the exception details to Slack
+        slackNotifier.sendNotification(message);
+    }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<String> handleUserNotFoundException(UsernameNotFoundException ex){
