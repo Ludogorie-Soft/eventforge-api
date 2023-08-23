@@ -94,7 +94,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         String htmlContent = "<html><body>" +
                 "<table style='width:100%; text-align:left;'>" +
                 TR_TD_TAG[0] +
-                "<img src='cid:image' style='max-width:100px;' />" +
+//                "<img src='cid:image' style='max-width:100px;' />" +
                 TR_TD_TAG[1] +
                 TR_TD_TAG[0] +
                 "<p style='font-size:18px;'>Здравей, " + user.getFullName() + "!</p>" +
@@ -119,16 +119,16 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         multipart.addBodyPart(messageBodyPart);
 
         // Create part for the image
-        MimeBodyPart imageBodyPart = new MimeBodyPart();
+//        MimeBodyPart imageBodyPart = new MimeBodyPart();
 
         // Fetch the image and associate it with the part
-        DataSource ds = new FileDataSource("src/main/resources/static/images/img_1.png");
-        imageBodyPart.setDataHandler(new DataHandler(ds));
+//        DataSource ds = new FileDataSource("img_1.png");
+//        imageBodyPart.setDataHandler(new DataHandler(ds));
         // Add a header to connect to the HTML
-        imageBodyPart.setHeader("Content-ID", "<image>");
+//        imageBodyPart.setHeader("Content-ID", "<image>");
 
         // Add part to multi-part
-        multipart.addBodyPart(imageBodyPart);
+//        multipart.addBodyPart(imageBodyPart);
 
         // Associate multi-part with message
         message.setContent(multipart);
