@@ -7,7 +7,9 @@ import com.eventforge.dto.response.OrganisationResponseForAdmin;
 import com.eventforge.email.AdminContactEvent;
 import com.eventforge.email.RegistrationCompleteEvent;
 import com.eventforge.model.Contact;
+import com.eventforge.model.Spammer;
 import com.eventforge.repository.ContactRepository;
+import com.eventforge.repository.SpammerRepository;
 import com.eventforge.service.EventService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
@@ -19,6 +21,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,6 +37,7 @@ public class AdminController {
 
     private final ContactRepository contactRepository;
 
+    private final SpammerRepository spammerRepository;
     private final ApplicationEventPublisher publisher;
 
     @GetMapping("/settings")
@@ -91,6 +96,28 @@ public class AdminController {
     public ResponseEntity<String> sendEmail(@RequestHeader("Authorization")String authHeader,@PathVariable("id")Long id ,@RequestParam("answer")String answer){
         publisher.publishEvent(new AdminContactEvent(id,answer));
         return new ResponseEntity<>("Изпратихте успешно отговора",HttpStatus.OK);
+    }
+    @GetMapping("/spammer-list")
+    public ResponseEntity<List<String>> listSpammers(@RequestHeader("Authorization")String authHeader){
+        List<String>spammersEmails = spammerRepository.findAll().stream().map(Spammer::getEmail).toList();
+        return new ResponseEntity<>(spammersEmails , HttpStatus.OK);
+    }
+
+    @PostMapping("/spammer/{email}")
+    public ResponseEntity<Void> markSpammer(@RequestHeader("Authorization")String authHeader , @PathVariable("email")String email){
+        if(spammerRepository.findByEmail(email).isEmpty()){
+            Spammer spammer = new Spammer(email);
+            spammerRepository.save(spammer);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/delete/spammer/{email}")
+    public ResponseEntity<Void> removeSpammerFromBlackList(@RequestHeader("Authorization")String authHeader,@PathVariable("email")String email){
+        Optional<Spammer> spammer = spammerRepository.findByEmail(email);
+        spammer.ifPresent(spammerRepository::delete);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @DeleteMapping("/delete-contact/{id}")
     public ResponseEntity<Void> deleteContact(@RequestHeader("Authorization")String authHeader ,@PathVariable("id")Long contactId){

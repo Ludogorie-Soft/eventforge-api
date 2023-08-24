@@ -6,6 +6,7 @@ import com.eventforge.dto.response.CommonEventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.model.Contact;
 import com.eventforge.repository.ContactRepository;
+import com.eventforge.repository.SpammerRepository;
 import com.eventforge.service.EventService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.PaginationService;
@@ -33,6 +34,8 @@ public class UnauthorizedUserController {
 
     private final ContactRepository contactRepository;
 
+    private final SpammerRepository spammerRepository;
+
     @GetMapping
     public Page<OrganisationResponse> showAllOrganisationsForUnauthorizedUser(@RequestParam(name = "search", required = false) String search
             , @RequestParam(value = "pageNo", required = false) Integer pageNo
@@ -58,8 +61,11 @@ public class UnauthorizedUserController {
     }
     @PostMapping("send-contact")
     public ResponseEntity<Void> contact(@RequestBody Contact contactForm){
-        contactForm.setIsAnswered(false);
-        contactRepository.save(contactForm);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        if(spammerRepository.findByEmail(contactForm.getEmail()).isEmpty()){
+            contactForm.setIsAnswered(false);
+            contactRepository.save(contactForm);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
