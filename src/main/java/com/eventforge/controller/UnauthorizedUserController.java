@@ -1,8 +1,11 @@
 package com.eventforge.controller;
 
+import com.eventforge.constants.Constant;
 import com.eventforge.dto.request.PageRequestDto;
 import com.eventforge.dto.response.CommonEventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
+import com.eventforge.model.Contact;
+import com.eventforge.repository.ContactRepository;
 import com.eventforge.service.EventService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.PaginationService;
@@ -12,6 +15,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +30,8 @@ public class UnauthorizedUserController {
     private final OrganisationService organisationService;
 
     private final PaginationService paginationService;
+
+    private final ContactRepository contactRepository;
 
     @GetMapping
     public Page<OrganisationResponse> showAllOrganisationsForUnauthorizedUser(@RequestParam(name = "search", required = false) String search
@@ -42,5 +51,15 @@ public class UnauthorizedUserController {
     @GetMapping("/event/details/{id}")
     public ResponseEntity<CommonEventResponse> showEventDetailsWithCondition(@PathVariable("id") Long id) {
         return new ResponseEntity<>(eventService.getEventDetailWithConditionsById(id), HttpStatus.OK);
+    }
+    @GetMapping("/subjects")
+    public ResponseEntity<Set<String>> subjects(){
+        return new ResponseEntity<>(Constant.staticSubjects ,HttpStatus.OK);
+    }
+    @PostMapping("send-contact")
+    public ResponseEntity<Void> contact(@RequestBody Contact contactForm){
+        contactForm.setIsAnswered(false);
+        contactRepository.save(contactForm);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

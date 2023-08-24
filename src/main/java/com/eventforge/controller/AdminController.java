@@ -4,10 +4,15 @@ import com.eventforge.dto.request.ChangePasswordRequest;
 import com.eventforge.dto.response.CommonEventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.OrganisationResponseForAdmin;
+import com.eventforge.email.AdminContactEvent;
+import com.eventforge.email.RegistrationCompleteEvent;
+import com.eventforge.model.Contact;
+import com.eventforge.repository.ContactRepository;
 import com.eventforge.service.EventService;
 import com.eventforge.service.OrganisationService;
 import com.eventforge.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +30,10 @@ public class AdminController {
     private final OrganisationService organisationService;
 
     private final EventService eventService;
+
+    private final ContactRepository contactRepository;
+
+    private final ApplicationEventPublisher publisher;
 
     @GetMapping("/settings")
     public ResponseEntity<ChangePasswordRequest> adminSettings(@RequestHeader("Authorization")String authHeader){
@@ -71,5 +80,21 @@ public class AdminController {
     public ResponseEntity<String> deleteEventById(@RequestHeader("Authorization")String authHeader ,@PathVariable("id")Long eventId){
         eventService.deleteEventByIdForAdmin(eventId);
         return new ResponseEntity<>("Успешно изтрихте събитие с номер " +eventId ,HttpStatus.OK);
+    }
+
+    @GetMapping("/contacts")
+    public ResponseEntity<List<Contact>> contacts(@RequestHeader("Authorization")String authHeader){
+        return new ResponseEntity<>(contactRepository.findAll() , HttpStatus.OK);
+    }
+
+    @PostMapping("/contact/send-email/{id}")
+    public ResponseEntity<String> sendEmail(@RequestHeader("Authorization")String authHeader,@PathVariable("id")Long id ,@RequestParam("answer")String answer){
+        publisher.publishEvent(new AdminContactEvent(id,answer));
+        return new ResponseEntity<>("Изпратихте успешно отговора",HttpStatus.OK);
+    }
+    @DeleteMapping("/delete-contact/{id}")
+    public ResponseEntity<Void> deleteContact(@RequestHeader("Authorization")String authHeader ,@PathVariable("id")Long contactId){
+        contactRepository.deleteById(contactId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

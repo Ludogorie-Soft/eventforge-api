@@ -1,6 +1,6 @@
 package com.eventforge.factory;
 
-import com.eventforge.constants.OrganisationPriorityCategory;
+import com.eventforge.constants.Constant;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.UpdateAccountRequest;
 import com.eventforge.exception.EventRequestException;
@@ -36,7 +36,7 @@ public class RequestFactory {
         User user = userService.getLoggedUserByToken(token);
         if (user != null) {
             Organisation organisation = organisationService.getOrganisationByUserId(user.getId());
-            Set<String> staticOrganisationPriorities = OrganisationPriorityCategory.staticCategories;
+            Set<String> staticOrganisationPriorities = Constant.staticCategories;
 
             int staticOrganisationPrioritiesSize = staticOrganisationPriorities.size();
 

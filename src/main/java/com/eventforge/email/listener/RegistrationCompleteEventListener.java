@@ -104,7 +104,14 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
                 TR_TD_TAG[0] +
                 "<p style='font-size:14px;'>Благодарим ти!</p>" +
                 "<p style='font-size:14px;'>С най-добри пожелания,<br>" +
-                "\uD83D\uDC4B Екипът на Активна Варна</p>" +
+                "\uD83D\uDC4B Екипът на Активна Варна!</p>" +
+                TR_TD_TAG[1] +
+                TR_TD_TAG[0] +
+                "<p style='font-size:14px; font-weight: bold;'>" +
+                "Това е автоматично съобщение, генерирано от нашата система. " +
+                "Моля не отговаряйте на този имейл. " +
+                "Ако имате въпроси или нужда от помощ, свържете се с нас чрез подходящия метод за контакт, предоставен от нашата услуга." +
+                "</p>" +
                 TR_TD_TAG[1] +
                 "</table>" +
                 "</body></html>";
@@ -117,18 +124,6 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
 
         // Add body part to multipart
         multipart.addBodyPart(messageBodyPart);
-
-        // Create part for the image
-//        MimeBodyPart imageBodyPart = new MimeBodyPart();
-
-        // Fetch the image and associate it with the part
-//        DataSource ds = new FileDataSource("img_1.png");
-//        imageBodyPart.setDataHandler(new DataHandler(ds));
-        // Add a header to connect to the HTML
-//        imageBodyPart.setHeader("Content-ID", "<image>");
-
-        // Add part to multi-part
-//        multipart.addBodyPart(imageBodyPart);
 
         // Associate multi-part with message
         message.setContent(multipart);

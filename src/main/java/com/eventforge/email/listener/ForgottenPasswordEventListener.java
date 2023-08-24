@@ -136,6 +136,12 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
                 "<p style='font-size:14px;'>Благодарим ви!</p>" +
                 "<p style='font-size:14px;'>С най-добри пожелания,<br>" +
                 "\uD83D\uDC4B Екипът на Активна Варна </p>" +
+                OPEN_TAG_TR_TD +
+                "<p style='font-size:14px; font-weight: bold;'>" +
+                "Това е автоматично съобщение, генерирано от нашата система. " +
+                "Моля не отговаряйте на този имейл. " +
+                "Ако имате въпроси или нужда от помощ, свържете се с нас чрез подходящия метод за контакт, предоставен от нашата услуга." +
+                "</p>" +
                 CLOSE_TAG_TD_TR +
                 "</table>" +
                 "</body></html>";
@@ -158,6 +164,12 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
                 "<p style='font-size:14px;'>Благодарим ви!</p>" +
                 "<p style='font-size:14px;'>С най-добри пожелания,<br>" +
                 "\uD83D\uDC4B Екипът на Активна Варна </p>" +
+                OPEN_TAG_TR_TD +
+                "<p style='font-size:14px; font-weight: bold;'>" +
+                "Това е автоматично съобщение, генерирано от нашата система. " +
+                "Моля не отговаряйте на този имейл. " +
+                "Ако имате въпроси или нужда от помощ, свържете се с нас чрез подходящия метод за контакт, предоставен от нашата услуга." +
+                "</p>" +
                 CLOSE_TAG_TD_TR +
                 "</table>" +
                 "</body></html>";
