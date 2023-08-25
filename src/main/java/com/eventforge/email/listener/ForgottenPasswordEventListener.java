@@ -82,7 +82,6 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
             htmlContent = fetchContentForNewlyRandomGeneratedPassword(generatedPassword);
         }
 
-
         MimeMessage message = mailSender.createMimeMessage();
 
         message.setSubject(subject);
@@ -92,7 +91,6 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
 
         MimeBodyPart messageBodyPart = new MimeBodyPart();
 
-
         messageBodyPart.setContent(htmlContent, "text/html; charset=utf-8");
 
         // Create a related multi-part to combine the parts
@@ -101,21 +99,8 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
         // Add body part to multipart
         multipart.addBodyPart(messageBodyPart);
 
-        // Create part for the image
-        MimeBodyPart imageBodyPart = new MimeBodyPart();
-
-        // Fetch the image and associate it with the part
-        DataSource ds = new FileDataSource("src/main/resources/static/images/img_1.png");
-        imageBodyPart.setDataHandler(new DataHandler(ds));
-        // Add a header to connect to the HTML
-        imageBodyPart.setHeader("Content-ID", "<image>");
-
-        // Add part to multi-part
-        multipart.addBodyPart(imageBodyPart);
-
         // Associate multi-part with message
         message.setContent(multipart);
-
 
         mailSender.send(message);
     }
@@ -123,9 +108,6 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
     private String fetchContentForForgottenPasswordRequest(String userFullName, String url) {
         return "<html><body>" +
                 "<table style='width:100%; text-align:left;'>" +
-                OPEN_TAG_TR_TD +
-                "<img src='cid:image' style='max-width:100px;' />" +
-                CLOSE_TAG_TD_TR +
                 OPEN_TAG_TR_TD +
                 "<p style='font-size:18px;'>Здравей, " + userFullName + "!</p>" +
                 "<p>Получавате това съобщение, защото сте поискали възстановяване на достъпа до вашия профил.</p>" +
@@ -141,7 +123,7 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
                 "<p style='font-size:14px; font-weight: bold;'>" +
                 "Това е автоматично съобщение, генерирано от нашата система. " +
                 "Моля не отговаряйте на този имейл. " +
-                "Ако имате въпроси или нужда от помощ, свържете се с нас чрез подходящия метод за контакт, предоставен от нашата услуга." +
+                "Ако имате въпроси или нужда от помощ, свържете се с нас чрез предоставената контактна форма на сайта." +
                 "</p>" +
                 CLOSE_TAG_TD_TR +
                 "</table>" +
@@ -152,13 +134,10 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
         return "<html><body>" +
                 "<table style='width:100%; text-align:left;'>" +
                 OPEN_TAG_TR_TD +
-                "<img src='cid:image' style='max-width:100px;' />" +
-                CLOSE_TAG_TD_TR +
-                OPEN_TAG_TR_TD +
                 "<p style='font-size:18px;'>Нова генерирана парола!</p>" +
                 "<p>Получавате това съобщение, защото сте потвърдили възстановяване на достъпа до вашият профил.</p>" +
                 "<p>Моля не излагайте публично вашата парола.</p>" +
-                "<p>Препоръчваме Ви веднага след като се впишете, да си смените паролата.</p>" +
+                "<p>Препоръчваме Ви, веднага след като се впишете, да си смените паролата.</p>" +
                 "<p>Нова парола - <span style='font-size:20px; font-weight:bold;'>" + generatedPassword + "</span></p>" +
                 CLOSE_TAG_TD_TR +
                 OPEN_TAG_TR_TD +
@@ -169,7 +148,7 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
                 "<p style='font-size:14px; font-weight: bold;'>" +
                 "Това е автоматично съобщение, генерирано от нашата система. " +
                 "Моля не отговаряйте на този имейл. " +
-                "Ако имате въпроси или нужда от помощ, свържете се с нас чрез подходящия метод за контакт, предоставен от нашата услуга." +
+                "Ако имате въпроси или нужда от помощ, свържете се с нас чрез предоставената контактна форма на сайта." +
                 "</p>" +
                 CLOSE_TAG_TD_TR +
                 "</table>" +

@@ -27,7 +27,7 @@ public class AdminContactEventListener implements ApplicationListener<AdminConta
     @Value("${spring.mail.username}")
     private String senderEmail;
 
-    private static final String [] TR_TD_TAG = {"<tr><td>" , "</td></tr>"};
+    private static final String[] TR_TD_TAG = {"<tr><td>", "</td></tr>"};
 
     @Override
     public void onApplicationEvent(AdminContactEvent event) {
@@ -41,33 +41,34 @@ public class AdminContactEventListener implements ApplicationListener<AdminConta
         }
     }
 
-    public void sendEmail(Contact contact , String adminAnswer) throws MessagingException, UnsupportedEncodingException {
-        String subject = String.format("Обратна връзка по тема %s",contact.getSubject());
+    public void sendEmail(Contact contact, String adminAnswer) throws MessagingException, UnsupportedEncodingException {
+        String subject = String.format("Обратна връзка по тема %s", contact.getSubject());
 
         MimeMessage message = mailSender.createMimeMessage();
         message.setSubject(subject);
-        message.setFrom(new InternetAddress(senderEmail ,"Активна Варна"));
+        message.setFrom(new InternetAddress(senderEmail, "Активна Варна"));
         message.setReplyTo(new InternetAddress[]{new InternetAddress("noreply@active-varna.com")});
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(contact.getEmail()));
 
         MimeBodyPart messageBodyPart = new MimeBodyPart();
 
-        String htmlContent = "<html><body>" +
-                "<table style='width:100%; text-align:left;'>" +
-                TR_TD_TAG[0] +
-                TR_TD_TAG[1] +
-                TR_TD_TAG[0] +
-                adminAnswer+
-                "\uD83D\uDC4B Екипът на Активна Варна</p>" +
-                TR_TD_TAG[1] +
-                TR_TD_TAG[0] +
-                "<p style='font-size:14px; font-weight: bold;'>" +
-                "Моля не отговаряйте на този имейл. " +
-                "Ако имате въпроси или нужда от помощ, свържете се с нас чрез подходящия метод за контакт, предоставен от нашата услуга." +
-                "</p>" +
-                TR_TD_TAG[1] +
-                "</table>" +
-                "</body></html>";
+        String htmlContent =
+                "<html><body>" +
+                        "<table style='width:100%; text-align:left;'>" +
+                        TR_TD_TAG[0] +
+                        adminAnswer +
+                        TR_TD_TAG[1] +
+                        TR_TD_TAG[0] +
+                        "\uD83D\uDC4B Екипът на Активна Варна</p>" +
+                        TR_TD_TAG[1] +
+                        TR_TD_TAG[0] +
+                        "<p style='font-size:14px; font-weight: bold;'>" +
+                        "Моля не отговаряйте на този имейл. " +
+                        "Ако имате въпроси или нужда от помощ, свържете се с нас чрез предоставената контактна форма на сайта." +
+                        "</p>" +
+                        TR_TD_TAG[1] +
+                        "</table>" +
+                        "</body></html>";
 
 
         messageBodyPart.setContent(htmlContent, "text/html; charset=utf-8");

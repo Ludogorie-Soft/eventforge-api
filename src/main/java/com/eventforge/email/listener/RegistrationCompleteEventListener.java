@@ -95,9 +95,6 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         String htmlContent = "<html><body>" +
                 "<table style='width:100%; text-align:left;'>" +
                 TR_TD_TAG[0] +
-//                "<img src='cid:image' style='max-width:100px;' />" +
-                TR_TD_TAG[1] +
-                TR_TD_TAG[0] +
                 "<p style='font-size:18px;'>Здравей, " + user.getFullName() + "!</p>" +
                 "<p>Благодарим ти за създадената регистрация! Моля, посетете долния линк, за да потвърдите регистрацията си.</p>" +
                 "<p><a href='" + url + "'>Потвърждаване на регистрация</a></p>" +
@@ -109,9 +106,8 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
                 TR_TD_TAG[1] +
                 TR_TD_TAG[0] +
                 "<p style='font-size:14px; font-weight: bold;'>" +
-                "Това е автоматично съобщение, генерирано от нашата система. " +
-                "Моля не отговаряйте на този имейл. " +
-                "Ако имате въпроси или нужда от помощ, свържете се с нас чрез подходящия метод за контакт, предоставен от нашата услуга." +
+                "Това е автоматично съобщение, генерирано от нашата система. Моля не отговаряйте на този имейл.<br> " +
+                "Ако имате въпроси или нужда от помощ, свържете се с нас чрез предоставената контактна форма на сайта." +
                 "</p>" +
                 TR_TD_TAG[1] +
                 "</table>" +
@@ -128,7 +124,6 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
 
         // Associate multi-part with message
         message.setContent(multipart);
-
 
         mailSender.send(message);
     }
