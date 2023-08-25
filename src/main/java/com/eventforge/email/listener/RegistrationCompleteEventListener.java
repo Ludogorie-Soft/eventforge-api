@@ -86,6 +86,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
 
         message.setSubject(subject);
         message.setFrom(new InternetAddress(senderEmail ,"Активна Варна"));
+        message.setReplyTo(new InternetAddress[]{new InternetAddress("noreply@active-varna.com")});
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getUsername()));
 
         MimeBodyPart messageBodyPart = new MimeBodyPart();

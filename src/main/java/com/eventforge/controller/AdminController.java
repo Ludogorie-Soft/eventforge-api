@@ -5,7 +5,6 @@ import com.eventforge.dto.response.CommonEventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.OrganisationResponseForAdmin;
 import com.eventforge.email.AdminContactEvent;
-import com.eventforge.email.RegistrationCompleteEvent;
 import com.eventforge.model.Contact;
 import com.eventforge.model.Spammer;
 import com.eventforge.repository.ContactRepository;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor

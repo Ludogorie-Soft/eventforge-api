@@ -47,6 +47,7 @@ public class AdminContactEventListener implements ApplicationListener<AdminConta
         MimeMessage message = mailSender.createMimeMessage();
         message.setSubject(subject);
         message.setFrom(new InternetAddress(senderEmail ,"Активна Варна"));
+        message.setReplyTo(new InternetAddress[]{new InternetAddress("noreply@active-varna.com")});
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(contact.getEmail()));
 
         MimeBodyPart messageBodyPart = new MimeBodyPart();

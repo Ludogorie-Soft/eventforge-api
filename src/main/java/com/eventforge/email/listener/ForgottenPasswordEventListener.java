@@ -72,8 +72,8 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
     }
 
     public void sendResetPasswordRequest(String url, User user, String generatedPassword) throws MessagingException, UnsupportedEncodingException {
-        String htmlContent = null;
-        String subject = null;
+        String htmlContent;
+        String subject;
         if (generatedPassword == null) {
             subject = "Забравена парола - Възстановяване на достъпа до профила ви";
             htmlContent = fetchContentForForgottenPasswordRequest(user.getFullName(), url);
@@ -87,6 +87,7 @@ public class ForgottenPasswordEventListener implements ApplicationListener<Forgo
 
         message.setSubject(subject);
         message.setFrom(new InternetAddress(senderEmail, "Активна Варна"));
+        message.setReplyTo(new InternetAddress[]{new InternetAddress("noreply@active-varna.com")});
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getUsername()));
 
         MimeBodyPart messageBodyPart = new MimeBodyPart();

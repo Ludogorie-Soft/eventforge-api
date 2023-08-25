@@ -1,8 +1,12 @@
 package com.eventforge.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -16,7 +20,6 @@ public class Contact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
-    private String name;
     private String subject;
     private String text;
 
@@ -24,9 +27,8 @@ public class Contact {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public Contact(String email, String name, String subject, String text) {
+    public Contact(String email, String subject, String text) {
         this.email = email;
-        this.name = name;
         this.subject = subject;
         this.text = text;
     }
