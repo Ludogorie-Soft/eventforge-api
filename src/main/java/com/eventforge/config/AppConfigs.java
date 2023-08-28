@@ -18,6 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.function.Supplier;
+
 
 @Configuration
 @EnableScheduling
@@ -61,6 +65,11 @@ public class AppConfigs {
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.setPoolSize(10);
         return taskScheduler;
+    }
+
+    @Bean
+    public Supplier<ZonedDateTime> sofiaZonedDateTimeSupplier() {
+        return () -> ZonedDateTime.now(ZoneId.of("Europe/Sofia"));
     }
 
 }
