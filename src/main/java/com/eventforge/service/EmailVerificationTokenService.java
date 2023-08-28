@@ -19,7 +19,7 @@ public class EmailVerificationTokenService {
     private final VerificationTokenRepository verificationTokenRepository;
 
     public VerificationToken getVerificationTokenByToken(String token){
-        return verificationTokenRepository.findByToken(token).orElseThrow(() -> new InvalidEmailConfirmationLinkException("Линкът е вече невалиден!"));
+        return verificationTokenRepository.findByToken(token).orElseThrow(() -> new InvalidEmailConfirmationLinkException("Линкът вече е невалиден!"));
     }
 
     public void validateTokenExpirationTime(VerificationToken token){

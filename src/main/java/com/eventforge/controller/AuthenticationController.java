@@ -1,6 +1,6 @@
 package com.eventforge.controller;
 
-import com.eventforge.constants.OrganisationPriorityCategory;
+import com.eventforge.constants.Constant;
 import com.eventforge.dto.request.JWTAuthenticationRequest;
 import com.eventforge.dto.request.RegistrationRequest;
 import com.eventforge.dto.response.AuthenticationResponse;
@@ -35,7 +35,7 @@ public class AuthenticationController {
 
     @GetMapping("/getAllPriorityCategories")
     public ResponseEntity<Set<String>> getAllPriorityCategories() {
-        return new ResponseEntity<>(OrganisationPriorityCategory.staticCategories, HttpStatus.OK);
+        return new ResponseEntity<>(Constant.staticCategories, HttpStatus.OK);
     }
 
     @PostMapping("/register")

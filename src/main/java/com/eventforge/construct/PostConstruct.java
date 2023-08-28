@@ -1,6 +1,6 @@
 package com.eventforge.construct;
 
-import com.eventforge.constants.OrganisationPriorityCategory;
+import com.eventforge.constants.Constant;
 import com.eventforge.constants.Role;
 import com.eventforge.model.OrganisationPriority;
 import com.eventforge.model.User;
@@ -47,7 +47,7 @@ public class PostConstruct {
     @jakarta.annotation.PostConstruct
     public void addCategoriesInDataBase() {
         OrganisationPriority organisationPriority;
-        for (String category : OrganisationPriorityCategory.staticCategories) {
+        for (String category : Constant.staticCategories) {
             if (organisationPriorityRepository.findByCategory(category) == null) {
                 organisationPriority = new OrganisationPriority(category);
                 organisationPriorityRepository.save(organisationPriority);
