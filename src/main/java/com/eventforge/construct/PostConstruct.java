@@ -29,12 +29,12 @@ public class PostConstruct {
 
     @jakarta.annotation.PostConstruct
     public void createAdmin() {
-        Optional<User> admin = userRepository.findAdmin();
+        Optional<User> admin = userRepository.findAdmin(adminUsername);
         if (admin.isEmpty()) {
             User adminDb = User.builder()
                     .username(adminUsername)
                     .password(passwordEncoder.encode(adminPassword))
-                    .fullName("admin")
+                    .fullName("Ludogorie Soft")
                     .role(Role.ADMIN.toString())
                     .isEnabled(true)
                     .isNonLocked(true)
