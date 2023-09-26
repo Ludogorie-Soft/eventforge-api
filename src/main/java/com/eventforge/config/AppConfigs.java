@@ -1,11 +1,9 @@
 package com.eventforge.config;
 
-import com.eventforge.exception.CustomAuthenticationEntryPoint;
 import com.eventforge.exception.CustomAccessDeniedHandler;
-import com.eventforge.repository.OrganisationRepository;
+import com.eventforge.exception.CustomAuthenticationEntryPoint;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
@@ -27,8 +25,6 @@ import java.util.function.Supplier;
 @EnableScheduling
 public class AppConfigs {
 
-    @Autowired
-    private OrganisationRepository organisationRepository;
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
