@@ -1,8 +1,9 @@
 package com.eventforge.controller;
 
 import com.eventforge.constants.Constant;
+import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.PageRequestDto;
-import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.model.Contact;
 import com.eventforge.repository.ContactRepository;
@@ -17,8 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -52,7 +51,7 @@ public class UnauthorizedUserController {
     }
 
     @GetMapping("/event/details/{id}")
-    public ResponseEntity<CommonEventResponse> showEventDetailsWithCondition(@PathVariable("id") Long id) {
+    public ResponseEntity<EventResponse> showEventDetailsWithCondition(@PathVariable("id") Long id) {
         return new ResponseEntity<>(eventService.getEventDetailWithConditionsById(id), HttpStatus.OK);
     }
     @GetMapping("/subjects")
@@ -67,5 +66,15 @@ public class UnauthorizedUserController {
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/filter-by-criteria")
+    public Page<EventResponse> getEventsByCriteria(@RequestParam(value = "pageNo", required = false) Integer pageNo
+            , @RequestParam(value = "pageSize", required = false) Integer pageSize
+            , @RequestParam(value = "sort", required = false) Sort.Direction sort
+            , @RequestParam(value = "sortByColumn", required = false) String sortByColumn, @RequestBody CriteriaFilterRequest filterRequest) {
+        PageRequestDto pageRequestDto = new PageRequestDto(pageNo, pageSize, sort, sortByColumn);
+
+        return paginationService.getEventsByCriteriaAndPagination(filterRequest, pageRequestDto);
     }
 }

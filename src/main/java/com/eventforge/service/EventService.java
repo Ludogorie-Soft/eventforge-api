@@ -3,7 +3,7 @@ package com.eventforge.service;
 import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.PageRequestDto;
-import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
@@ -40,52 +40,44 @@ public class EventService {
 
     private static final String [] START_END_DATE = {"startsAt" , "endsAt"};
 
-    public List<CommonEventResponse> getThreeUpcomingEvents() {
+    public List<EventResponse> getThreeUpcomingEvents() {
         LocalDateTime now = LocalDateTime.now();
-        return eventRepository.findThreeUpcomingEvents(now).stream().map(responseFactory::buildCommonEventResponse).toList();
+        return eventRepository.findThreeUpcomingEvents(now).stream().map(responseFactory::buildEventResponse).toList();
 
     }
 
-    public List<CommonEventResponse> getAllOneTimeEventsByOrganisationId(Long id) {
-        return eventRepository.findAllOneTimeEventsByOrganisationId(id).stream().map(responseFactory::buildCommonEventResponse).toList();
-    }
 
-    public List<CommonEventResponse> getAllRecurrenceEventsByOrganisationId(Long id) {
-        return eventRepository.findAllRecurrenceEventsByOrganisationId(id).stream().map(responseFactory::buildCommonEventResponse).toList();
-    }
-
-
-    public Page<Event> getAllActiveOneTimeEvents(PageRequestDto pageRequest) {
+    public Page<Event> getAllActiveEvents(PageRequestDto pageRequest) {
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
         LocalDateTime dateTime = LocalDateTime.now();
-        return eventRepository.findAllActiveOneTimeEvents(dateTime, pageable);
+        return eventRepository.findAllActiveEvents(dateTime, pageable);
     }
 
-    public Page<Event> getAllActiveRecurrenceEvents(PageRequestDto pageRequest) {
+    public Page<Event> getAllActiveAds(PageRequestDto pageRequest) {
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
         LocalDateTime dateTime = LocalDateTime.now();
-        return eventRepository.findAllActiveRecurrenceEvents(dateTime, pageable);
+        return eventRepository.findAllActiveAds(dateTime, pageable);
     }
 
 
-    public Page<Event> getAllExpiredOneTimeEvents(PageRequestDto pageRequest) {
+    public Page<Event> getAllExpiredEvents(PageRequestDto pageRequest) {
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
         LocalDateTime dateTime = LocalDateTime.now();
-        return eventRepository.findAllExpiredOneTimeEvents(dateTime, pageable);
+        return eventRepository.findAllExpiredEvents(dateTime, pageable);
     }
 
-    public Page<Event> getAllExpiredRecurrenceEvents(PageRequestDto pageRequest) {
+    public Page<Event> getAllExpiredAds(PageRequestDto pageRequest) {
         Pageable pageable = new PageRequestDto().getPageable(pageRequest);
 
         LocalDateTime dateTime = LocalDateTime.now();
-        return eventRepository.findAllExpiredRecurrenceEvents(dateTime, pageable);
+        return eventRepository.findAllExpiredAds(dateTime, pageable);
     }
 
-    public List<CommonEventResponse> getAllEventsByUserIdForOrganisation(String token) {
+    public List<EventResponse> getAllEventsAndAdsByUserIdForOrganisation(String token) {
         User user = userService.getLoggedUserByToken(token);
-        return eventRepository.findAllEventsForOrganisationByUserId(user.getId())
+        return eventRepository.findAllEventsAndAdsForOrganisationByUserId(user.getId())
                 .stream()
-                .map(responseFactory::buildCommonEventResponse)
+                .map(responseFactory::buildEventResponse)
                 .toList();
     }
 
@@ -94,21 +86,21 @@ public class EventService {
     }
 
 
-    public CommonEventResponse getEventDetailWithConditionsById(Long eventId) {
+    public EventResponse getEventDetailWithConditionsById(Long eventId) {
         Event event = eventRepository.findEventByIdWithCondition(eventId);
         if (event != null) {
-            return responseFactory.buildCommonEventResponse(event);
+            return responseFactory.buildEventResponse(event);
         } else {
             throw new EventRequestException("Търсеното от вас събитие не е намерено.");
         }
     }
 
-    public CommonEventResponse getEventDetailsWithoutConditionsById(Long eventId) {
+    public EventResponse getEventDetailsWithoutConditionsById(Long eventId) {
         Optional<Event> event = eventRepository.findById(eventId);
         if (event.isEmpty()) {
             throw new EventRequestException("Търсеното от вас събитие не е наремено");
         }
-        return responseFactory.buildCommonEventResponse(event.get());
+        return responseFactory.buildEventResponse(event.get());
     }
 
     public void deleteEventByIdAndUserIdForOrganisation(Long eventId, String token) {
@@ -151,7 +143,7 @@ public class EventService {
         event.setMaxAge(eventRequest.getMaxAge());
         event.setPrice(eventRequest.getPrice());
         event.setIsOnline(eventRequest.getIsOnline());
-        event.setIsOneTime(eventRequest.getIsOneTime());
+        event.setIsEvent(eventRequest.getIsEvent());
         event.setStartsAt(eventRequest.getStartsAt());
         event.setEndsAt(eventRequest.getEndsAt());
         event.setRecurrenceDetails(eventRequest.getRecurrenceDetails());
@@ -167,15 +159,10 @@ public class EventService {
         CriteriaQuery<Event> query = cb.createQuery(Event.class);
         Root<Event> root = query.from(Event.class);
         List<Predicate> predicates = new ArrayList<>();
-        addCategoryPredicate(request, cb, root, predicates);
-        addNamePredicate(request, cb, root, predicates);
-        addDescriptionPredicate(request, cb, root, predicates);
-        addAddressPredicate(request, cb, root, predicates);
-        addOnlinePredicate(request, cb, root, predicates);
-        addOrganisationNamePredicate(request, cb, root, predicates);
-        addAgePredicate(request, cb, root, predicates);
+
+        addSearchPredicate(request ,cb , root , predicates);
         addDateTimePredicates(request, cb, root, predicates);
-        addOneTimePredicate(request, cb, root, predicates);
+        addIsEventPredicate(request, cb, root, predicates);
         addUserPredicates(cb, root, predicates);
         addExpiredPredicate(request, cb, root, predicates);
 
@@ -201,102 +188,29 @@ public class EventService {
         return new PageImpl<>(resultList, pageable, totalElements);
     }
 
-    public void addCategoryPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
-        if (request.getEventCategories() != null) {
-            String[] categories = request.getEventCategories().split(",");
-            for (String category : categories) {
-                predicates.add(cb.like(root.get("eventCategories"), "%" + category.trim() + "%"));
-            }
+    public void addSearchPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+        if (request.getValue() != null) {
+            String value = "%" + request.getValue() + "%";
+            Predicate categoryPredicate = cb.like(root.get("eventCategories"), value.trim());
+            Predicate namePredicate = cb.like(root.get("name"), value);
+            Predicate organisationNamePredicate = cb.like(root.get("organisation").get("name"), value);
+            Predicate addressPredicate = cb.like(root.get("address"), value);
+
+            // Combine the predicates with OR
+            Predicate finalPredicate = cb.or(categoryPredicate, namePredicate, organisationNamePredicate, addressPredicate);
+
+            predicates.add(finalPredicate);
         }
     }
 
-    public void addNamePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
-        if (request.getName() != null) {
-            predicates.add(cb.like(root.get("name"), "%" + request.getName() + "%"));
-        }
-    }
-
-    public void addDescriptionPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
-        if (request.getDescription() != null) {
-            predicates.add(cb.like(root.get("description"), "%" + request.getDescription() + "%"));
-        }
-    }
-
-    public void addAddressPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
-        if (request.getAddress() != null) {
-            predicates.add(cb.like(root.get("address"), "%" + request.getAddress() + "%"));
-        }
-    }
-
-    public void addOnlinePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
-        if (request.getIsOnline() != null) {
-            predicates.add(cb.equal(root.get("isOnline"), request.getIsOnline()));
-        }
-    }
-
-    public void addOrganisationNamePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
-        if (request.getOrganisationName() != null) {
-            predicates.add(cb.like(root.get("organisation").get("name"), "%" + request.getOrganisationName() + "%"));
-        }
-    }
-
-    public void addAgePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
-        String minAge = "minAge";
-        String maxAge = "maxAge";
-
-        Predicate ageNotZero;
-        Predicate ageLessThanOrEqualTo;
-        Predicate finalPredicate;
-        if (request.getMinAge() != null && request.getMaxAge() != null) {
-            if (request.getMinAge() == 0 && request.getMaxAge() == 0) {
-                predicates.add(cb.equal(root.get(minAge), 0));
-                predicates.add(cb.equal(root.get(maxAge), 0));
-            } else if (request.getMinAge() == 0 && request.getMaxAge() > 0) {
-
-                predicates.add(cb.equal(root.get(minAge), 0));
-                ageNotZero = cb.notEqual(root.get(maxAge), 0);
-                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get(maxAge), request.getMaxAge());
-
-                // Combine the predicates using AND
-                finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
-                predicates.add(finalPredicate);
-            } else if (request.getMaxAge() == 0 && request.getMinAge() > 0) {
-                predicates.add(cb.equal(root.get(maxAge), request.getMaxAge()));
-                ageNotZero = cb.notEqual(root.get(minAge), 0);
-                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get(minAge), request.getMinAge());
-
-                finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
-                predicates.add(finalPredicate);
-            } else {
-                predicates.add(cb.and(
-                        cb.greaterThanOrEqualTo(root.get(minAge), request.getMinAge()),
-                        cb.lessThanOrEqualTo(root.get(maxAge), request.getMaxAge())
-                ));
-
-            }
-        } else if (request.getMinAge() != null && request.getMaxAge() == null) {
-            if (request.getMinAge() == 0) {
-                predicates.add(cb.equal(root.get(minAge), request.getMinAge()));
-            } else {
-                ageNotZero = cb.notEqual(root.get(minAge), 0);
-                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get(minAge), request.getMinAge());
-
-                finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
-                predicates.add(finalPredicate);
-            }
-        } else if (request.getMinAge() == null && request.getMaxAge() != null) {
-            if (request.getMaxAge() == 0) {
-                predicates.add(cb.equal(root.get(maxAge), request.getMaxAge()));
-            } else {
-                ageNotZero = cb.notEqual(root.get(maxAge), 0);
-                ageLessThanOrEqualTo = cb.lessThanOrEqualTo(root.get(maxAge), request.getMaxAge());
-
-                // Combine the predicates using AND
-                finalPredicate = cb.and(ageNotZero, ageLessThanOrEqualTo);
-                predicates.add(finalPredicate);
-            }
-        }
-    }
+//    public void addCategoryPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+//        if (request.getValue() != null) {
+//            String[] categories = request.getValue().split(",");
+//            for (String category : categories) {
+//                predicates.add(cb.like(root.get("eventCategories"), "%" + category.trim() + "%"));
+//            }
+//        }
+//    }
 
     public void addDateTimePredicates(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getStartsAt() != null && request.getEndsAt() == null) {
@@ -320,12 +234,12 @@ public class EventService {
         }
     }
 
-    public void addOneTimePredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
-        boolean isOneTime = request.getIsOneTime();
-        if (isOneTime) {
-            predicates.add(cb.isTrue(root.get("isOneTime")));
+    public void addIsEventPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
+        boolean isEvent = request.getIsEvent();
+        if (isEvent) {
+            predicates.add(cb.isTrue(root.get("isEvent")));
         } else {
-            predicates.add(cb.isFalse(root.get("isOneTime")));
+            predicates.add(cb.isFalse(root.get("isEvent")));
         }
     }
 

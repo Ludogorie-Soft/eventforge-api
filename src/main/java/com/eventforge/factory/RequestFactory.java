@@ -79,7 +79,7 @@ public class RequestFactory {
                         .minAge(foundEvent.getMinAge())
                         .imageUrl(foundEvent.getEventImage().getUrl())
                         .maxAge(foundEvent.getMaxAge())
-                        .isOneTime(foundEvent.getIsOneTime())
+                        .isEvent(foundEvent.getIsEvent())
                         .startsAt(foundEvent.getStartsAt())
                         .endsAt(foundEvent.getEndsAt())
                         .recurrenceDetails(foundEvent.getRecurrenceDetails())

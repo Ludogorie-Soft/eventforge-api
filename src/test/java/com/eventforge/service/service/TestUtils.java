@@ -1,6 +1,5 @@
 package com.eventforge.service.service;
 
-import com.eventforge.model.Organisation;
 import com.eventforge.model.OrganisationPriority;
 import com.eventforge.service.OrganisationPriorityService;
 import com.eventforge.service.Utils;
@@ -39,7 +38,7 @@ class TestUtils {
 
 
         // Act
-        String result = utils.convertIsOneTimeToString(isOneTime);
+        String result = utils.convertIsEventToString(isOneTime);
 
         // Assert
         assertEquals("еднократно", result);
@@ -50,7 +49,7 @@ class TestUtils {
         // Arrange
         Boolean isOneTime = false;
         // Act
-        String result = utils.convertIsOneTimeToString(isOneTime);
+        String result = utils.convertIsEventToString(isOneTime);
 
         // Assert
         assertEquals("инициатива", result);

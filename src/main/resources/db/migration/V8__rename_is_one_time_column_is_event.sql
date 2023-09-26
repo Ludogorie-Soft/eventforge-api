@@ -1,0 +1,1 @@
+ALTER TABLE event RENAME COLUMN is_one_time TO is_event;

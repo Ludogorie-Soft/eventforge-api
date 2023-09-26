@@ -46,8 +46,8 @@ public class EventRequest {
     @PositiveOrZero(message = "Не можете да въвеждате отрицателни цифри")
     private Integer maxAge;
 
-    @NotNull(message = "Моля маркирайте полето.")
-    private Boolean isOneTime;
+//    @NotNull(message = "Моля маркирайте полето.")
+    private Boolean isEvent;
     @FutureOrPresent(message = "Невалидна дата. Не е възможно създаване на събитие с минала дата спрямо текущата!")
     private LocalDateTime startsAt;
     private LocalDateTime endsAt;

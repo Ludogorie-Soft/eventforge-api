@@ -3,7 +3,7 @@ package com.eventforge.controller;
 import com.eventforge.dto.request.ChangePasswordRequest;
 import com.eventforge.dto.request.EventRequest;
 import com.eventforge.dto.request.UpdateAccountRequest;
-import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.factory.EntityFactory;
 import com.eventforge.factory.RequestFactory;
@@ -89,8 +89,8 @@ public class OrganisationController {
     }
 
     @GetMapping("/show-my-events")
-    public ResponseEntity<List<CommonEventResponse>> showAllOrganisationEvents(@RequestHeader(AUTHORIZATION) String authHeader){
-       List<CommonEventResponse> eventResponse = eventService.getAllEventsByUserIdForOrganisation(authHeader);
+    public ResponseEntity<List<EventResponse>> showAllOrganisationEvents(@RequestHeader(AUTHORIZATION) String authHeader){
+       List<EventResponse> eventResponse = eventService.getAllEventsAndAdsByUserIdForOrganisation(authHeader);
         return new ResponseEntity<>(eventResponse , HttpStatus.OK);
     }
     @GetMapping("/create-event")

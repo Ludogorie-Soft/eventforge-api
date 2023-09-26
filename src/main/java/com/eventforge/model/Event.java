@@ -37,7 +37,7 @@ public class Event {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    private Boolean isOneTime;
+    private Boolean isEvent;
     @DateTimeFormat(pattern ="dd-MM-yyyy HH:mm" ,iso = DateTimeFormat.ISO.DATE_TIME)
 
     private LocalDateTime startsAt;

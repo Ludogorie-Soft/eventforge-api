@@ -1,6 +1,6 @@
 package com.eventforge.factory;
 
-import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.OrganisationResponseForAdmin;
 import com.eventforge.model.Event;
@@ -69,28 +69,28 @@ public class ResponseFactory {
                 .build();
     }
 
-    private List<CommonEventResponse> fetchExpiredEvents(Long orgId) {
+    private List<EventResponse> fetchExpiredEvents(Long orgId) {
 
         return eventRepository.findAllExpiredEvents(orgId, LocalDateTime.now()).stream()
-                .map(this::buildCommonEventResponse)
+                .map(this::buildEventResponse)
                 .toList();
     }
 
-    private List<CommonEventResponse> fetchActiveEvents(Long orgId) {
+    private List<EventResponse> fetchActiveEvents(Long orgId) {
         return eventRepository.findAllActiveEvents(orgId, LocalDateTime.now()).stream()
-                .map(this::buildCommonEventResponse)
+                .map(this::buildEventResponse)
                 .toList();
     }
 
-    private List<CommonEventResponse> fetchUpcomingEvents(Long orgId) {
+    private List<EventResponse> fetchUpcomingEvents(Long orgId) {
         return eventRepository.findAllUpcomingEvents(orgId, LocalDateTime.now()).stream()
-                .map(this::buildCommonEventResponse)
+                .map(this::buildEventResponse)
                 .toList();
     }
 
 
-    public CommonEventResponse buildCommonEventResponse(Event event) {
-        CommonEventResponse eventResponse = new CommonEventResponse();
+    public EventResponse buildEventResponse(Event event) {
+        EventResponse eventResponse = new EventResponse();
 
         eventResponse.setId(event.getId());
         eventResponse.setOrgId(event.getOrganisation().getId());
@@ -109,8 +109,8 @@ public class ResponseFactory {
         eventResponse.setAgeBoundary(utils.convertAgeToString(event.getMinAge(), event.getMaxAge()));
         eventResponse.setStartsAt(event.getStartsAt());
         eventResponse.setEndsAt(event.getEndsAt());
-        eventResponse.setIsOneTime(utils.convertIsOneTimeToString(event.getIsOneTime()));
-        if (event.getRecurrenceDetails() != null && !event.getIsOneTime()) {
+        eventResponse.setIsEvent(utils.convertIsEventToString(event.getIsEvent()));
+        if (event.getRecurrenceDetails() != null ) {
             eventResponse.setRecurrenceDetails(event.getRecurrenceDetails());
         } else {
             eventResponse.setRecurrenceDetails(null);
