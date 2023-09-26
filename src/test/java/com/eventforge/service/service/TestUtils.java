@@ -34,25 +34,25 @@ class TestUtils {
     @Test
     public void convertIsOneTimeToString_WhenIsOneTimeIsTrue_ShouldReturnCorrectString() {
         // Arrange
-        Boolean isOneTime = true;
+        Boolean isEvent = true;
 
 
         // Act
-        String result = utils.convertIsEventToString(isOneTime);
+        String result = utils.convertIsEventToString(isEvent);
 
         // Assert
-        assertEquals("еднократно", result);
+        assertEquals("събитие", result);
     }
 
     @Test
     public void convertIsOneTimeToString_WhenIsOneTimeIsFalse_ShouldReturnCorrectString() {
         // Arrange
-        Boolean isOneTime = false;
+        Boolean isEvent = false;
         // Act
-        String result = utils.convertIsEventToString(isOneTime);
+        String result = utils.convertIsEventToString(isEvent);
 
         // Assert
-        assertEquals("инициатива", result);
+        assertEquals("обява", result);
     }
     @Test
  void testConvertPriceToString() {
@@ -68,7 +68,7 @@ class TestUtils {
     @Test
     void testConvertAgeToString() {
         String result1 = utils.convertAgeToString(0, 0);
-        assertEquals("Няма ограничение за възрастта", result1, "Should return 'Няма ограничение за възрастта'");
+        assertEquals("Няма ограничение на възрастта", result1, "Should return 'Няма ограничение на възрастта'");
 
         String result2 = utils.convertAgeToString(18, 0);
         assertEquals("Минимална възраст: 18 години", result2, "Should return 'Минимална възраст: 18 години'");
