@@ -1,6 +1,6 @@
 package com.eventforge.controller;
 
-import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.service.EventService;
 import com.eventforge.service.OrganisationService;
@@ -22,7 +22,7 @@ public class MainMenuController {
 
     private final OrganisationService organisationService;
     @GetMapping("/events")
-    public ResponseEntity<List<CommonEventResponse>> showThreeUpcomingEvents(){
+    public ResponseEntity<List<EventResponse>> showThreeUpcomingEvents(){
         return new ResponseEntity<>(eventService.getThreeUpcomingEvents() , HttpStatus.OK);
     }
     @GetMapping("/organisations")

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommonEventResponse {
+public class EventResponse {
     private Long id;
     private Long orgId;
     private Long imageId;
@@ -26,6 +26,6 @@ public class CommonEventResponse {
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime endsAt;
     private String description;
-    private String isOneTime;
+    private String isEvent;
     private String recurrenceDetails;
 }

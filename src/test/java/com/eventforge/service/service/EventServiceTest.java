@@ -2,8 +2,7 @@ package com.eventforge.service.service;
 
 import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.EventRequest;
-import com.eventforge.dto.request.PageRequestDto;
-import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.exception.EventRequestException;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
@@ -21,15 +20,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -62,45 +54,6 @@ class EventServiceTest {
     @InjectMocks
     private EventService eventService;
 
-    @Test
-    void testGetAllOneTimeEventsByOrganisationId() {
-        // Arrange
-        Long id = 1L;
-        List<Event> events = Arrays.asList(new Event(), new Event()); // Create a list of events for testing
-        List<CommonEventResponse> expectedResponses = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
-
-        when(eventRepository.findAllOneTimeEventsByOrganisationId(id)).thenReturn(events);
-        when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
-
-        // Act
-        List<CommonEventResponse> actualResponses = eventService.getAllOneTimeEventsByOrganisationId(id);
-
-        // Assert
-        assertEquals(expectedResponses.size(), actualResponses.size());
-        // Add additional assertions as needed
-        verify(eventRepository).findAllOneTimeEventsByOrganisationId(id);
-        verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
-    }
-
-    @Test
-    void testGetAllRecurrenceEventsByOrganisationId() {
-        // Arrange
-        Long id = 1L;
-        List<Event> events = Arrays.asList(new Event(), new Event()); // Create a list of events for testing
-        List<CommonEventResponse> expectedResponses = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
-
-        when(eventRepository.findAllRecurrenceEventsByOrganisationId(id)).thenReturn(events);
-        when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
-
-        // Act
-        List<CommonEventResponse> actualResponses = eventService.getAllRecurrenceEventsByOrganisationId(id);
-
-        // Assert
-        assertEquals(expectedResponses.size(), actualResponses.size());
-        // Add additional assertions as needed
-        verify(eventRepository).findAllRecurrenceEventsByOrganisationId(id);
-        verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
-    }
 
     @Test
     void testGetAllEventsByUserIdAndNameForOrganisation_NullOrEmptyName() {
@@ -111,21 +64,21 @@ class EventServiceTest {
         user.setId(1L);
 
         List<Event> events = Arrays.asList(new Event(), new Event()); // Create a list of events for testing
-        List<CommonEventResponse> expectedResponses = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
+        List<EventResponse> expectedResponses = Arrays.asList(new EventResponse(), new EventResponse());
 
         when(userService.getLoggedUserByToken(token)).thenReturn(user);
-        when(eventRepository.findAllEventsForOrganisationByUserId(user.getId())).thenReturn(events);
-        when(responseFactory.buildCommonEventResponse(any(Event.class))).thenReturn(new CommonEventResponse());
+        when(eventRepository.findAllEventsAndAdsForOrganisationByUserId(user.getId())).thenReturn(events);
+        when(responseFactory.buildEventResponse(any(Event.class))).thenReturn(new EventResponse());
 
         // Act
-        List<CommonEventResponse> actualResponses = eventService.getAllEventsByUserIdForOrganisation(token);
+        List<EventResponse> actualResponses = eventService.getAllEventsAndAdsByUserIdForOrganisation(token);
 
         // Assert
         assertEquals(expectedResponses.size(), actualResponses.size());
         // Add additional assertions as needed
         verify(userService).getLoggedUserByToken(token);
-        verify(eventRepository).findAllEventsForOrganisationByUserId(user.getId());
-        verify(responseFactory, times(events.size())).buildCommonEventResponse(any(Event.class));
+        verify(eventRepository).findAllEventsAndAdsForOrganisationByUserId(user.getId());
+        verify(responseFactory, times(events.size())).buildEventResponse(any(Event.class));
         verifyNoMoreInteractions(eventRepository);
     }
 
@@ -146,11 +99,11 @@ class EventServiceTest {
         when(eventRepository.findEventByIdWithCondition(eventId)).thenReturn(event);
 
         // Mock the behavior of the responseFactory
-        CommonEventResponse expectedResponse = new CommonEventResponse(); // Create a test response object
-        when(responseFactory.buildCommonEventResponse(event)).thenReturn(expectedResponse);
+        EventResponse expectedResponse = new EventResponse(); // Create a test response object
+        when(responseFactory.buildEventResponse(event)).thenReturn(expectedResponse);
 
         // Call the method being tested
-        CommonEventResponse actualResponse = eventService.getEventDetailWithConditionsById(eventId);
+        EventResponse actualResponse = eventService.getEventDetailWithConditionsById(eventId);
 
         // Verify the expected interactions and outcomes
         Assertions.assertEquals(expectedResponse, actualResponse);
@@ -175,11 +128,11 @@ class EventServiceTest {
         Event event = new Event();
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
 
-        CommonEventResponse expectedResponse = new CommonEventResponse(); // Create a test response object
-        when(responseFactory.buildCommonEventResponse(event)).thenReturn(expectedResponse);
+        EventResponse expectedResponse = new EventResponse(); // Create a test response object
+        when(responseFactory.buildEventResponse(event)).thenReturn(expectedResponse);
 
         // Call the method being tested
-        CommonEventResponse actualResponse = eventService.getEventDetailsWithoutConditionsById(eventId);
+        EventResponse actualResponse = eventService.getEventDetailsWithoutConditionsById(eventId);
 
         // Verify the expected interactions and outcomes
         Assertions.assertEquals(expectedResponse, actualResponse);
@@ -274,133 +227,20 @@ class EventServiceTest {
 
     }
 
-
-    @Test
-    void addNamePredicate_shouldAddPredicateWhenNameNotNull() {
-        String name = "event";
-
-        request.setName(name);
-        List<Predicate> predicates = new ArrayList<>();
-        eventService.addNamePredicate(request, cb, root, predicates);
-
-        verify(cb).like((root.get("name")), ("%" + name + "%"));
-        assertEquals(1, predicates.size());
-    }
-
-    @Test
-    void addNamePredicate_shouldNotAddPredicateWhenNameNull() {
-        List<Predicate> predicates = new ArrayList<>();
-
-        eventService.addNamePredicate(request, cb, root, predicates);
-
-        assertEquals(0, predicates.size());
-        verifyNoInteractions(cb, root);
-    }
-
-    @Test
-    void addDescriptionPredicate_shouldAddPredicateWhenDescriptionNotNull() {
-        String description = "example";
-        request.setDescription(description);
-        List<Predicate> predicates = new ArrayList<>();
-
-        eventService.addDescriptionPredicate(request, cb, root, predicates);
-
-        verify(cb).like((root.get("description")), ("%" + description + "%"));
-        assertEquals(1, predicates.size());
-    }
-
-    @Test
-    void addDescriptionPredicate_shouldNotAddPredicateWhenDescriptionNull() {
-        List<Predicate> predicates = new ArrayList<>();
-
-        eventService.addDescriptionPredicate(request, cb, root, predicates);
-
-        assertEquals(0, predicates.size());
-        verifyNoInteractions(cb, root);
-    }
-
-    @Test
-    void addAddressPredicate_shouldAddPredicateWhenAddressNotNull() {
-        String address = "123 Main St";
-        request.setAddress(address);
-        List<Predicate> predicates = new ArrayList<>();
-
-        eventService.addAddressPredicate(request, cb, root, predicates);
-
-        assertEquals(1, predicates.size());
-        verify(cb).like((root.get("address")), ("%" + address + "%"));
-    }
-
-    @Test
-    void addAddressPredicate_shouldNotAddPredicateWhenAddressNull() {
-        List<Predicate> predicates = new ArrayList<>();
-
-        eventService.addAddressPredicate(request, cb, root, predicates);
-
-        assertEquals(0, predicates.size());
-        verifyNoInteractions(cb, root);
-    }
-
-    @Test
-    void addOnlinePredicate_shouldNotAddPredicateWhenIsOnlineNull() {
-        List<Predicate> predicates = new ArrayList<>();
-
-        eventService.addOnlinePredicate(request, cb, root, predicates);
-
-        assertTrue(predicates.isEmpty());
-        verify(cb, never()).equal(any(), any());
-    }
-
-    @Test
-    void addOnlinePredicate_shouldAddPredicateWhenIsOnlineNotNull() {
-        Boolean isOnline = true;
-        request.setIsOnline(isOnline);
-        List<Predicate> predicates = new ArrayList<>();
-        eventService.addOnlinePredicate(request, cb, root, predicates);
-
-        assertEquals(1, predicates.size());
-        verify(cb).equal((root.get("isOnline")), (isOnline));
-    }
-
-    @Test
-    void addOrganisationNamePredicate_shouldNotAddPredicateWhenOrganisationNameNull() {
-        request.setOrganisationName(null);
-        List<Predicate> predicates = new ArrayList<>();
-
-        eventService.addOrganisationNamePredicate(request, cb, root, predicates);
-
-        assertTrue(predicates.isEmpty());
-        verify(cb, never()).like(any(), (Expression<String>) any());
-    }
-
-    @Test
-    void addOrganisationNamePredicate_shouldAddPredicateWhenOrganisationNameNotNull() {
-        String organisationName = "ABC Organization";
-        request.setOrganisationName(organisationName);
-        Join organisationJoin = mock(Join.class);
-        List<Predicate> predicates = new ArrayList<>();
-
-        when(root.get("organisation")).thenReturn(organisationJoin);
-        eventService.addOrganisationNamePredicate(request, cb, root, predicates);
-
-        assertEquals(1, predicates.size());
-        verify(cb).like((organisationJoin.get("name")), ("%" + organisationName + "%"));
-    }
-
     @Test
     void testAddOneTimePredicate_IsOneTimeTrue() {
-        request.setIsOneTime(true);
+        request.setIsEvent(true);
         List<Predicate> predicates = new ArrayList<>();
 
-        eventService.addOneTimePredicate(request, cb, root, predicates);
+        eventService.addIsEventPredicate(request, cb, root, predicates);
         Assertions.assertEquals(1, predicates.size());
     }
 
     @Test
     void testAddOneTimePredicate_IsOneTimeFalse() {
-        request.setIsOneTime(false);
+        request.setIsEvent(false);
         List<Predicate> predicates = new ArrayList<>();
-        eventService.addOneTimePredicate(request, cb, root, predicates);
+        eventService.addIsEventPredicate(request, cb, root, predicates);
         Assertions.assertEquals(1, predicates.size());
     }
 
@@ -420,161 +260,6 @@ class EventServiceTest {
 
         eventService.addExpiredPredicate(request, cb, root, predicates);
         Assertions.assertEquals(1, predicates.size());
-    }
-
-    @Test
-    void testAddAgePredicate_MinAgeAndMaxAgeNotNull() {
-        List<Predicate> predicates = new ArrayList<>();
-        request.setMinAge(18);
-        request.setMaxAge(30);
-
-        Predicate minAgePredicate = Mockito.mock(Predicate.class);
-        Predicate maxAgePredicate = Mockito.mock(Predicate.class);
-
-        when(cb.greaterThanOrEqualTo(root.get("minAge"), request.getMinAge())).thenReturn(minAgePredicate);
-        when(cb.lessThanOrEqualTo(root.get("maxAge"), request.getMaxAge())).thenReturn(maxAgePredicate);
-
-        eventService.addAgePredicate(request, cb, root, predicates);
-        Assertions.assertEquals(1, predicates.size());
-    }
-
-    @Test
-    void testAddAgePredicate_MinAgeAndMaxAgeZero() {
-        List<Predicate> predicates = new ArrayList<>();
-        request.setMinAge(0);
-        request.setMaxAge(0);
-
-        Predicate minAgePredicate = Mockito.mock(Predicate.class);
-        Predicate maxAgePredicate = Mockito.mock(Predicate.class);
-
-        when(cb.equal(root.get("minAge"), 0)).thenReturn(minAgePredicate);
-        when(cb.equal(root.get("maxAge"), 0)).thenReturn(maxAgePredicate);
-
-        eventService.addAgePredicate(request, cb, root, predicates);
-        Assertions.assertEquals(2, predicates.size());
-    }
-
-    @Test
-    void testAddAgePredicate_MinAgeZeroAndMaxAgeGreaterThanZero() {
-        List<Predicate> predicates = new ArrayList<>();
-        request.setMinAge(0);
-        request.setMaxAge(30);
-
-        Predicate minAgePredicate = Mockito.mock(Predicate.class);
-        Predicate maxAgePredicate = Mockito.mock(Predicate.class);
-
-        when(cb.equal(root.get("minAge"), 0)).thenReturn(minAgePredicate);
-        when(cb.lessThanOrEqualTo(root.get("maxAge"), request.getMaxAge())).thenReturn(maxAgePredicate);
-
-        eventService.addAgePredicate(request, cb, root, predicates);
-
-        Assertions.assertEquals(2, predicates.size());
-    }
-
-
-
-    @Test
-    void testAddAgePredicate_MinAgeAndMaxAgeNonNull() {
-        // Set up your request with appropriate values
-        request.setMinAge(18);
-        request.setMaxAge(0);
-
-        // Call the method under test
-        List<Predicate> predicates = new ArrayList<>();
-        eventService.addAgePredicate(request, cb, root, predicates);
-
-        // Assert that the predicates list contains the expected predicates
-        // For example, check if ageNotZero and ageLessThanOrEqualTo predicates are added
-        // You can use Hamcrest or any other assertion library for more readability
-        // Assuming your test checks for the right predicates
-        // For simplicity, I am just checking the list size here
-        assertEquals(2, predicates.size());
-    }
-
-
-    @Test
-    void testAddAgePredicate_OnlyMinAgeNonNull() {
-        // Set up your request with appropriate values
-        request.setMinAge(18);
-        request.setMaxAge(null);
-
-        // Call the method under test
-        List<Predicate> predicates = new ArrayList<>();
-        eventService.addAgePredicate(request, cb, root, predicates);
-
-        // Assert that the predicates list contains the expected predicates
-        // Assuming your test checks for the right predicates
-        // For simplicity, I am just checking the list size here
-        assertEquals(1, predicates.size());
-    }
-    @Test
-    void testAddAgePredicate_BothMinAndMaxAgeZero() {
-        request.setMinAge(0);
-        request.setMaxAge(0);
-
-        List<Predicate> predicates = new ArrayList<>();
-        eventService.addAgePredicate(request, cb, root, predicates);
-
-        assertEquals(2, predicates.size());
-        // Add more assertions if required for specific predicates
-    }
-    @Test
-    void testAddAgePredicate_MaxAgeZeroAndMinAgeGreaterThanZero() {
-        request.setMinAge(10);
-        request.setMaxAge(0);
-
-        List<Predicate> predicates = new ArrayList<>();
-        eventService.addAgePredicate(request, cb, root, predicates);
-
-        assertEquals(2, predicates.size());
-        // Add more assertions if required for specific predicates
-    }
-
-    @Test
-    void testAddAgePredicate_MinAgeLessThanMaxAge() {
-        request.setMinAge(10);
-        request.setMaxAge(20);
-
-        List<Predicate> predicates = new ArrayList<>();
-        eventService.addAgePredicate(request, cb, root, predicates);
-
-        assertEquals(1, predicates.size());
-        // Add more assertions if required for specific predicates
-    }
-
-    @Test
-    void testAddAgePredicate_MinAgeGreaterThanMaxAge() {
-        request.setMinAge(20);
-        request.setMaxAge(10);
-
-        List<Predicate> predicates = new ArrayList<>();
-        eventService.addAgePredicate(request, cb, root, predicates);
-
-        assertEquals(1, predicates.size());
-        // Add more assertions if required for specific predicates
-    }
-    @Test
-    void testAddAgePredicate_OnlyMaxAgeNonNull() {
-        request.setMinAge(null);
-        request.setMaxAge(30);
-
-
-        List<Predicate> predicates = new ArrayList<>();
-        eventService.addAgePredicate(request, cb, root, predicates);
-
-        assertEquals(1, predicates.size());
-        // Add more assertions if required for specific predicates
-    }
-
-    @Test
-    void testAddAgePredicate_BothMinAndMaxAgeNull() {
-        request.setMinAge(null);
-        request.setMaxAge(null);
-
-        List<Predicate> predicates = new ArrayList<>();
-        eventService.addAgePredicate(request, cb, root, predicates);
-
-        assertEquals(0, predicates.size());
     }
 
 }

@@ -7,7 +7,6 @@ import com.eventforge.exception.EventRequestException;
 import com.eventforge.factory.RequestFactory;
 import com.eventforge.model.Event;
 import com.eventforge.model.Image;
-import com.eventforge.model.Organisation;
 import com.eventforge.model.User;
 import com.eventforge.repository.EventRepository;
 import com.eventforge.service.OrganisationPriorityService;
@@ -23,8 +22,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -90,7 +87,7 @@ class RequestFactoryTest {
         foundEvent.setPrice(10.0);
         foundEvent.setMinAge(18);
         foundEvent.setMaxAge(40);
-        foundEvent.setIsOneTime(true);
+        foundEvent.setIsEvent(true);
         foundEvent.setStartsAt(LocalDateTime.now());
         foundEvent.setEndsAt(LocalDateTime.now());
         foundEvent.setRecurrenceDetails("Example Recurrence Details");
@@ -110,7 +107,7 @@ class RequestFactoryTest {
         assertEquals(10.0, result.getPrice());
         assertEquals(18, result.getMinAge());
         assertEquals(40, result.getMaxAge());
-        assertEquals(true, result.getIsOneTime());
+        assertEquals(true, result.getIsEvent());
         // Add more assertions for the remaining properties
         verify(userService, times(1)).getLoggedUserByToken(eq(token));
         verify(eventRepository, times(1)).findEventByIdAndUserId(eq(user.getId()), eq(eventId));

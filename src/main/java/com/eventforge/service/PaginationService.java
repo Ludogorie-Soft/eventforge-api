@@ -2,7 +2,7 @@ package com.eventforge.service;
 
 import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.PageRequestDto;
-import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
@@ -33,37 +33,37 @@ public class PaginationService {
 
 
 
-    public Page<CommonEventResponse> getAllActiveOneTimeEventsByPagination(PageRequestDto pageRequest) {
-        Page<Event> oneTimeEvents = eventService.getAllActiveOneTimeEvents(pageRequest);
-        List<CommonEventResponse>oneTimeEventsResponse = oneTimeEvents.stream().map(responseFactory::buildCommonEventResponse).toList();
+    public Page<EventResponse> getAllActiveEventsByPagination(PageRequestDto pageRequest) {
+        Page<Event> oneTimeEvents = eventService.getAllActiveEvents(pageRequest);
+        List<EventResponse>oneTimeEventsResponse = oneTimeEvents.stream().map(responseFactory::buildEventResponse).toList();
 
         return new PageImpl<>(oneTimeEventsResponse, new PageRequestDto().getPageable(pageRequest), oneTimeEvents.getTotalElements());
     }
 
-    public Page<CommonEventResponse> getAllExpiredOneTimeEventsByPagination(PageRequestDto pageRequest){
-        Page<Event> oneTimeEvents = eventService.getAllExpiredOneTimeEvents(pageRequest);
-        List<CommonEventResponse> oneTimeEventsResponse = oneTimeEvents.stream().map(responseFactory::buildCommonEventResponse).toList();
+    public Page<EventResponse> getAllExpiredEventsByPagination(PageRequestDto pageRequest){
+        Page<Event> oneTimeEvents = eventService.getAllExpiredEvents(pageRequest);
+        List<EventResponse> oneTimeEventsResponse = oneTimeEvents.stream().map(responseFactory::buildEventResponse).toList();
 
         return new PageImpl<>(oneTimeEventsResponse , new PageRequestDto().getPageable(pageRequest) , oneTimeEvents.getTotalElements());
     }
 
-    public Page<CommonEventResponse> getAllActiveRecurrenceEventsByPagination(PageRequestDto pageRequest){
-        Page<Event> recurrenceEvents = eventService.getAllActiveRecurrenceEvents(pageRequest);
-        List<CommonEventResponse> recurrenceEventsResponse = recurrenceEvents.stream().map(responseFactory::buildCommonEventResponse).toList();
+    public Page<EventResponse> getAllActiveAdsByPagination(PageRequestDto pageRequest){
+        Page<Event> recurrenceEvents = eventService.getAllActiveAds(pageRequest);
+        List<EventResponse> recurrenceEventsResponse = recurrenceEvents.stream().map(responseFactory::buildEventResponse).toList();
 
         return new PageImpl<>(recurrenceEventsResponse , new PageRequestDto().getPageable(pageRequest) , recurrenceEvents.getTotalElements());
     }
 
-    public Page<CommonEventResponse> getAllExpiredRecurrenceEventsByPagination(PageRequestDto pageRequest){
-        Page<Event> recurrenceEvents = eventService.getAllExpiredRecurrenceEvents(pageRequest);
-        List<CommonEventResponse> recurrenceEventsResponse = recurrenceEvents.stream().map(responseFactory::buildCommonEventResponse).toList();
+    public Page<EventResponse> getAllExpiredAdsByPagination(PageRequestDto pageRequest){
+        Page<Event> recurrenceEvents = eventService.getAllExpiredAds(pageRequest);
+        List<EventResponse> recurrenceEventsResponse = recurrenceEvents.stream().map(responseFactory::buildEventResponse).toList();
 
         return new PageImpl<>(recurrenceEventsResponse , new PageRequestDto().getPageable(pageRequest) , recurrenceEvents.getTotalElements());
     }
 
-    public Page<CommonEventResponse> getEventsByCriteriaAndPagination(CriteriaFilterRequest criteriaFilterRequest , PageRequestDto pageRequest){
+    public Page<EventResponse> getEventsByCriteriaAndPagination(CriteriaFilterRequest criteriaFilterRequest , PageRequestDto pageRequest){
         Page<Event> events = eventService.filterEventsByCriteria(criteriaFilterRequest , pageRequest);
-        List<CommonEventResponse> eventsByCriteria = events.stream().map(responseFactory::buildCommonEventResponse).toList();
+        List<EventResponse> eventsByCriteria = events.stream().map(responseFactory::buildEventResponse).toList();
         long elements = events.getTotalElements();
         return new PageImpl<>(eventsByCriteria , new PageRequestDto().getPageable(pageRequest) ,elements);
     }

@@ -46,7 +46,7 @@ public class EntityFactory {
                 .minAge(eventRequest.getMinAge())
                 .maxAge(eventRequest.getMaxAge())
                 .recurrenceDetails(eventRequest.getRecurrenceDetails())
-                .isOneTime(eventRequest.getIsOneTime())
+                .isEvent(eventRequest.getIsEvent())
                 .build();
         eventService.saveEvent(event);
         imageService.saveImageToDb(null, null, eventRequest.getImageUrl(), null, event);

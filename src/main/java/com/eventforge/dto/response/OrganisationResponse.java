@@ -23,8 +23,8 @@ public class OrganisationResponse {
     private String charityOption;
     private String organisationPurpose;
     private Set<String> organisationPriorities;
-    private List<CommonEventResponse> expiredEvents;
-    private List<CommonEventResponse> activeEvents;
-    private List<CommonEventResponse> upcomingEvents;
+    private List<EventResponse> expiredEvents;
+    private List<EventResponse> activeEvents;
+    private List<EventResponse> upcomingEvents;
 
 }

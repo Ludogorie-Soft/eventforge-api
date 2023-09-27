@@ -1,7 +1,6 @@
 package com.eventforge.service.factory;
 
-import com.eventforge.dto.response.CommonEventResponse;
-import com.eventforge.dto.response.OrganisationResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.dto.response.OrganisationResponseForAdmin;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.*;
@@ -16,9 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -93,11 +90,11 @@ class ResponseFactoryTest {
         when(org.getName()).thenReturn("organisation");
         when(event.getRecurrenceDetails()).thenReturn("details");
         // Mock other event properties accordingly
-        when(mockUtils.convertIsOneTimeToString(event.getIsOneTime())).thenReturn("one-time");
+        when(mockUtils.convertIsEventToString(event.getIsEvent())).thenReturn("one-time");
         when(mockUtils.convertPriceToString(event.getPrice())).thenReturn("100 USD");
         when(mockUtils.convertAgeToString(event.getMinAge(), event.getMaxAge())).thenReturn("18+");
 
-        CommonEventResponse eventResponseResult = responseFactory.buildCommonEventResponse(event);
+        EventResponse eventResponseResult = responseFactory.buildEventResponse(event);
 
         assertEquals("organisation" ,eventResponseResult.getOrganisationName());
         assertEquals(event.getId(), eventResponseResult.getId());

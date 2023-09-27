@@ -9,7 +9,8 @@ import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
 
-import static com.eventforge.constants.regex.Regex.*;
+import static com.eventforge.constants.regex.Regex.EVENT_CATEGORIES_PATTERN;
+import static com.eventforge.constants.regex.Regex.FACEBOOK_OR_EMPTY_PATTERN;
 
 @Getter
 @Setter
@@ -21,9 +22,9 @@ import static com.eventforge.constants.regex.Regex.*;
 public class EventRequest {
 
     private String imageUrl;
-    @Size(min = 5, max = 30, message = "Името на събитието трява да е между 5 и 30 символа!")
+    @Size(min = 5, max = 200, message = "Името на събитието трява да е между 5 и 200 символа!")
     private String name;
-    @Size(min = 20, max = 500, message = "Описанието трява да е между 20 и 500 символа!")
+    @Size(min = 20, max = 2000, message = "Описанието трява да е между 20 и 2000 символа!")
     private String description;
     @NotNull(message = "Моля маркирайте полето.")
     private Boolean isOnline;
@@ -46,8 +47,7 @@ public class EventRequest {
     @PositiveOrZero(message = "Не можете да въвеждате отрицателни цифри")
     private Integer maxAge;
 
-    @NotNull(message = "Моля маркирайте полето.")
-    private Boolean isOneTime;
+    private Boolean isEvent;
     @FutureOrPresent(message = "Невалидна дата. Не е възможно създаване на събитие с минала дата спрямо текущата!")
     private LocalDateTime startsAt;
     private LocalDateTime endsAt;

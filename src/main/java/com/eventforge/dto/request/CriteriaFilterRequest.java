@@ -13,24 +13,10 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class CriteriaFilterRequest {
-        private Boolean isOneTime; //// we will hardcore this on the frontend according to which html/template we are.
+        private Boolean isEvent; //// we will hardcore this on the frontend according to which html/template we are.
         private boolean sortByExpired; // we will hardcore this on the frontend according to which html/template we are.
         @Nullable
-        private String name;
-        @Nullable
-        private String description;
-        @Nullable
-        private String address;
-        @Nullable
-        private String organisationName;
-        @Nullable
-        private Integer minAge;
-        @Nullable
-        private Integer maxAge;
-        @Nullable
-        private Boolean isOnline;
-        @Nullable
-        private String eventCategories;
+        private String value;
         @Nullable
         private LocalDate startsAt;
         @Nullable

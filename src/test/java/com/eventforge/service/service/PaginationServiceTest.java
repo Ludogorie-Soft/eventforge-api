@@ -2,7 +2,7 @@ package com.eventforge.service.service;
 
 import com.eventforge.dto.request.CriteriaFilterRequest;
 import com.eventforge.dto.request.PageRequestDto;
-import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.factory.ResponseFactory;
 import com.eventforge.model.Event;
@@ -85,18 +85,18 @@ public class PaginationServiceTest {
     public void testGetAllActiveOneTimeEventsByPagination() {
         // Mock the behavior of the eventService to return some test events
         Page<Event> oneTimeEvents = this.events;
-        when(eventService.getAllActiveOneTimeEvents(pageRequest)).thenReturn(oneTimeEvents);
+        when(eventService.getAllActiveEvents(pageRequest)).thenReturn(oneTimeEvents);
 
         // Mock the behavior of the responseFactory to return some test CommonEventResponse objects
-        List<CommonEventResponse> oneTimeEventsResponse = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
-        when(responseFactory.buildCommonEventResponse(any())).thenReturn(oneTimeEventsResponse.get(0), oneTimeEventsResponse.get(1));
+        List<EventResponse> oneTimeEventsResponse = Arrays.asList(new EventResponse(), new EventResponse());
+        when(responseFactory.buildEventResponse(any())).thenReturn(oneTimeEventsResponse.get(0), oneTimeEventsResponse.get(1));
 
         // Call the method under test
-        Page<CommonEventResponse> result = paginationService.getAllActiveOneTimeEventsByPagination(pageRequest);
+        Page<EventResponse> result = paginationService.getAllActiveEventsByPagination(pageRequest);
 
         // Verify the interaction and the result
-        verify(eventService).getAllActiveOneTimeEvents(pageRequest);
-        verify(responseFactory, times(2)).buildCommonEventResponse(any());
+        verify(eventService).getAllActiveEvents(pageRequest);
+        verify(responseFactory, times(2)).buildEventResponse(any());
         assertEquals(oneTimeEventsResponse, result.getContent());
         assertEquals(12, result.getTotalElements());
     }
@@ -104,18 +104,18 @@ public class PaginationServiceTest {
     @Test
     public void testGetAllExpiredOneTimeEventsByPagination() {
         // Mock the behavior of the eventService to return some test events
-        when(eventService.getAllExpiredOneTimeEvents(pageRequest)).thenReturn(events);
+        when(eventService.getAllExpiredEvents(pageRequest)).thenReturn(events);
 
         // Mock the behavior of the responseFactory to return some test CommonEventResponse objects
-        List<CommonEventResponse> oneTimeEventsResponse = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
-        when(responseFactory.buildCommonEventResponse(any())).thenReturn(oneTimeEventsResponse.get(0), oneTimeEventsResponse.get(1));
+        List<EventResponse> oneTimeEventsResponse = Arrays.asList(new EventResponse(), new EventResponse());
+        when(responseFactory.buildEventResponse(any())).thenReturn(oneTimeEventsResponse.get(0), oneTimeEventsResponse.get(1));
 
         // Call the method under test
-        Page<CommonEventResponse> result = paginationService.getAllExpiredOneTimeEventsByPagination(pageRequest);
+        Page<EventResponse> result = paginationService.getAllExpiredEventsByPagination(pageRequest);
 
         // Verify the interaction and the result
-        verify(eventService).getAllExpiredOneTimeEvents(pageRequest);
-        verify(responseFactory, times(2)).buildCommonEventResponse(any());
+        verify(eventService).getAllExpiredEvents(pageRequest);
+        verify(responseFactory, times(2)).buildEventResponse(any());
         assertEquals(oneTimeEventsResponse, result.getContent());
         assertEquals(12, result.getTotalElements());
     }
@@ -124,18 +124,18 @@ public class PaginationServiceTest {
     public void testGetAllActiveRecurrenceEventsByPagination() {
         // Mock the behavior of the eventService to return some test events
 
-        when(eventService.getAllActiveRecurrenceEvents(pageRequest)).thenReturn(events);
+        when(eventService.getAllActiveAds(pageRequest)).thenReturn(events);
 
         // Mock the behavior of the responseFactory to return some test CommonEventResponse objects
-        List<CommonEventResponse> oneTimeEventsResponse = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
-        when(responseFactory.buildCommonEventResponse(any())).thenReturn(oneTimeEventsResponse.get(0), oneTimeEventsResponse.get(1));
+        List<EventResponse> oneTimeEventsResponse = Arrays.asList(new EventResponse(), new EventResponse());
+        when(responseFactory.buildEventResponse(any())).thenReturn(oneTimeEventsResponse.get(0), oneTimeEventsResponse.get(1));
 
         // Call the method under test
-        Page<CommonEventResponse> result = paginationService.getAllActiveRecurrenceEventsByPagination(pageRequest);
+        Page<EventResponse> result = paginationService.getAllActiveAdsByPagination(pageRequest);
 
         // Verify the interaction and the result
-        verify(eventService).getAllActiveRecurrenceEvents(pageRequest);
-        verify(responseFactory, times(2)).buildCommonEventResponse(any());
+        verify(eventService).getAllActiveAds(pageRequest);
+        verify(responseFactory, times(2)).buildEventResponse(any());
         assertEquals(oneTimeEventsResponse, result.getContent());
         assertEquals(12, result.getTotalElements());
     }
@@ -144,18 +144,18 @@ public class PaginationServiceTest {
     public void testGetAllExpiredRecurrenceEventsByPagination() {
         // Mock the behavior of the eventService to return some test events
 
-        when(eventService.getAllExpiredRecurrenceEvents(pageRequest)).thenReturn(events);
+        when(eventService.getAllExpiredAds(pageRequest)).thenReturn(events);
 
         // Mock the behavior of the responseFactory to return some test CommonEventResponse objects
-        List<CommonEventResponse> oneTimeEventsResponse = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
-        when(responseFactory.buildCommonEventResponse(any())).thenReturn(oneTimeEventsResponse.get(0), oneTimeEventsResponse.get(1));
+        List<EventResponse> oneTimeEventsResponse = Arrays.asList(new EventResponse(), new EventResponse());
+        when(responseFactory.buildEventResponse(any())).thenReturn(oneTimeEventsResponse.get(0), oneTimeEventsResponse.get(1));
 
         // Call the method under test
-        Page<CommonEventResponse> result = paginationService.getAllExpiredRecurrenceEventsByPagination(pageRequest);
+        Page<EventResponse> result = paginationService.getAllExpiredAdsByPagination(pageRequest);
 
         // Verify the interaction and the result
-        verify(eventService).getAllExpiredRecurrenceEvents(pageRequest);
-        verify(responseFactory, times(2)).buildCommonEventResponse(any());
+        verify(eventService).getAllExpiredAds(pageRequest);
+        verify(responseFactory, times(2)).buildEventResponse(any());
         assertEquals(oneTimeEventsResponse, result.getContent());
         assertEquals(12, result.getTotalElements());
     }
@@ -167,15 +167,15 @@ public class PaginationServiceTest {
         when(eventService.filterEventsByCriteria(criteriaFilterRequest,pageRequest)).thenReturn(events);
 
         // Mock the behavior of the responseFactory to return some test CommonEventResponse objects
-        List<CommonEventResponse> oneTimeEventsResponse = Arrays.asList(new CommonEventResponse(), new CommonEventResponse());
-        when(responseFactory.buildCommonEventResponse(any())).thenReturn(oneTimeEventsResponse.get(0), oneTimeEventsResponse.get(1));
+        List<EventResponse> oneTimeEventsResponse = Arrays.asList(new EventResponse(), new EventResponse());
+        when(responseFactory.buildEventResponse(any())).thenReturn(oneTimeEventsResponse.get(0), oneTimeEventsResponse.get(1));
 
         // Call the method under test
-        Page<CommonEventResponse> result = paginationService.getEventsByCriteriaAndPagination(criteriaFilterRequest,pageRequest);
+        Page<EventResponse> result = paginationService.getEventsByCriteriaAndPagination(criteriaFilterRequest,pageRequest);
 
         // Verify the interaction and the result
         verify(eventService).filterEventsByCriteria(criteriaFilterRequest,pageRequest);
-        verify(responseFactory, times(2)).buildCommonEventResponse(any());
+        verify(responseFactory, times(2)).buildEventResponse(any());
         assertEquals(oneTimeEventsResponse, result.getContent());
         assertEquals(12, result.getTotalElements());
     }

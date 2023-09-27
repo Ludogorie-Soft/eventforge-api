@@ -23,11 +23,11 @@ public class Utils {
 
     private static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
-    public String convertIsOneTimeToString(Boolean isOneTime) {
-        if (isOneTime) {
-            return "еднократно";
+    public String convertIsEventToString(Boolean isEvent) {
+        if (isEvent) {
+            return "събитие";
         }
-        return "инициатива";
+        return "обява";
     }
 
     public String convertPriceToString(Double price) {
@@ -40,7 +40,7 @@ public class Utils {
 
     public String convertAgeToString(Integer minAge, Integer maxAge) {
         if (minAge == 0 && maxAge == 0) {
-            return "Няма ограничение за възрастта";
+            return "Няма ограничение на възрастта";
         }
         if (minAge > 0 && maxAge == 0) {
             return "Минимална възраст: " + minAge + AGE_STRING;

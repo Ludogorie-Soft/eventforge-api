@@ -1,7 +1,7 @@
 package com.eventforge.controller;
 
 import com.eventforge.dto.request.ChangePasswordRequest;
-import com.eventforge.dto.response.CommonEventResponse;
+import com.eventforge.dto.response.EventResponse;
 import com.eventforge.dto.response.OrganisationResponse;
 import com.eventforge.dto.response.OrganisationResponseForAdmin;
 import com.eventforge.email.AdminContactEvent;
@@ -59,7 +59,7 @@ public class AdminController {
     }
 
     @GetMapping("/event/details/{id}")
-    public ResponseEntity<CommonEventResponse>showEventDetailsForAdmin(@RequestHeader("Authorization")String authHeader ,@PathVariable("id")Long eventId){
+    public ResponseEntity<EventResponse>showEventDetailsForAdmin(@RequestHeader("Authorization")String authHeader , @PathVariable("id")Long eventId){
         return new ResponseEntity<>(eventService.getEventDetailsWithoutConditionsById(eventId) , HttpStatus.OK);
     }
     @PutMapping("/organisation-management/ban-account/{id}/{email}")
