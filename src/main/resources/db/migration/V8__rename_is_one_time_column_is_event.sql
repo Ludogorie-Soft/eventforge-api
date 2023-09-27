@@ -1,1 +1,1 @@
-ALTER TABLE event RENAME COLUMN is_one_time TO is_event;
+ALTER TABLE event CHANGE COLUMN is_one_time is_event BOOLEAN;

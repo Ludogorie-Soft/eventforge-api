@@ -190,14 +190,24 @@ public class EventService {
 
     public void addSearchPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getValue() != null) {
-            String value = "%" + request.getValue() + "%";
-            Predicate categoryPredicate = cb.like(root.get("eventCategories"), value.trim());
-            Predicate namePredicate = cb.like(root.get("name"), value);
-            Predicate organisationNamePredicate = cb.like(root.get("organisation").get("name"), value);
-            Predicate addressPredicate = cb.like(root.get("address"), value);
+            String[] keywords = request.getValue().split("[,\\s]+"); // Split the input into keywords
+            List<Predicate> keywordPredicates = new ArrayList<>();
 
-            // Combine the predicates with OR
-            Predicate finalPredicate = cb.or(categoryPredicate, namePredicate, organisationNamePredicate, addressPredicate);
+            for (String keyword : keywords) {
+                String trimmedKeyword = "%" + keyword.trim() + "%";
+                Predicate categoryPredicate = cb.like(root.get("eventCategories"), trimmedKeyword);
+                Predicate namePredicate = cb.like(root.get("name"), trimmedKeyword);
+                Predicate organisationNamePredicate = cb.like(root.get("organisation").get("name"), trimmedKeyword);
+                Predicate addressPredicate = cb.like(root.get("address"), trimmedKeyword);
+
+                // Combine the predicates for this keyword with OR
+                Predicate keywordPredicate = cb.or(categoryPredicate, namePredicate, organisationNamePredicate, addressPredicate);
+
+                keywordPredicates.add(keywordPredicate);
+            }
+
+            // Combine the keyword predicates with an overall OR
+            Predicate finalPredicate = cb.or(keywordPredicates.toArray(new Predicate[0]));
 
             predicates.add(finalPredicate);
         }
