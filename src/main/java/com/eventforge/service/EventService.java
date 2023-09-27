@@ -213,14 +213,6 @@ public class EventService {
         }
     }
 
-//    public void addCategoryPredicate(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
-//        if (request.getValue() != null) {
-//            String[] categories = request.getValue().split(",");
-//            for (String category : categories) {
-//                predicates.add(cb.like(root.get("eventCategories"), "%" + category.trim() + "%"));
-//            }
-//        }
-//    }
 
     public void addDateTimePredicates(CriteriaFilterRequest request, CriteriaBuilder cb, Root<Event> root, List<Predicate> predicates) {
         if (request.getStartsAt() != null && request.getEndsAt() == null) {
