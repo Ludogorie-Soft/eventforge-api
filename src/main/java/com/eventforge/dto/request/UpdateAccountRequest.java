@@ -18,7 +18,7 @@ import static com.eventforge.constants.regex.Regex.*;
 @Builder
 @UpdateOrganisationPriorityNotNull
 public class UpdateAccountRequest  {
-    @Size(min = 5, max = 30, message = "Името на организацията трябва да е между 5 и 30 символа!")
+    @Size(min = 5, max = 35, message = "Името на организацията трябва да е между 5 и 35 символа!")
     private String name;
 
     private String bullstat;

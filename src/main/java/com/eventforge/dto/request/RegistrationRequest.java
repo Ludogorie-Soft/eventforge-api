@@ -25,7 +25,7 @@ public class RegistrationRequest  {
     @Pattern(regexp = EMAIL_PATTERN, message = "Грешно въведена електронна поща. Трябва да е във формат \"<потребител>@<домейн>.<tld>\"")
     @IsEmailFree
     private String username;
-    @Size(min = 5, max = 30, message = "Името на организацията трябва да е между 5 и 30 символа!")
+    @Size(min = 5, max = 35, message = "Името на организацията трябва да е между 5 и 35 символа!")
     private String name;
 
     private String bullstat;
