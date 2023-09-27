@@ -143,7 +143,6 @@ public class EventService {
         event.setMaxAge(eventRequest.getMaxAge());
         event.setPrice(eventRequest.getPrice());
         event.setIsOnline(eventRequest.getIsOnline());
-        event.setIsEvent(eventRequest.getIsEvent());
         event.setStartsAt(eventRequest.getStartsAt());
         event.setEndsAt(eventRequest.getEndsAt());
         event.setRecurrenceDetails(eventRequest.getRecurrenceDetails());
