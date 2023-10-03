@@ -24,7 +24,7 @@ public class EventRequest {
     private String imageUrl;
     @Size(min = 5, max = 200, message = "Името на събитието трява да е между 5 и 200 символа!")
     private String name;
-    @Size(min = 20, max = 4000, message = "Описанието трява да е между 20 и 4000 символа!")
+    @Size(min = 20, max = 5000, message = "Описанието трява да е между 20 и 5000 символа!")
     private String description;
     @NotNull(message = "Моля маркирайте полето.")
     private Boolean isOnline;
